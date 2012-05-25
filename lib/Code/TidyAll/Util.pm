@@ -1,4 +1,6 @@
 package Code::TidyAll::Util;
+use File::Basename;
+use File::Path;
 use File::Slurp qw(read_file write_file);
 use File::Temp qw(tempdir);
 use Try::Tiny;
@@ -6,7 +8,7 @@ use strict;
 use warnings;
 use base qw(Exporter);
 
-our @EXPORT_OK = qw(can_load read_file tempdir_simple write_file );
+our @EXPORT_OK = qw(basename can_load dirname mkpath read_file tempdir_simple write_file );
 
 sub can_load {
 
@@ -17,7 +19,7 @@ sub can_load {
 
     my $result;
     try {
-        Class::MOP::load_class($class_name);
+        eval "require $class_name";
         $result = 1;
     }
     catch {

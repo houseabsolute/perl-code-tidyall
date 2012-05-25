@@ -65,4 +65,34 @@ is( read_file("$root_dir/bin/bar.pl"), "#!/usr/bin/perl\nuse strict;\n\$d = 5;\n
 $output = capture_merged { $ct->tidyall() };
 is($output, '', 'no output');
 
+$ct = Code::TidyAll->new(
+    root_dir => $root_dir,
+    plugins  => {
+        perltidy   => {},
+        perlcritic => {},
+    }
+);
+$output = capture_merged { $ct->tidyall() };
+is($output, '', 'no output');
+
+sleep(1);
+utime(time, time, "$root_dir/bin/bar.pl");
+$output = capture_merged { $ct->tidyall() };
+like( $output, qr/.*bar\.pl/ );
+$output = capture_merged { $ct->tidyall() };
+is($output, '', 'no output');
+
+$ct = Code::TidyAll->new(
+    root_dir => $root_dir,
+    plugins  => {
+        perltidy   => {argv => '-noll'},
+        perlcritic => {},
+    }
+);
+$output = capture_merged { $ct->tidyall() };
+like( $output, qr/.*Foo\.pm/ );
+like( $output, qr/.*bar\.pl/ );
+$output = capture_merged { $ct->tidyall() };
+is($output, '', 'no output');
+
 done_testing();

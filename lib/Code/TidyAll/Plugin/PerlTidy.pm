@@ -1,8 +1,9 @@
 package Code::TidyAll::Plugin::perltidy;
 use Hash::MoreUtils qw(slice_exists);
 use Perl::Tidy;
-use Moose;
-extends 'Code::TidyAll::Plugin';
+use strict;
+use warnings;
+use base qw(Code::TidyAll::Plugin);
 
 sub defaults {
     return { include => qr/\.(pl|pm|t)$/ };
@@ -10,7 +11,12 @@ sub defaults {
 
 sub process_source {
     my ( $self, $source ) = @_;
-    my %params = slice_exists( $self->options, qw(argv prefilter postfilter) );
+    my $options = $self->options;
+
+    # Determine parameters
+    #
+    my %params = slice_exists( $self->options, qw(argv prefilter postfilter perltidyrc) );
+
     Perl::Tidy::perltidy(
         %params,
         source      => \$source,

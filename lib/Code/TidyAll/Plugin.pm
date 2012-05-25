@@ -1,25 +1,32 @@
 package Code::TidyAll::Plugin;
+use Object::Tiny qw(conf exclude include matcher name options root_dir);
 use Code::TidyAll::Util qw(read_file write_file);
-use Moose;
-use Method::Signatures::Simple;
 
-has 'conf'     => ( is => 'ro', required => 1 );
-has 'exclude'  => ( is => 'ro', init_arg => undef, lazy_build => 1 );
-has 'include'  => ( is => 'ro', init_arg => undef, lazy_build => 1 );
-has 'matcher'  => ( is => 'ro', init_arg => undef, lazy_build => 1 );
-has 'name'     => ( is => 'ro', required => 1 );
-has 'options'  => ( is => 'ro', init_arg => undef, lazy_build => 1 );
-has 'root_dir' => ( is => 'ro' );
+sub new {
+    my $class = shift;
+    my $self  = $class->SUPER::new(@_);
+    die "conf required" unless $self->{conf};
+    die "name required" unless $self->{name};
 
-method defaults () { return {} }
+    $self->{include} = $self->_build_include();
+    $self->{exclude} = $self->_build_exclude();
+    $self->{matcher} = $self->_build_matcher();
+    $self->{options} = $self->_build_options();
 
-method process_file ($file) {
+    return $self;
+}
+
+sub defaults { return {} }
+
+sub process_file {
+    my ( $self, $file ) = @_;
     my $source = read_file($file);
     my $dest   = $self->process_source($source);
     write_file( $file, $dest );
 }
 
-method _build_matcher () {
+sub _build_matcher {
+    my $self = shift;
     my $conf = $self->conf;
 
     my $include = $self->_match_spec_to_coderef( 'include', $self->include );
@@ -28,24 +35,28 @@ method _build_matcher () {
     return sub { my $file = shift; return $include->($file) && !$exclude->($file) };
 }
 
-method _build_include () {
+sub _build_include {
+    my $self = shift;
     return
          $self->conf->{include}
       || $self->defaults->{include}
       || die sprintf( "cannot determine include condition for plugin '%s'", $self->name );
 }
 
-method _build_exclude () {
+sub _build_exclude {
+    my $self = shift;
     return $self->conf->{exclude} || $self->defaults->{exclude} || sub { 0 };
 }
 
-method _build_options () {
+sub _build_options {
+    my $self    = shift;
     my %options = %{ $self->{conf} };
     delete( @options{qw(include exclude)} );
     return \%options;
 }
 
-method _match_spec_to_coderef ($type, $spec) {
+sub _match_spec_to_coderef {
+    my ( $self, $type, $spec ) = @_;
     $spec = qr/$spec/ if ( !ref($spec) );
     if ( ref($spec) eq 'Regexp' ) {
         return sub { $_[0] =~ $spec };

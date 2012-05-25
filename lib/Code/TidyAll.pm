@@ -1,50 +1,76 @@
 package Code::TidyAll;
-use CHI;
-use Moose;
-use File::Find qw(find);
+use Cwd qw(realpath);
+use Code::TidyAll::Cache;
 use Code::TidyAll::Util qw(can_load read_file);
-use Method::Signatures::Simple;
 use Digest::SHA1 qw(sha1_hex);
-use List::Pairwise qw(mapp);
+use File::Find qw(find);
 use JSON::XS qw(encode_json);
+use strict;
+use warnings;
 
-has 'base_sig'       => ( is => 'ro', init_arg => undef, lazy_build => 1 );
-has 'cache'          => ( is => 'ro', init_arg => undef, lazy_build => 1 );
-has 'cache_dir'      => ( is => 'ro', lazy_build => 1 );
-has 'plugin_objects' => ( is => 'ro', init_arg => undef, lazy_build => 1 );
-has 'plugins'        => ( is => 'ro', required => 1 );
-has 'root_dir'       => ( is => 'ro', required => 1 );
+# Incoming parameters
+use Object::Tiny qw(
+  backup_dir
+  cache
+  cache_dir
+  conf_file
+  data_dir
+  plugins
+  recursive
+);
 
-method tidyall () {
-    my $cache = $self->cache;
-    my @files;
-    find( { wanted => sub { push @files, $_ if -f }, no_chdir => 1 }, $self->root_dir );
-    foreach my $file (@files) {
-        if ( ( $cache->get($file) || '' ) ne $self->_file_sig($file) ) {
-            if ( $self->process_file($file) ) {
-                $cache->set( $file, $self->_file_sig($file) );
+# Internal
+use Object::Tiny qw(
+  base_sig
+  plugin_objects
+);
+
+sub new {
+    my $class  = shift;
+    my %params = @_;
+
+    # Read params from conf file, if provided; handle .../ upward search syntax
+    #
+    if ( my $conf_file = delete( $params{conf_file} ) ) {
+        if ( my ( $start_dir, $search_file ) = ( $conf_file =~ m{^(.*)\.\.\./(.*)$} ) ) {
+            $start_dir = '.' if !$start_dir;
+            $start_dir = realpath($start_dir);
+            if ( my $found_file = $class->_find_file_upwards( $start_dir, $search_file ) ) {
+                $conf_file = $found_file;
+            }
+            else {
+                die "cound not find '$search_file' upwards from '$start_dir'";
             }
         }
+
+        my $conf_params = Load($conf_file);
+        if ( ref($conf_params) ne 'HASH' ) {
+            die "'$conf_file' did not evaluate to a hash";
+        }
+        %params = ( %$conf_params, %params );
     }
+
+    my $self = $class->SUPER::new(%params);
+    die "plugins required" unless $self->{plugins};
+
+    if ( defined( $self->data_dir ) ) {
+        $self->{backup_dir} ||= $self->data_dir . "/backup";
+        $self->{cache_dir}  ||= $self->data_dir . "/cache";
+    }
+    if ( defined( $self->cache_dir ) ) {
+        $self->{cache} ||= Code::TidyAll::Cache->new( cache_dir => $self->cache_dir );
+    }
+    $self->{base_sig} = $self->_sig( [ $Code::TidyAll::VERSION, $self->plugins ] );
+
+    my $plugins = $self->plugins;
+    $self->{plugin_objects} =
+      [ map { $self->load_plugin( $_, $plugins->{$_} ) } keys( %{ $self->plugins } ) ];
+
+    return $self;
 }
 
-method _build_cache () {
-    return CHI->new( driver => 'File', root_dir => $self->cache_dir );
-}
-
-method _build_cache_dir () {
-    return $self->root_dir . "/.tidyall_cache";
-}
-
-method _build_base_sig () {
-    return $self->_sig( [ $Code::TidyAll::VERSION, $self->plugins ] );
-}
-
-method _build_plugin_objects () {
-    return [ mapp { $self->load_plugin( $a, $b ) } %{ $self->plugins } ];
-}
-
-method load_plugin ($plugin_name, $plugin_conf) {
+sub load_plugin {
+    my ( $self, $plugin_name, $plugin_conf ) = @_;
     my $class_name = (
         $plugin_name =~ /^\+/
         ? substr( $plugin_name, 1 )
@@ -52,9 +78,8 @@ method load_plugin ($plugin_name, $plugin_conf) {
     );
     if ( can_load($class_name) ) {
         return $class_name->new(
-            conf     => $plugin_conf,
-            name     => $plugin_name,
-            root_dir => $self->root_dir
+            conf => $plugin_conf,
+            name => $plugin_name
         );
     }
     else {
@@ -62,28 +87,72 @@ method load_plugin ($plugin_name, $plugin_conf) {
     }
 }
 
-method process_file ($file) {
-    my $matched = 0;
-    foreach my $plugin ( @{ $self->plugin_objects } ) {
-        if ( $plugin->matcher->($file) ) {
-            print "$file\n" if !$matched++;
-            eval { $plugin->process_file($file) };
-            if ( my $error = $@ ) {
-                printf( "*** '%s': %s", $plugin->name, $error );
-                return 0;
-            }
-        }
-    }
-    return 1;
+sub process_path {
+    my ( $self, $path ) = @_;
+
+        ( -f $path ) ? $self->process_file($path)
+      : ( -d $path ) ? $self->process_dir($path)
+      :                printf( "%s: not a file or directory\n", $path );
 }
 
-method _file_sig ($file) {
+sub process_dir {
+    my ( $self, $dir ) = @_;
+    printf( "%s: skipping dir, not in recursive mode\n", $dir ) unless $self->recursive;
+    my @files;
+    find( { wanted => sub { push @files, $_ if -f }, no_chdir => 1 }, $dir );
+    foreach my $file (@files) {
+        $self->process_file($file);
+    }
+}
+
+sub process_file {
+    my ( $self, $file ) = @_;
+    my $cache = $self->cache;
+    if ( !$cache || ( ( $cache->get($file) || '' ) ne $self->_file_sig($file) ) ) {
+        my $matched = 0;
+        foreach my $plugin ( @{ $self->plugin_objects } ) {
+            if ( $plugin->matcher->($file) ) {
+                print "$file\n" if !$matched++;
+                eval { $plugin->process_file($file) };
+                if ( my $error = $@ ) {
+                    printf( "*** '%s': %s\n", $plugin->name, $error );
+                    return;
+                }
+            }
+        }
+        $cache->set( $file, $self->_file_sig($file) ) if $cache;
+    }
+}
+
+sub _find_file_upwards {
+    my ( $class, $search_dir, $search_file ) = @_;
+
+    $search_dir  =~ s{/+$}{};
+    $search_file =~ s{^/+}{};
+
+    while (1) {
+        my $try_path = "$search_dir/$search_file";
+        if ( -f $try_path ) {
+            return $try_path;
+        }
+        elsif ( $search_dir eq '/' ) {
+            return undef;
+        }
+        else {
+            $search_dir = dirname($search_dir);
+        }
+    }
+}
+
+sub _file_sig {
+    my ( $self, $file ) = @_;
     my $last_mod = ( stat($file) )[9];
     my $contents = read_file($file);
     return $self->_sig( [ $self->base_sig, $last_mod, $contents ] );
 }
 
-method _sig ($data) {
+sub _sig {
+    my ( $self, $data ) = @_;
     return sha1_hex( encode_json($data) );
 }
 
@@ -95,14 +164,15 @@ __END__
 
 =head1 NAME
 
-Code::TidyAll - Tidy and validate code in many ways at once
+Code::TidyAll - Tidy and validate code in multiple ways
 
 =head1 SYNOPSIS
 
     use Code::TidyAll;
 
     my $ct = Code::TidyAll->new(
-        root_dir => '...',
+        data_dir => '/tmp/.tidyall',
+        recursive => 1,
         plugins  => {
             perltidy => {
                 include => qr/\.(pl|pm|t)$/,
@@ -129,18 +199,13 @@ Code::TidyAll - Tidy and validate code in many ways at once
             }, 
         }
     );
-    $ct->tidyall;
+    $ct->process_path($path1, $path2);
 
 =head1 DESCRIPTION
 
 =head1 CONSTRUCTOR OPTIONS
 
 =over
-
-=item root_dir
-
-Required. All files under the root directory and its subdirectories will be
-considered for processing.
 
 =item plugins
 
@@ -176,10 +241,21 @@ only processed if it did not change since the last time it was processed.
 
 =back
 
-=over
+=item backup_dir
 
-=item 
+Where to backup files before processing. Defaults to C<data_dir>/backup.
 
-=item 
+=item cache_dir
+
+A cache directory, used to ensure that files are only processed when they or
+the configuration has changed. Defaults to C<data_dir>/cache.
+
+=item data_dir
+
+Default parent directory for C<backup_dir> and C<cache_dir>.
+
+=item recursive
+
+Indcates whether L</process> will follow directories. Defaults to false.
 
 =back
