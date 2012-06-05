@@ -21,19 +21,15 @@ GetOptions(
     'cache_dir'   => \$params{cache_dir},
     'class'       => \$class,
     'data_dir'    => \$params{data_dir},
-    'g|git-mode'  => \$git_mode,
     'c|conf'      => \$params{conf_file},
     'h|help'      => \$help,
     'r|recursive' => \$params{recursive},
-    's|svn-mode'  => \$svn_mode,
 ) or usage();
 
 usage("-c|--conf required") if !$params{conf_file};
 die "cannot load '$class'" unless can_load($class);
 
 my @paths = @ARGV or usage("path(s) required");
-@paths = uniq( map { $class->files_from_svn_status($_) } @paths ) if $svn_mode;
-@paths = uniq( map { $class->files_from_git_status($_) } @paths ) if $git_mode;
 
 my $ct = $class->new(%params);
 foreach my $path (@paths) {

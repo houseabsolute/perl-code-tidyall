@@ -126,28 +126,6 @@ sub process_file {
     }
 }
 
-sub files_from_svn_status {
-    my ( $class, $dir ) = @_;
-
-    my $buffer = `cd $dir; svn status`;
-    my @paths = ( $buffer =~ /^[AM]\s+(.*)/gm );
-    return $class->_files_from_vcs_status( $dir, @paths );
-}
-
-sub files_from_git_status {
-    my ( $class, $dir ) = @_;
-
-    my $buffer = `cd $dir; git status`;
-    my @paths = ( $buffer =~ /(?:new file|modified):\s+(.*)/g );
-    return $class->_files_from_vcs_status( $dir, @paths );
-}
-
-sub _files_from_vcs_status {
-    my (@files) = @_;
-
-    return grep { -f } uniq( map { "$dir/$_" } @files );
-}
-
 sub _find_file_upwards {
     my ( $class, $search_dir, $search_file ) = @_;
 
