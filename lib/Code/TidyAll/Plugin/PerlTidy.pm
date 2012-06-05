@@ -1,4 +1,4 @@
-package Code::TidyAll::Plugin::perltidy;
+package Code::TidyAll::Plugin::PerlTidy;
 use Hash::MoreUtils qw(slice_exists);
 use Perl::Tidy;
 use strict;

@@ -21,14 +21,14 @@ GetOptions(
     'cache_dir'   => \$params{cache_dir},
     'class'       => \$class,
     'data_dir'    => \$params{data_dir},
-    'git'         => \$git_mode,
+    'g|git-mode'  => \$git_mode,
     'c|conf'      => \$params{conf_file},
     'h|help'      => \$help,
     'r|recursive' => \$params{recursive},
-    'svn'         => \$svn_mode,
+    's|svn-mode'  => \$svn_mode,
 ) or usage();
 
-usage("-c|--conf_file required") if !$params{conf_file};
+usage("-c|--conf required") if !$params{conf_file};
 die "cannot load '$class'" unless can_load($class);
 
 my @paths = @ARGV or usage("path(s) required");
@@ -39,3 +39,144 @@ my $ct = $class->new(%params);
 foreach my $path (@paths) {
     $ct->process_path($path);
 }
+
+1;
+
+__END__
+
+=head1 NAME
+
+tidyall - Your all-in-one code tidier and validator
+
+=head1 SYNOPSIS
+
+    # Process one or more specific files
+    tidyall [-c /path/to/config] file [file...]
+
+    # Process all files under a directory
+    tidyall [-c /path/to/config] -r dir
+
+    # Process all files ready to commit according to git/svn status
+    tidyall [-c /path/to/config] -g dir
+    tidyall [-c /path/to/config] -s dir
+
+=head1 OPTIONS
+
+ -c, --conf          Configuration file; default is ~/.tidyallrc
+ -g, --git-mode      Only process locally modified files according to git status
+ -h, --help          Print help message
+ -r, --recursive     Descend into directories recursively
+ -s, --svn-mode      Only process locally modified files according to svn status
+ --backup-dir        Where to backup files before processing. Defaults to data_dir/backup
+ --backup-keep       How long to keep backup files. Defaults to "1h"
+ --cache-dir         Where to keep the last-processed cache. Defaults to data_dir/cache
+ --class             Optionally specify a Code::TidyAll subclass
+ --data_dir          Container for a number of subdirs. Defaults to dir of conf file
+
+=head1 DESCRIPTION
+
+There are a lot of great code tidiers and validators out there. C<tidyall>
+makes them available from a single unified interface.
+
+You can run C<tidyall> on a single file or an entire hierarchy of files, and
+configure which tidiers/validators are applied to which types of files. Files
+are backed up to a separate directory before processing, and for maximum
+efficiency only files that have changed since the last time will be processed.
+
+=head2 What's a tidier? What's a validator?
+
+A I<tidier> transforms a file so as to improve its appearance without changing
+its semantics. Examples include L<perltidy>, L<podtidy> and
+L<htmltidy|HTML::Tidy>.
+
+A I<validator> analyzes a file for some definition of correctness. Examples
+include L<perlcritic>, L<podchecker> and
+L<xmllint|http://xmlsoft.org/xmllint.html>.
+
+Many tidiers are also validators, e.g. C<perltidy> will throw an error on badly
+formed Perl.
+
+=head1 CONFIGURATION
+
+An INI-style config file is required to use C<tidyall>. It can be specified
+with -c, or left to the default ~/.tidyallrc.
+
+Here's a sample config file:
+
+    [PerlTidy]
+    argv = -noll -it=2
+    include = *.pl *.pm *.t
+
+    [PerlCritic]
+    argv = -severity 3
+
+    [PodTidy]
+
+    [HTMLTidy]
+    argv = -wrap 70 -indent
+
+Section 1 says to apply C<PerlTidy> with settings "-noll -it=2" to all Perl
+scripts, modules and test files.
+
+Section 2 says to apply C<PerlCritic> with severity 3. Since there is no
+C<include> clause, the default for C<PerlCritic> plugin is used, which happens
+to be the same: "*.pl *.pm *.t".
+
+Section 3 says to apply C<PodTidy> with default settings, to the same set of
+default files "*.pl *.pm *.t".
+
+Section 4 says to apply C<HTMLTidy> with settings "-wrap 70 -indent" against
+the default set of files, in this case "*.html *.htm".
+
+=head2 Standard configuration elements
+
+=over
+
+=item [class]
+
+The header of each configuration section refers to a tidyall I<plugin>. The
+name is automatically prefixed with C<Code::TidyAll::Plugin::> unless it begins
+with a '+', e.g.
+
+    # Uses plugin Code::TidyAll::Plugin::PerlTidy
+    [PerlTidy]
+
+    # Uses plugin My::TidyAll::Plugin
+    [+My::TidyAll::Plugin]
+
+=item include
+
+One or more glob patterns indicating which files to include. If not specified,
+use the default set for the plugin.
+
+=item exclude
+
+One or more glob patterns indicating which files to exclude. This overrides
+C<include>.
+
+=back
+
+=head1 DATA DIRECTORY
+
+By default, C<tidyall> will keep its cache and backups (see below) in a single
+data directory. It defaults to
+
+=head1 LAST-PROCESSED CACHE
+
+C<tidyall> keeps track of each file's signature after it was last
+processed. On subsequent runs, it will only process a file if its
+signature has changed.
+=head1 BACKUPS
+
+C<tidyall> will backup each file before overwriting it. The backups are kept in
+a separate directory hierarchy, specified by C<--backup-dir> and defaulting to
+C<data_dir/backup>. A new backup file will be created for each processing.
+
+Old backup files will be purged automatically as part of occasional C<tidyall>
+runs. The duration specified in C<--backup-keep> indicates both the minimum
+amount of time backups should be kept, and the frequency that purges should be
+run. It may be specified as "30min" or "4h" or any string acceptable to
+L<Time::Duration::Parse>.
+
+You can disable backups by specifying C<--backup-keep 0>.
+

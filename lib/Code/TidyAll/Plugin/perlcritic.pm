@@ -1,4 +1,4 @@
-package Code::TidyAll::Plugin::perlcritic;
+package Code::TidyAll::Plugin::PerlCritic;
 use Code::TidyAll::Util qw(write_file tempdir_simple);
 use Perl::Critic::Command qw();
 use Capture::Tiny qw(capture_merged);

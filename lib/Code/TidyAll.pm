@@ -1,5 +1,6 @@
 package Code::TidyAll;
 use Cwd qw(realpath);
+use Config::INI::Reader;
 use Code::TidyAll::Cache;
 use Code::TidyAll::Util qw(can_load read_file);
 use Digest::SHA1 qw(sha1_hex);
@@ -43,11 +44,12 @@ sub new {
             }
         }
 
-        my $conf_params = Load($conf_file);
+        my $conf_params = Config::INI::Reader->read_file($conf_file);
         if ( ref($conf_params) ne 'HASH' ) {
             die "'$conf_file' did not evaluate to a hash";
         }
-        %params = ( %$conf_params, %params );
+        my $main_params = delete( $conf_params_ > {_} ) || {};
+        %params = ( plugins => $conf_params, %$main_params, %params );
     }
 
     my $self = $class->SUPER::new(%params);
@@ -124,6 +126,28 @@ sub process_file {
     }
 }
 
+sub files_from_svn_status {
+    my ( $class, $dir ) = @_;
+
+    my $buffer = `cd $dir; svn status`;
+    my @paths = ( $buffer =~ /^[AM]\s+(.*)/gm );
+    return $class->_files_from_vcs_status( $dir, @paths );
+}
+
+sub files_from_git_status {
+    my ( $class, $dir ) = @_;
+
+    my $buffer = `cd $dir; git status`;
+    my @paths = ( $buffer =~ /(?:new file|modified):\s+(.*)/g );
+    return $class->_files_from_vcs_status( $dir, @paths );
+}
+
+sub _files_from_vcs_status {
+    my (@files) = @_;
+
+    return grep { -f } uniq( map { "$dir/$_" } @files );
+}
+
 sub _find_file_upwards {
     my ( $class, $search_dir, $search_file ) = @_;
 
@@ -164,7 +188,7 @@ __END__
 
 =head1 NAME
 
-Code::TidyAll - Tidy and validate code in multiple ways
+Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
 =head1 SYNOPSIS
 
