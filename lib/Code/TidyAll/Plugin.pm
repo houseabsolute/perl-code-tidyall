@@ -40,7 +40,7 @@ sub _build_include {
     return
          $self->conf->{include}
       || $self->defaults->{include}
-      || die sprintf( "cannot determine include condition for plugin '%s'", $self->name );
+      || die sprintf( "did not specify include for plugin '%s', and no default", $self->name );
 }
 
 sub _build_exclude {

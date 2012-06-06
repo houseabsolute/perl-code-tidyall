@@ -2,22 +2,25 @@ package Code::TidyAll;
 use Cwd qw(realpath);
 use Config::INI::Reader;
 use Code::TidyAll::Cache;
-use Code::TidyAll::Util qw(can_load read_file);
+use Code::TidyAll::Util qw(can_load dirname mkpath read_file write_file);
+use Date::Format;
 use Digest::SHA1 qw(sha1_hex);
 use File::Find qw(find);
-use JSON::XS qw(encode_json);
+use Time::Duration::Parse qw(parse_duration);
 use strict;
 use warnings;
 
 # Incoming parameters
 use Object::Tiny qw(
-  backup_dir
+  backup_purge
   cache
-  cache_dir
   conf_file
   data_dir
+  no_backups
+  no_cache
   plugins
   recursive
+  verbose
 );
 
 # Internal
@@ -48,21 +51,19 @@ sub new {
         if ( ref($conf_params) ne 'HASH' ) {
             die "'$conf_file' did not evaluate to a hash";
         }
-        my $main_params = delete( $conf_params_ > {_} ) || {};
+        my $main_params = delete( $conf_params->{'_'} ) || {};
         %params = ( plugins => $conf_params, %$main_params, %params );
+        $params{data_dir} ||= join( "/", dirname($conf_file), ".tidyall.d" );
     }
 
     my $self = $class->SUPER::new(%params);
-    die "plugins required" unless $self->{plugins};
+    die "conf_file or plugins required"  unless $self->{plugins};
+    die "conf_file or data_dir required" unless $self->{data_dir};
 
-    if ( defined( $self->data_dir ) ) {
-        $self->{backup_dir} ||= $self->data_dir . "/backup";
-        $self->{cache_dir}  ||= $self->data_dir . "/cache";
-    }
-    if ( defined( $self->cache_dir ) ) {
-        $self->{cache} ||= Code::TidyAll::Cache->new( cache_dir => $self->cache_dir );
-    }
-    $self->{base_sig} = $self->_sig( [ $Code::TidyAll::VERSION, $self->plugins ] );
+    $self->{cache} ||= Code::TidyAll::Cache->new( cache_dir => $self->data_dir . "/cache" )
+      unless $self->no_cache;
+    $self->{base_sig} = $self->_sig( [ $Code::TidyAll::VERSION || 0, $self->plugins ] );
+    $self->{backup_purge} = parse_duration( $self->{backup_purge} || "1 day" );
 
     my $plugins = $self->plugins;
     $self->{plugin_objects} =
@@ -89,6 +90,13 @@ sub load_plugin {
     }
 }
 
+sub process_paths {
+    my ( $self, @paths ) = @_;
+    foreach my $path (@paths) {
+        $self->process_path($path);
+    }
+}
+
 sub process_path {
     my ( $self, $path ) = @_;
 
@@ -110,19 +118,33 @@ sub process_dir {
 sub process_file {
     my ( $self, $file ) = @_;
     my $cache = $self->cache;
-    if ( !$cache || ( ( $cache->get($file) || '' ) ne $self->_file_sig($file) ) ) {
+    if ( !$cache || ( ( $cache->get("sig/$file") || '' ) ne $self->_file_sig($file) ) ) {
         my $matched = 0;
         foreach my $plugin ( @{ $self->plugin_objects } ) {
             if ( $plugin->matcher->($file) ) {
-                print "$file\n" if !$matched++;
+                if ( !$matched++ ) {
+                    print "$file\n";
+                    $self->backup_file($file);
+                }
                 eval { $plugin->process_file($file) };
                 if ( my $error = $@ ) {
-                    printf( "*** '%s': %s\n", $plugin->name, $error );
+                    printf STDERR "*** '%s': %s\n", $plugin->name, $error;
                     return;
                 }
             }
         }
-        $cache->set( $file, $self->_file_sig($file) ) if $cache;
+        $cache->set( "sig/$file", $self->_file_sig($file) ) if $cache;
+    }
+}
+
+sub backup_file {
+    my ( $self, $file ) = @_;
+    unless ( $self->no_backups ) {
+        my $backup_file = join( "",
+            $self->data_dir, "/backups", realpath($file), "-",
+            time2str( "%Y-%m-%d-%H-%M-%S", time ) );
+        mkpath( dirname($backup_file), 0, 0775 );
+        write_file( $backup_file, read_file($file) );
     }
 }
 
@@ -155,7 +177,7 @@ sub _file_sig {
 
 sub _sig {
     my ( $self, $data ) = @_;
-    return sha1_hex( encode_json($data) );
+    return sha1_hex( join( ",", @$data ) );
 }
 
 1;
@@ -235,26 +257,16 @@ whether it should be excluded. This overrides C<include> above.
 
 Options specific to the plugin to be used for its tidying/validation.
 
-=item cache
-
-Optional. A cache object, or a hashref of parameters to pass to L<CHI|CHI> to
-construct a cache. If provided, this will be used to ensure that each file is
-only processed if it did not change since the last time it was processed.
-
 =back
 
-=item backup_dir
+=item cache
 
-Where to backup files before processing. Defaults to C<data_dir>/backup.
-
-=item cache_dir
-
-A cache directory, used to ensure that files are only processed when they or
-the configuration has changed. Defaults to C<data_dir>/cache.
+A cache object, or a hashref of parameters to pass to L<CHI|CHI> to construct a
+cache. This overrides the default cache.
 
 =item data_dir
 
-Default parent directory for C<backup_dir> and C<cache_dir>.
+Data directory for backups and cache.
 
 =item recursive
 

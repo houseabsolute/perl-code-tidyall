@@ -1,5 +1,5 @@
 package Code::TidyAll::Plugin::PerlCritic;
-use Code::TidyAll::Util qw(write_file tempdir_simple);
+use Code::TidyAll::Util qw(write_file);
 use Perl::Critic::Command qw();
 use Capture::Tiny qw(capture_merged);
 use strict;

@@ -8,7 +8,7 @@ use strict;
 use warnings;
 use base qw(Exporter);
 
-our @EXPORT_OK = qw(basename can_load dirname mkpath read_file tempdir_simple write_file );
+our @EXPORT_OK = qw(can_load dirname mkpath read_file tempdir_simple write_file );
 
 sub can_load {
 
@@ -34,8 +34,7 @@ sub can_load {
 }
 
 sub tempdir_simple {
-    my ($template) = @_;
-
+    my $template = shift || 'Code-TidyAll-XXXX';
     return tempdir( $template, TMPDIR => 1, CLEANUP => 1 );
 }
 

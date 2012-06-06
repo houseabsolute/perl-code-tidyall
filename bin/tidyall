@@ -16,14 +16,14 @@ my %params;
 my $class = 'Code::TidyAll';
 
 GetOptions(
-    'backup_dir'  => \$params{backup_dir},
-    'backup_keep' => \$params{backup_keep},
-    'cache_dir'   => \$params{cache_dir},
-    'class'       => \$class,
-    'data_dir'    => \$params{data_dir},
-    'c|conf'      => \$params{conf_file},
-    'h|help'      => \$help,
-    'r|recursive' => \$params{recursive},
+    'backup-purge' => \$params{backup_purge},
+    'class'        => \$class,
+    'data-dir'     => \$params{data_dir},
+    'no-backup'    => \$params{no_backup},
+    'no-cache'     => \$params{no_cache},
+    'c|conf'       => \$params{conf_file},
+    'h|help'       => \$help,
+    'r|recursive'  => \$params{recursive},
 ) or usage();
 
 usage("-c|--conf required") if !$params{conf_file};
@@ -32,9 +32,7 @@ die "cannot load '$class'" unless can_load($class);
 my @paths = @ARGV or usage("path(s) required");
 
 my $ct = $class->new(%params);
-foreach my $path (@paths) {
-    $ct->process_path($path);
-}
+$ct->process_paths($path);
 
 1;
 
@@ -47,27 +45,21 @@ tidyall - Your all-in-one code tidier and validator
 =head1 SYNOPSIS
 
     # Process one or more specific files
-    tidyall [-c /path/to/config] file [file...]
+    tidyall -c /path/to/config file [file...]
 
     # Process all files under a directory
-    tidyall [-c /path/to/config] -r dir
-
-    # Process all files ready to commit according to git/svn status
-    tidyall [-c /path/to/config] -g dir
-    tidyall [-c /path/to/config] -s dir
+    tidyall -c /path/to/config -r dir
 
 =head1 OPTIONS
 
- -c, --conf          Configuration file; default is ~/.tidyallrc
- -g, --git-mode      Only process locally modified files according to git status
- -h, --help          Print help message
- -r, --recursive     Descend into directories recursively
- -s, --svn-mode      Only process locally modified files according to svn status
- --backup-dir        Where to backup files before processing. Defaults to data_dir/backup
- --backup-keep       How long to keep backup files. Defaults to "1h"
- --cache-dir         Where to keep the last-processed cache. Defaults to data_dir/cache
- --class             Optionally specify a Code::TidyAll subclass
- --data_dir          Container for a number of subdirs. Defaults to dir of conf file
+ -c, --conf       Required configuration file
+ -h, --help       Print help message
+ -r, --recursive  Descend into directories recursively
+ --backup-purge   When backup files can be purged. Defaults to "1d"
+ --class          Code::TidyAll subclass to use. Defaults to "Code::TidyAll"
+ --data-dir       Container for backups, cache, etc. Defaults to dir of conf file
+ --no-backup      Don't backup files
+ --no-cache       Don't cache last processed times; process all files every time
 
 =head1 DESCRIPTION
 
@@ -75,9 +67,9 @@ There are a lot of great code tidiers and validators out there. C<tidyall>
 makes them available from a single unified interface.
 
 You can run C<tidyall> on a single file or an entire hierarchy of files, and
-configure which tidiers/validators are applied to which types of files. Files
-are backed up to a separate directory before processing, and for maximum
-efficiency only files that have changed since the last time will be processed.
+configure which tidiers/validators are applied to which types of files.
+C<tidyall> will back up files beforehand, and for efficiency will only consider
+files that have changed since they were last processed.
 
 =head2 What's a tidier? What's a validator?
 
@@ -94,8 +86,9 @@ formed Perl.
 
 =head1 CONFIGURATION
 
-An INI-style config file is required to use C<tidyall>. It can be specified
-with -c, or left to the default ~/.tidyallrc.
+An INI-style config file, specified with -c, is required to use C<tidyall>. If
+the path is of the form I<dir>/.../I<file>, it will look upwards from I<dir>
+for I<file>.
 
 Here's a sample config file:
 
@@ -154,25 +147,27 @@ C<include>.
 
 =head1 DATA DIRECTORY
 
-By default, C<tidyall> will keep its cache and backups (see below) in a single
-data directory. It defaults to
+C<tidyall> keeps cache and backup files (below) under a data directory. It can
+be specified with C<--data-dir>; by default it is a directory named
+".tidyall.d" in the same path as the config file.
 
 =head1 LAST-PROCESSED CACHE
 
-C<tidyall> keeps track of each file's signature after it was last
-processed. On subsequent runs, it will only process a file if its
-signature has changed.
+C<tidyall> keeps track of each file's signature after it was last processed. On
+subsequent runs, it will only process a file if its signature has changed.
+
+You can turn off this behavior with C<--no-cache>.
+
 =head1 BACKUPS
 
-C<tidyall> will backup each file before overwriting it. The backups are kept in
-a separate directory hierarchy, specified by C<--backup-dir> and defaulting to
-C<data_dir/backup>. A new backup file will be created for each processing.
+C<tidyall> will backup each file before modifying it. The timestamped backups
+are kept in a separate directory hierarchy under the data dir.
 
 Old backup files will be purged automatically as part of occasional C<tidyall>
-runs. The duration specified in C<--backup-keep> indicates both the minimum
+runs. The duration specified in C<--backup-purge> indicates both the minimum
 amount of time backups should be kept, and the frequency that purges should be
 run. It may be specified as "30min" or "4h" or any string acceptable to
-L<Time::Duration::Parse>.
+L<Time::Duration::Parse>. It defaults to "1d".
 
-You can disable backups by specifying C<--backup-keep 0>.
+You can turn off backups with C<--no-backups>.
 
