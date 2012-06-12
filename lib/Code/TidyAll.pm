@@ -2,7 +2,7 @@ package Code::TidyAll;
 use Cwd qw(realpath);
 use Config::INI::Reader;
 use Code::TidyAll::Cache;
-use Code::TidyAll::Util qw(can_load dirname mkpath read_file write_file);
+use Code::TidyAll::Util qw(basename can_load dirname mkpath read_file write_file);
 use Date::Format;
 use Digest::SHA1 qw(sha1_hex);
 use File::Find qw(find);
@@ -12,20 +12,22 @@ use warnings;
 
 # Incoming parameters
 use Object::Tiny qw(
-  backup_purge
-  cache
+  backup_ttl
   conf_file
   data_dir
   no_backups
   no_cache
   plugins
   recursive
+  root_dir
   verbose
 );
 
 # Internal
 use Object::Tiny qw(
+  backup_dir
   base_sig
+  cache
   plugin_objects
 );
 
@@ -53,18 +55,20 @@ sub new {
         }
         my $main_params = delete( $conf_params->{'_'} ) || {};
         %params = ( plugins => $conf_params, %$main_params, %params );
-        $params{data_dir} ||= join( "/", dirname($conf_file), ".tidyall.d" );
+        $params{root_dir} ||= dirname($conf_file);
     }
+    die "conf_file or plugins required"  unless $params{plugins};
+    die "conf_file or root_dir required" unless $params{root_dir};
 
     my $self = $class->SUPER::new(%params);
-    die "conf_file or plugins required"  unless $self->{plugins};
-    die "conf_file or data_dir required" unless $self->{data_dir};
 
-    $self->{cache} ||= Code::TidyAll::Cache->new( cache_dir => $self->data_dir . "/cache" )
+    $self->{root_dir} = realpath( $self->{root_dir} );
+    $self->{data_dir} ||= $self->root_dir . "/.tidyall.d";
+    $self->{cache} = Code::TidyAll::Cache->new( cache_dir => $self->data_dir . "/cache" )
       unless $self->no_cache;
-    $self->{base_sig} = $self->_sig( [ $Code::TidyAll::VERSION || 0, $self->plugins ] );
-    $self->{backup_purge} = parse_duration( $self->{backup_purge} || "1 day" );
-
+    $self->{backup_dir} = $self->data_dir . "/backups";
+    $self->{base_sig}   = $self->_sig( [ $Code::TidyAll::VERSION || 0, $self->plugins ] );
+    $self->{backup_ttl} = parse_duration( $self->{backup_ttl} || "1 day" );
     my $plugins = $self->plugins;
     $self->{plugin_objects} =
       [ map { $self->load_plugin( $_, $plugins->{$_} ) } keys( %{ $self->plugins } ) ];
@@ -99,53 +103,89 @@ sub process_paths {
 
 sub process_path {
     my ( $self, $path ) = @_;
+    $path = realpath($path);
+    unless ( index( $path, $self->root_dir ) == 0 ) {
+        $self->msg( "%s: skipping, not underneath root dir '%s'", $path, $self->root_dir );
+        return;
+    }
 
-        ( -f $path ) ? $self->process_file($path)
-      : ( -d $path ) ? $self->process_dir($path)
-      :                printf( "%s: not a file or directory\n", $path );
+        ( -f $path ) ? $self->_process_file($path)
+      : ( -d $path ) ? $self->_process_dir($path)
+      :                $self->msg( "%s: not a file or directory\n", $path );
 }
 
-sub process_dir {
+sub _process_dir {
     my ( $self, $dir ) = @_;
-    printf( "%s: skipping dir, not in recursive mode\n", $dir ) unless $self->recursive;
+    unless ( $self->recursive ) {
+        $self->msg( "%s: skipping dir, not in recursive mode\n", $dir );
+        next;
+    }
+    next if basename($dir) eq '.tidyall.d';
     my @files;
-    find( { wanted => sub { push @files, $_ if -f }, no_chdir => 1 }, $dir );
+    find( { follow => 0, wanted => sub { push @files, $_ if -f }, no_chdir => 1 }, $dir );
     foreach my $file (@files) {
-        $self->process_file($file);
+        $self->_process_file($file);
     }
 }
 
-sub process_file {
+sub _process_file {
     my ( $self, $file ) = @_;
-    my $cache = $self->cache;
-    if ( !$cache || ( ( $cache->get("sig/$file") || '' ) ne $self->_file_sig($file) ) ) {
+
+    my $cache      = $self->cache;
+    my $small_path = $self->_small_path($file);
+    if ( $self->no_cache
+        || ( ( $cache->get("sig/$small_path") || '' ) ne $self->_file_sig($file) ) )
+    {
         my $matched = 0;
         foreach my $plugin ( @{ $self->plugin_objects } ) {
-            if ( $plugin->matcher->($file) ) {
+            if ( $plugin->matcher->($small_path) ) {
                 if ( !$matched++ ) {
-                    print "$file\n";
-                    $self->backup_file($file);
+                    $self->msg( "%s", $small_path );
+                    $self->_backup_file($file);
                 }
+                $self->msg( "  applying '%s'", $plugin->name ) if $self->verbose;
                 eval { $plugin->process_file($file) };
                 if ( my $error = $@ ) {
-                    printf STDERR "*** '%s': %s\n", $plugin->name, $error;
+                    $self->msg( "*** '%s': %s", $plugin->name, $error );
                     return;
                 }
             }
         }
-        $cache->set( "sig/$file", $self->_file_sig($file) ) if $cache;
+        $cache->set( "sig/$small_path", $self->_file_sig($file) ) unless $self->no_cache;
     }
 }
 
-sub backup_file {
+sub _backup_file {
     my ( $self, $file ) = @_;
     unless ( $self->no_backups ) {
         my $backup_file = join( "",
-            $self->data_dir, "/backups", realpath($file), "-",
-            time2str( "%Y-%m-%d-%H-%M-%S", time ) );
+            $self->backup_dir, "/", $self->_small_path($file),
+            "-", time2str( "%Y-%m-%d-%H-%M-%S", time ), ".bak" );
         mkpath( dirname($backup_file), 0, 0775 );
         write_file( $backup_file, read_file($file) );
+        if ( my $cache = $self->cache ) {
+            my $last_purge_backups = $cache->get("last_purge_backups") || 0;
+            if ( time > $last_purge_backups + $self->backup_ttl ) {
+                $self->_purge_backups();
+                $cache->set( "last_purge_backups", time() );
+            }
+        }
     }
+}
+
+sub _purge_backups {
+    my ($self) = @_;
+    $self->msg("purging old backups") if $self->verbose;
+    find(
+        {
+            follow => 0,
+            wanted => sub {
+                unlink $_ if -f && /\.bak$/ && time > ( stat($_) )[9] + $self->backup_ttl;
+            },
+            no_chdir => 1
+        },
+        $self->backup_dir
+    );
 }
 
 sub _find_file_upwards {
@@ -168,6 +208,12 @@ sub _find_file_upwards {
     }
 }
 
+sub _small_path {
+    my ( $self, $path ) = @_;
+    die "'%s' is not underneath root dir '%s'!" unless index( $path, $self->root_dir ) == 0;
+    return substr( $path, length( $self->root_dir ) + 1 );
+}
+
 sub _file_sig {
     my ( $self, $file ) = @_;
     my $last_mod = ( stat($file) )[9];
@@ -178,6 +224,11 @@ sub _file_sig {
 sub _sig {
     my ( $self, $data ) = @_;
     return sha1_hex( join( ",", @$data ) );
+}
+
+sub msg {
+    my ( $self, $format, @params ) = @_;
+    printf( "$format\n", @params );
 }
 
 1;

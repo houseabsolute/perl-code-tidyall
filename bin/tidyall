@@ -16,14 +16,14 @@ my %params;
 my $class = 'Code::TidyAll';
 
 GetOptions(
-    'backup-purge' => \$params{backup_purge},
-    'class'        => \$class,
-    'data-dir'     => \$params{data_dir},
-    'no-backup'    => \$params{no_backup},
-    'no-cache'     => \$params{no_cache},
-    'c|conf'       => \$params{conf_file},
-    'h|help'       => \$help,
-    'r|recursive'  => \$params{recursive},
+    'backup-ttl'  => \$params{backup_ttl},
+    'class'       => \$class,
+    'data-dir'    => \$params{data_dir},
+    'no-backups'  => \$params{no_backups},
+    'no-cache'    => \$params{no_cache},
+    'c|conf'      => \$params{conf_file},
+    'h|help'      => \$help,
+    'r|recursive' => \$params{recursive},
 ) or usage();
 
 usage("-c|--conf required") if !$params{conf_file};
@@ -55,7 +55,7 @@ tidyall - Your all-in-one code tidier and validator
  -c, --conf       Required configuration file
  -h, --help       Print help message
  -r, --recursive  Descend into directories recursively
- --backup-purge   When backup files can be purged. Defaults to "1d"
+ --backup-ttl   When backup files can be purged. Defaults to "1d"
  --class          Code::TidyAll subclass to use. Defaults to "Code::TidyAll"
  --data-dir       Container for backups, cache, etc. Defaults to dir of conf file
  --no-backup      Don't backup files
@@ -164,10 +164,10 @@ C<tidyall> will backup each file before modifying it. The timestamped backups
 are kept in a separate directory hierarchy under the data dir.
 
 Old backup files will be purged automatically as part of occasional C<tidyall>
-runs. The duration specified in C<--backup-purge> indicates both the minimum
+runs. The duration specified in C<--backup-ttl> indicates both the minimum
 amount of time backups should be kept, and the frequency that purges should be
 run. It may be specified as "30min" or "4h" or any string acceptable to
-L<Time::Duration::Parse>. It defaults to "1d".
+L<Time::Duration::Parse>. It defaults to "1h" (1 hour).
 
 You can turn off backups with C<--no-backups>.
 

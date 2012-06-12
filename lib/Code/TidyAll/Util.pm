@@ -8,7 +8,7 @@ use strict;
 use warnings;
 use base qw(Exporter);
 
-our @EXPORT_OK = qw(can_load dirname mkpath read_file tempdir_simple write_file );
+our @EXPORT_OK = qw(basename can_load dirname mkpath read_file tempdir_simple write_file );
 
 sub can_load {
 
