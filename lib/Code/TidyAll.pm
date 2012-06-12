@@ -111,16 +111,16 @@ sub process_path {
 
         ( -f $path ) ? $self->_process_file($path)
       : ( -d $path ) ? $self->_process_dir($path)
-      :                $self->msg( "%s: not a file or directory\n", $path );
+      :                $self->msg( "%s: not a file or directory", $path );
 }
 
 sub _process_dir {
     my ( $self, $dir ) = @_;
     unless ( $self->recursive ) {
-        $self->msg( "%s: skipping dir, not in recursive mode\n", $dir );
-        next;
+        $self->msg( "%s: skipping dir, not in recursive mode", $self->_small_path($dir) );
+        return;
     }
-    next if basename($dir) eq '.tidyall.d';
+    return if basename($dir) eq '.tidyall.d';
     my @files;
     find( { follow => 0, wanted => sub { push @files, $_ if -f }, no_chdir => 1 }, $dir );
     foreach my $file (@files) {

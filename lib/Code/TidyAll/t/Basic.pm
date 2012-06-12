@@ -1,5 +1,6 @@
 package Code::TidyAll::t::Basic;
-use Code::TidyAll::Util qw(mkpath read_file tempdir_simple write_file);
+use Cwd qw(realpath);
+use Code::TidyAll::Util qw(dirname mkpath read_file tempdir_simple write_file);
 use Code::TidyAll;
 use Capture::Tiny qw(capture_stdout);
 use File::Find qw(find);
@@ -14,9 +15,11 @@ sub create_dir {
 
     my $root_dir = tempdir_simple();
     while ( my ( $path, $content ) = each(%$files) ) {
-        write_file( "$root_dir/$path", $content );
+        my $full_path = "$root_dir/$path";
+        mkpath( dirname($full_path), 0, 0775 );
+        write_file( $full_path, $content );
     }
-    return $root_dir;
+    return realpath($root_dir);
 }
 
 sub tidy {
@@ -25,10 +28,15 @@ sub tidy {
 
     my $root_dir = $self->create_dir( $params{source} );
 
-    my $ct =
-      Code::TidyAll->new( plugins => $params{plugins}, recursive => 1, root_dir => $root_dir );
+    my $options = $params{options} || {};
+    my $ct = Code::TidyAll->new(
+        plugins   => $params{plugins},
+        recursive => 1,
+        root_dir  => $root_dir,
+        %$options
+    );
 
-    my ($output) = capture_stdout { $ct->process_paths($root_dir) };
+    my $output = capture_stdout { $ct->process_paths($root_dir) };
     if ( $params{errors} ) {
         like( $output, $params{errors}, "$desc - errors" );
     }
@@ -105,6 +113,18 @@ sub test_errors : Tests {
     my $data_dir = tempdir_simple();
     throws_ok { Code::TidyAll->new( data_dir => $data_dir ) } qr/conf_file or plugins required/;
     throws_ok { Code::TidyAll->new( plugins  => {} ) } qr/conf_file or root_dir required/;
+
+    my $root_dir = $self->create_dir( { "foo/bar.txt" => "abc" } );
+    my $ct = Code::TidyAll->new( plugins => { $UpperText => {} }, root_dir => $root_dir );
+    my $output = capture_stdout { $ct->process_paths("$root_dir/foo/bar.txt") };
+    is( $output,                            "foo/bar.txt\n", "filename output" );
+    is( read_file("$root_dir/foo/bar.txt"), "ABC",           "tidied" );
+    $output = capture_stdout { $ct->process_paths("$root_dir/foo") };
+    is( $output, "foo: skipping dir, not in recursive mode\n" );
+    my $other_dir = realpath( tempdir_simple() );
+    write_file( "$other_dir/foo.txt", "ABC" );
+    $output = capture_stdout { $ct->process_paths("$other_dir/foo.txt") };
+    like( $output, qr/foo.txt: skipping, not underneath root dir/ );
 }
 
 1;
