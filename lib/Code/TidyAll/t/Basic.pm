@@ -78,43 +78,65 @@ sub test_basic : Tests {
 sub test_caching_and_backups : Tests {
     my $self = shift;
 
-    my $root_dir = $self->create_dir( { "foo.txt" => "abc" } );
-    my $ct = Code::TidyAll->new( plugins => { $UpperText => {} }, root_dir => $root_dir );
-    my $output;
-    my $file = "$root_dir/foo.txt";
-    my $go   = sub {
-        $output = capture_stdout { $ct->process_paths($file) };
-    };
+    foreach my $no_cache ( 0 .. 1 ) {
+        foreach my $no_backups ( 0 .. 1 ) {
+            my $root_dir = $self->create_dir( { "foo.txt" => "abc" } );
+            my $ct = Code::TidyAll->new(
+                plugins  => { $UpperText => {} },
+                root_dir => $root_dir,
+                ( $no_cache ? ( no_cache => 1 ) : () ), ( $no_backups ? ( no_backups => 1 ) : () )
+            );
+            my $output;
+            my $file = "$root_dir/foo.txt";
+            my $go   = sub {
+                $output = capture_stdout { $ct->process_paths($file) };
+            };
 
-    $go->();
-    is( read_file($file), "ABC",       "file changed" );
-    is( $output,          "foo.txt\n", 'output' );
+            $go->();
+            is( read_file($file), "ABC",       "file changed" );
+            is( $output,          "foo.txt\n", 'output' );
 
-    $go->();
-    is( $output, '', 'no output' );
+            $go->();
+            if ($no_cache) {
+                is( $output, "foo.txt\n", 'output' );
+            }
+            else {
+                is( $output, '', 'no output' );
+            }
 
-    write_file( $file, "def" );
-    $go->();
-    is( read_file($file), "DEF",       "file changed" );
-    is( $output,          "foo.txt\n", 'output' );
+            write_file( $file, "def" );
+            $go->();
+            is( read_file($file), "DEF",       "file changed" );
+            is( $output,          "foo.txt\n", 'output' );
 
-    my $backup_dir = $ct->data_dir . "/backups";
-    my @files;
-    find( { follow => 0, wanted => sub { push @files, $_ if -f }, no_chdir => 1 }, $backup_dir );
-    ok( scalar(@files) == 1 || scalar(@files) == 2, "1 or 2 backup files" );
-    foreach my $file (@files) {
-        like( $file, qr|\.tidyall\.d/backups/foo\.txt-\d+-\d+\.bak|, "backup filename" );
+            my $backup_dir = $ct->data_dir . "/backups";
+            mkpath( $backup_dir, 0, 0775 );
+            my @files;
+            find( { follow => 0, wanted => sub { push @files, $_ if -f }, no_chdir => 1 },
+                $backup_dir );
+            if ($no_backups) {
+                ok( @files == 0, "no backup files" );
+            }
+            else {
+                ok( scalar(@files) == 1 || scalar(@files) == 2, "1 or 2 backup files" );
+                foreach my $file (@files) {
+                    like( $file, qr|\.tidyall\.d/backups/foo\.txt-\d+-\d+\.bak|,
+                        "backup filename" );
+                }
+            }
+        }
     }
 }
 
 sub test_errors : Tests {
     my $self = shift;
 
-    my $data_dir = tempdir_simple();
-    throws_ok { Code::TidyAll->new( data_dir => $data_dir ) } qr/conf_file or plugins required/;
-    throws_ok { Code::TidyAll->new( plugins  => {} ) } qr/conf_file or root_dir required/;
-
     my $root_dir = $self->create_dir( { "foo/bar.txt" => "abc" } );
+    throws_ok { Code::TidyAll->new( root_dir => $root_dir ) } qr/conf_file or plugins required/;
+    throws_ok { Code::TidyAll->new( plugins  => {} ) } qr/conf_file or root_dir required/;
+    throws_ok { Code::TidyAll->new( root_dir => $root_dir, plugins => { 'DoesNotExist' => {} } ) }
+    qr/could not load plugin class/;
+
     my $ct = Code::TidyAll->new( plugins => { $UpperText => {} }, root_dir => $root_dir );
     my $output = capture_stdout { $ct->process_paths("$root_dir/foo/bar.txt") };
     is( $output,                            "foo/bar.txt\n", "filename output" );
@@ -125,6 +147,46 @@ sub test_errors : Tests {
     write_file( "$other_dir/foo.txt", "ABC" );
     $output = capture_stdout { $ct->process_paths("$other_dir/foo.txt") };
     like( $output, qr/foo.txt: skipping, not underneath root dir/ );
+}
+
+my $conf1 = '
+backup_ttl = 5m
+no_cache = 1
+recursive = 1
+
+[PerlTidy]
+argv = -noll -it=2
+include = *.pl *.pm *.t
+
+[PodTidy]
+
+[PerlCritic]
+argv = -severity 3
+';
+
+sub test_conf_file : Tests {
+    my $self      = shift;
+    my $root_dir  = $self->create_dir();
+    my $conf_file = "$root_dir/.tidyallrc";
+    write_file( $conf_file, $conf1 );
+    my $ct = Code::TidyAll->new( conf_file => $conf_file );
+    my %expected = (
+        backup_ttl => 300,
+        no_backups => undef,
+        no_cache   => 1,
+        recursive  => 1,
+        root_dir   => dirname($conf_file),
+        data_dir   => "$root_dir/.tidyall.d",
+        plugins    => {
+            PerlTidy => { argv => '-noll -it=2', include => '*.pl *.pm *.t' },
+            PodTidy  => {},
+            PerlCritic => { argv => '-severity 3' },
+        }
+    );
+    while ( my ( $method, $value ) = each(%expected) ) {
+        cmp_deeply( $ct->$method, $value, "$method" );
+    }
+
 }
 
 1;

@@ -57,7 +57,8 @@ sub _build_options {
 
 sub _match_spec_to_coderef {
     my ( $self, $type, $spec ) = @_;
-    $spec = qr/$spec/ if ( !ref($spec) );
+
+    $spec = $self->_glob_to_regex($spec) if !ref($spec);
     if ( ref($spec) eq 'Regexp' ) {
         return sub { $_[0] =~ $spec };
     }
@@ -67,6 +68,15 @@ sub _match_spec_to_coderef {
     else {
         die sprintf( "bad '%s' conf value for plugin '%s': '%s'", $type, $self->name, $spec );
     }
+}
+
+sub _glob_to_regex {
+    my ( $self, $spec ) = @_;
+
+    my @patterns = split( /\s+/, $spec );
+    foreach (@patterns) { s/\./\\\./g; s/\*/.*/g }
+    my $regex = join( '|', @patterns );
+    return qr/$regex/;
 }
 
 1;

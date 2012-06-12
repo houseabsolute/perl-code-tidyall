@@ -20,6 +20,7 @@ sub can_load {
     my $result;
     try {
         eval "require $class_name";
+        die $@ if $@;
         $result = 1;
     }
     catch {

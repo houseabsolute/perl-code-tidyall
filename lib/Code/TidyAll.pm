@@ -67,8 +67,10 @@ sub new {
     $self->{cache} = Code::TidyAll::Cache->new( cache_dir => $self->data_dir . "/cache" )
       unless $self->no_cache;
     $self->{backup_dir} = $self->data_dir . "/backups";
-    $self->{base_sig}   = $self->_sig( [ $Code::TidyAll::VERSION || 0, $self->plugins ] );
-    $self->{backup_ttl} = parse_duration( $self->{backup_ttl} || "1 day" );
+    $self->{base_sig} = $self->_sig( [ $Code::TidyAll::VERSION || 0, $self->plugins ] );
+    $self->{backup_ttl} ||= '1 hour';
+    $self->{backup_ttl} = parse_duration( $self->{backup_ttl} )
+      unless $self->{backup_ttl} =~ /^\d+$/;
     my $plugins = $self->plugins;
     $self->{plugin_objects} =
       [ map { $self->load_plugin( $_, $plugins->{$_} ) } keys( %{ $self->plugins } ) ];

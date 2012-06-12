@@ -55,7 +55,7 @@ tidyall - Your all-in-one code tidier and validator
  -c, --conf       Required configuration file
  -h, --help       Print help message
  -r, --recursive  Descend into directories recursively
- --backup-ttl   When backup files can be purged. Defaults to "1d"
+ --backup-ttl     When backup files can be purged. Defaults to "1d"
  --class          Code::TidyAll subclass to use. Defaults to "Code::TidyAll"
  --data-dir       Container for backups, cache, etc. Defaults to dir of conf file
  --no-backup      Don't backup files
@@ -109,7 +109,7 @@ scripts, modules and test files.
 
 Section 2 says to apply C<PerlCritic> with severity 3. Since there is no
 C<include> clause, the default for C<PerlCritic> plugin is used, which happens
-to be the same: "*.pl *.pm *.t".
+to be the same as above: "*.pl *.pm *.t".
 
 Section 3 says to apply C<PodTidy> with default settings, to the same set of
 default files "*.pl *.pm *.t".
@@ -135,13 +135,13 @@ with a '+', e.g.
 
 =item include
 
-One or more glob patterns indicating which files to include. If not specified,
-use the default set for the plugin.
+One or more glob patterns indicating which files to include, separated by
+whitespace. If not specified, use the default set for the plugin.
 
 =item exclude
 
-One or more glob patterns indicating which files to exclude. This overrides
-C<include>.
+One or more glob patterns indicating which files to exclude, separated by
+whitespace. This overrides C<include>.
 
 =back
 
