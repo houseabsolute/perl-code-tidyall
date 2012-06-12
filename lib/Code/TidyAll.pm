@@ -158,9 +158,7 @@ sub _process_file {
 sub _backup_file {
     my ( $self, $file ) = @_;
     unless ( $self->no_backups ) {
-        my $backup_file = join( "",
-            $self->backup_dir, "/", $self->_small_path($file),
-            "-", time2str( "%Y-%m-%d-%H-%M-%S", time ), ".bak" );
+        my $backup_file = join( "/", $self->backup_dir, $self->_backup_filename($file) );
         mkpath( dirname($backup_file), 0, 0775 );
         write_file( $backup_file, read_file($file) );
         if ( my $cache = $self->cache ) {
@@ -171,6 +169,12 @@ sub _backup_file {
             }
         }
     }
+}
+
+sub _backup_filename {
+    my ( $self, $file ) = @_;
+
+    return join( "", $self->_small_path($file), "-", time2str( "%Y%m%d-%H%M%S", time ), ".bak" );
 }
 
 sub _purge_backups {

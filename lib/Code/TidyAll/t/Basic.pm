@@ -84,6 +84,7 @@ sub test_caching_and_backups : Tests {
 
     $go->();
     is( $output, '', 'no output' );
+    sleep(1);    # to get two backup files
 
     write_file( $file, "def" );
     $go->();
@@ -93,6 +94,10 @@ sub test_caching_and_backups : Tests {
     my $backup_dir = $ct->data_dir . "/backups";
     my @files;
     find( { follow => 0, wanted => sub { push @files, $_ if -f }, no_chdir => 1 }, $backup_dir );
+    is( scalar(@files), 2, "2 backup files" );
+    foreach my $file (@files) {
+        like( $file, qr|\.tidyall\.d/backups/foo\.txt-\d+-\d+\.bak|, "backup filename" );
+    }
 }
 
 sub test_errors : Tests {
