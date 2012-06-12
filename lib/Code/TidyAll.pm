@@ -10,18 +10,23 @@ use Time::Duration::Parse qw(parse_duration);
 use strict;
 use warnings;
 
+sub valid_params {
+    return qw(
+      backup_ttl
+      conf_file
+      data_dir
+      no_backups
+      no_cache
+      plugins
+      recursive
+      root_dir
+      verbose
+    );
+}
+my %valid_params_hash;
+
 # Incoming parameters
-use Object::Tiny qw(
-  backup_ttl
-  conf_file
-  data_dir
-  no_backups
-  no_cache
-  plugins
-  recursive
-  root_dir
-  verbose
-);
+use Object::Tiny ( valid_params() );
 
 # Internal
 use Object::Tiny qw(
@@ -34,6 +39,15 @@ use Object::Tiny qw(
 sub new {
     my $class  = shift;
     my %params = @_;
+
+    # Check param validity
+    #
+    my $valid_params_hash = $valid_params_hash{$class} ||=
+      { map { ( $_, 1 ) } $class->valid_params() };
+    if ( my @bad_params = grep { !$valid_params_hash->{$_} } keys(%params) ) {
+        die sprintf( "unknown constructor param(s) %s",
+            join( ", ", sort map { "'$_'" } @bad_params ) );
+    }
 
     # Read params from conf file, if provided; handle .../ upward search syntax
     #

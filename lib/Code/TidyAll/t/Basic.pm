@@ -134,6 +134,15 @@ sub test_errors : Tests {
     my $root_dir = $self->create_dir( { "foo/bar.txt" => "abc" } );
     throws_ok { Code::TidyAll->new( root_dir => $root_dir ) } qr/conf_file or plugins required/;
     throws_ok { Code::TidyAll->new( plugins  => {} ) } qr/conf_file or root_dir required/;
+    throws_ok {
+        Code::TidyAll->new(
+            root_dir    => $root_dir,
+            plugins     => {},
+            bad_param   => 1,
+            worse_param => 2
+        );
+    }
+    qr/unknown constructor param\(s\) 'bad_param', 'worse_param'/;
     throws_ok { Code::TidyAll->new( root_dir => $root_dir, plugins => { 'DoesNotExist' => {} } ) }
     qr/could not load plugin class/;
 
