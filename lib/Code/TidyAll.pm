@@ -2,7 +2,7 @@ package Code::TidyAll;
 use Cwd qw(realpath);
 use Config::INI::Reader;
 use Code::TidyAll::Cache;
-use Code::TidyAll::Util qw(basename can_load dirname mkpath read_file write_file);
+use Code::TidyAll::Util qw(basename can_load dirname dump_one_line mkpath read_file write_file);
 use Date::Format;
 use Digest::SHA1 qw(sha1_hex);
 use File::Find qw(find);
@@ -74,18 +74,29 @@ sub new {
     die "conf_file or plugins required"  unless $params{plugins};
     die "conf_file or root_dir required" unless $params{root_dir};
 
+    $class->msg( "constructing %s with these params: %s", $class, \%params )
+      if ( $params{verbose} );
+
     my $self = $class->SUPER::new(%params);
 
     $self->{root_dir} = realpath( $self->{root_dir} );
     $self->{data_dir} ||= $self->root_dir . "/.tidyall.d";
-    $self->{cache} = Code::TidyAll::Cache->new( cache_dir => $self->data_dir . "/cache" )
-      unless $self->no_cache;
-    $self->{backup_dir} = $self->data_dir . "/backups";
-    $self->{base_sig} = $self->_sig( [ $Code::TidyAll::VERSION || 0, $self->plugins ] );
-    $self->{backup_ttl} ||= '1 hour';
-    $self->{backup_ttl} = parse_duration( $self->{backup_ttl} )
-      unless $self->{backup_ttl} =~ /^\d+$/;
+
+    unless ( $self->no_cache ) {
+        $self->{cache} = Code::TidyAll::Cache->new( cache_dir => $self->data_dir . "/cache" );
+    }
+
+    unless ( $self->no_backups ) {
+        $self->{backup_dir} = $self->data_dir . "/backups";
+        mkpath( $self->backup_dir, 0, 0775 );
+        $self->{backup_ttl} ||= '1 hour';
+        $self->{backup_ttl} = parse_duration( $self->{backup_ttl} )
+          unless $self->{backup_ttl} =~ /^\d+$/;
+        $self->_purge_backups_periodically();
+    }
+
     my $plugins = $self->plugins;
+    $self->{base_sig} = $self->_sig( [ $Code::TidyAll::VERSION || 0, $plugins ] );
     $self->{plugin_objects} =
       [ map { $self->load_plugin( $_, $plugins->{$_} ) } keys( %{ $self->plugins } ) ];
 
@@ -177,13 +188,6 @@ sub _backup_file {
         my $backup_file = join( "/", $self->backup_dir, $self->_backup_filename($file) );
         mkpath( dirname($backup_file), 0, 0775 );
         write_file( $backup_file, read_file($file) );
-        if ( my $cache = $self->cache ) {
-            my $last_purge_backups = $cache->get("last_purge_backups") || 0;
-            if ( time > $last_purge_backups + $self->backup_ttl ) {
-                $self->_purge_backups();
-                $cache->set( "last_purge_backups", time() );
-            }
-        }
     }
 }
 
@@ -191,6 +195,17 @@ sub _backup_filename {
     my ( $self, $file ) = @_;
 
     return join( "", $self->_small_path($file), "-", time2str( "%Y%m%d-%H%M%S", time ), ".bak" );
+}
+
+sub _purge_backups_periodically {
+    my ($self) = @_;
+    if ( my $cache = $self->cache ) {
+        my $last_purge_backups = $cache->get("last_purge_backups") || 0;
+        if ( time > $last_purge_backups + $self->backup_ttl ) {
+            $self->_purge_backups();
+            $cache->set( "last_purge_backups", time() );
+        }
+    }
 }
 
 sub _purge_backups {
@@ -248,6 +263,7 @@ sub _sig {
 
 sub msg {
     my ( $self, $format, @params ) = @_;
+    @params = map { ref($_) ? dump_one_line($_) : $_ } @params;
     printf( "$format\n", @params );
 }
 

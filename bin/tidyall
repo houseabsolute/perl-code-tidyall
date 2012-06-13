@@ -2,6 +2,7 @@
 use Getopt::Long;
 use Pod::Usage;
 use Code::TidyAll::Util qw(can_load);
+use Hash::MoreUtils qw(slice_def);
 use strict;
 use warnings;
 
@@ -12,27 +13,31 @@ sub usage {
     Pod::Usage::pod2usage( { verbose => 2 } );
 }
 
-my %params;
+my ( %params, $help );
 my $class = 'Code::TidyAll';
 
 GetOptions(
-    'backup-ttl'  => \$params{backup_ttl},
-    'class'       => \$class,
-    'data-dir'    => \$params{data_dir},
-    'no-backups'  => \$params{no_backups},
-    'no-cache'    => \$params{no_cache},
-    'c|conf'      => \$params{conf_file},
-    'h|help'      => \$help,
-    'r|recursive' => \$params{recursive},
+    'backup-ttl=i' => \$params{backup_ttl},
+    'class=s'      => \$class,
+    'data-dir=s'   => \$params{data_dir},
+    'no-backups'   => \$params{no_backups},
+    'no-cache'     => \$params{no_cache},
+    'c|conf=s'     => \$params{conf_file},
+    'h|help'       => \$help,
+    'r|recursive'  => \$params{recursive},
+    'v|verbose'    => \$params{verbose},
 ) or usage();
 
-usage("-c|--conf required") if !$params{conf_file};
+usage("") if $help;
+usage("-c|--conf required") if !defined( $params{conf_file} );
 die "cannot load '$class'" unless can_load($class);
+
+%params = slice_def( \%params );
 
 my @paths = @ARGV or usage("path(s) required");
 
 my $ct = $class->new(%params);
-$ct->process_paths($path);
+$ct->process_paths(@paths);
 
 1;
 

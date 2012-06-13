@@ -9,6 +9,8 @@ use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 sub test_plugin { "+Code::TidyAll::Test::Plugin::$_[0]" }
 my $UpperText  = test_plugin('UpperText');
 my $ReverseFoo = test_plugin('ReverseFoo');
+my $RepeatBar  = test_plugin('RepeatBar');
+my ( $conf1, $conf2 );
 
 sub create_dir {
     my ( $self, $files ) = @_;
@@ -158,26 +160,12 @@ sub test_errors : Tests {
     like( $output, qr/foo.txt: skipping, not underneath root dir/ );
 }
 
-my $conf1 = '
-backup_ttl = 5m
-no_cache = 1
-recursive = 1
-
-[PerlTidy]
-argv = -noll -it=2
-include = *.pl *.pm *.t
-
-[PodTidy]
-
-[PerlCritic]
-argv = -severity 3
-';
-
 sub test_conf_file : Tests {
     my $self      = shift;
     my $root_dir  = $self->create_dir();
     my $conf_file = "$root_dir/.tidyallrc";
     write_file( $conf_file, $conf1 );
+
     my $ct = Code::TidyAll->new( conf_file => $conf_file );
     my %expected = (
         backup_ttl => 300,
@@ -195,7 +183,52 @@ sub test_conf_file : Tests {
     while ( my ( $method, $value ) = each(%expected) ) {
         cmp_deeply( $ct->$method, $value, "$method" );
     }
-
 }
+
+sub test_cli : Tests {
+    my $self      = shift;
+    my $root_dir  = $self->create_dir();
+    my $conf_file = "$root_dir/.tidyallrc";
+    write_file( $conf_file,          $conf2 );
+    write_file( "$root_dir/foo.txt", "hello" );
+    my $output =
+      capture_stdout { system( "$^X", "bin/tidyall", "-c", $conf_file, "-v", "-r", $root_dir ) };
+    my ($params_msg) = ( $output =~ /constructing Code::TidyAll with these params:(.*)/ );
+    ok( defined($params_msg), "params msg" );
+    like( $params_msg, qr/backup_ttl => '15m'/,                                 'backup_ttl' );
+    like( $params_msg, qr/recursive => '?1'?/,                                  'recursive' );
+    like( $params_msg, qr/verbose => '?1'?/,                                    'verbose' );
+    like( $params_msg, qr/\Qroot_dir => '$root_dir'\E/,                         'root_dir' );
+    like( $output,     qr/foo\.txt/,                                            'foo.txt' );
+    like( $output,     qr/applying '\+Code::TidyAll::Test::Plugin::UpperText'/, 'UpperText' );
+    like( $output,     qr/applying '\+Code::TidyAll::Test::Plugin::RepeatBar'/, 'RepeatBar' );
+    is( read_file("$root_dir/foo.txt"), "HELLOHELLOHELLO", "tidied" );
+}
+
+$conf1 = '
+backup_ttl = 5m
+no_cache = 1
+recursive = 1
+
+[PerlTidy]
+argv = -noll -it=2
+include = *.pl *.pm *.t
+
+[PodTidy]
+
+[PerlCritic]
+argv = -severity 3
+';
+
+$conf2 = "
+backup_ttl = 15m
+verbose = 1
+
+[$UpperText]
+
+[$RepeatBar]
+times = 3
+include = *.txt
+";
 
 1;
