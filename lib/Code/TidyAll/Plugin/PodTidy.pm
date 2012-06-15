@@ -6,10 +6,6 @@ use strict;
 use warnings;
 use base qw(Code::TidyAll::Plugin);
 
-sub defaults {
-    return { include => qr/\.(pl|pm|t)$/ };
-}
-
 sub process_file {
     my ( $self, $file ) = @_;
     my $options = $self->options;
@@ -24,7 +20,7 @@ sub process_file {
             verbose  => 1,
         );
     };
-    die $output if $output =~ /\S/;
+    die $output if $output =~ /\S/ && $output !~ /does not contain Pod/;
 }
 
 1;

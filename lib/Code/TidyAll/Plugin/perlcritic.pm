@@ -6,10 +6,6 @@ use strict;
 use warnings;
 use base qw(Code::TidyAll::Plugin);
 
-sub defaults {
-    return { include => qr/\.(pl|pm|t)$/ };
-}
-
 sub process_file {
     my ( $self, $file ) = @_;
     my $options = $self->options;

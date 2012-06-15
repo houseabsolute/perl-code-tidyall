@@ -4,10 +4,6 @@ use base qw(Code::TidyAll::Plugin);
 use strict;
 use warnings;
 
-sub defaults {
-    return { include => qr/foo[^\/]+$/ };
-}
-
 sub process_file {
     my ( $self, $file ) = @_;
     write_file( $file, scalar( reverse( read_file($file) ) ) );

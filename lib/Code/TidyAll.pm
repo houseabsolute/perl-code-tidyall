@@ -2,11 +2,14 @@ package Code::TidyAll;
 use Cwd qw(realpath);
 use Config::INI::Reader;
 use Code::TidyAll::Cache;
-use Code::TidyAll::Util qw(basename can_load dirname dump_one_line mkpath read_file write_file);
+use Code::TidyAll::Util
+  qw(abs2rel basename can_load dirname dump_one_line mkpath read_dir read_file uniq write_file);
 use Date::Format;
 use Digest::SHA1 qw(sha1_hex);
 use File::Find qw(find);
+use File::Zglob;
 use Time::Duration::Parse qw(parse_duration);
+use Try::Tiny;
 use strict;
 use warnings;
 
@@ -33,6 +36,7 @@ use Object::Tiny qw(
   backup_dir
   base_sig
   cache
+  matched_files
   plugin_objects
 );
 
@@ -49,37 +53,27 @@ sub new {
             join( ", ", sort map { "'$_'" } @bad_params ) );
     }
 
-    # Read params from conf file, if provided; handle .../ upward search syntax
+    # Read params from conf file
     #
-    if ( my $conf_file = delete( $params{conf_file} ) ) {
-        if ( my ( $start_dir, $search_file ) = ( $conf_file =~ m{^(.*)\.\.\./(.*)$} ) ) {
-            $start_dir = '.' if !$start_dir;
-            $start_dir = realpath($start_dir);
-            if ( my $found_file = $class->_find_file_upwards( $start_dir, $search_file ) ) {
-                $conf_file = $found_file;
-            }
-            else {
-                die "cound not find '$search_file' upwards from '$start_dir'";
-            }
-        }
-
-        my $conf_params = Config::INI::Reader->read_file($conf_file);
-        if ( ref($conf_params) ne 'HASH' ) {
-            die "'$conf_file' did not evaluate to a hash";
-        }
+    if ( my $conf_file = $params{conf_file} ) {
+        my $conf_params = $class->_read_conf_file($conf_file);
         my $main_params = delete( $conf_params->{'_'} ) || {};
-        %params = ( plugins => $conf_params, %$main_params, %params );
-        $params{root_dir} ||= dirname($conf_file);
+        %params = (
+            plugins  => $conf_params,
+            root_dir => realpath( dirname($conf_file) ),
+            %$main_params, %params
+        );
     }
-    die "conf_file or plugins required"  unless $params{plugins};
-    die "conf_file or root_dir required" unless $params{root_dir};
+    else {
+        die "conf_file or plugins required"  unless $params{plugins};
+        die "conf_file or root_dir required" unless $params{root_dir};
+    }
 
     $class->msg( "constructing %s with these params: %s", $class, \%params )
       if ( $params{verbose} );
 
     my $self = $class->SUPER::new(%params);
 
-    $self->{root_dir} = realpath( $self->{root_dir} );
     $self->{data_dir} ||= $self->root_dir . "/.tidyall.d";
 
     unless ( $self->no_cache ) {
@@ -96,9 +90,11 @@ sub new {
     }
 
     my $plugins = $self->plugins;
+
     $self->{base_sig} = $self->_sig( [ $Code::TidyAll::VERSION || 0, $plugins ] );
     $self->{plugin_objects} =
-      [ map { $self->load_plugin( $_, $plugins->{$_} ) } keys( %{ $self->plugins } ) ];
+      [ map { $self->load_plugin( $_, $plugins->{$_} ) } sort keys( %{ $self->plugins } ) ];
+    $self->{matched_files} = $self->_find_matched_files;
 
     return $self;
 }
@@ -110,46 +106,26 @@ sub load_plugin {
         ? substr( $plugin_name, 1 )
         : "Code::TidyAll::Plugin::$plugin_name"
     );
-    if ( can_load($class_name) ) {
-        return $class_name->new(
-            conf => $plugin_conf,
-            name => $plugin_name
-        );
+    try {
+        can_load($class_name) || die "not found";
     }
-    else {
-        die "could not load plugin class '$class_name'";
-    }
+    catch {
+        die "could not load plugin class '$class_name': $_";
+    };
+    return $class_name->new(
+        conf => $plugin_conf,
+        name => $plugin_name
+    );
 }
 
-sub process_paths {
-    my ( $self, @paths ) = @_;
-    foreach my $path (@paths) {
-        $self->process_path($path);
-    }
+sub process_all {
+    my $self = shift;
+
+    $self->process_files( keys( %{ $self->matched_files } ) );
 }
 
-sub process_path {
-    my ( $self, $path ) = @_;
-    $path = realpath($path);
-    unless ( index( $path, $self->root_dir ) == 0 ) {
-        $self->msg( "%s: skipping, not underneath root dir '%s'", $path, $self->root_dir );
-        return;
-    }
-
-        ( -f $path ) ? $self->_process_file($path)
-      : ( -d $path ) ? $self->_process_dir($path)
-      :                $self->msg( "%s: not a file or directory", $path );
-}
-
-sub _process_dir {
-    my ( $self, $dir ) = @_;
-    unless ( $self->recursive ) {
-        $self->msg( "%s: skipping dir, not in recursive mode", $self->_small_path($dir) );
-        return;
-    }
-    return if basename($dir) eq '.tidyall.d';
-    my @files;
-    find( { follow => 0, wanted => sub { push @files, $_ if -f }, no_chdir => 1 }, $dir );
+sub process_files {
+    my ( $self, @files ) = @_;
     foreach my $file (@files) {
         $self->_process_file($file);
     }
@@ -158,36 +134,62 @@ sub _process_dir {
 sub _process_file {
     my ( $self, $file ) = @_;
 
-    my $cache      = $self->cache;
+    my @plugins    = @{ $self->matched_files->{$file} || [] };
     my $small_path = $self->_small_path($file);
-    if ( $self->no_cache
-        || ( ( $cache->get("sig/$small_path") || '' ) ne $self->_file_sig($file) ) )
-    {
-        my $matched = 0;
-        foreach my $plugin ( @{ $self->plugin_objects } ) {
-            if ( $plugin->matcher->($small_path) ) {
-                if ( !$matched++ ) {
-                    $self->msg( "%s", $small_path );
-                    $self->_backup_file($file);
-                }
-                $self->msg( "  applying '%s'", $plugin->name ) if $self->verbose;
-                eval { $plugin->process_file($file) };
-                if ( my $error = $@ ) {
-                    $self->msg( "*** '%s': %s", $plugin->name, $error );
-                    return;
-                }
-            }
+    if ( !@plugins ) {
+        $self->msg( "[no plugins apply] %s", $small_path );
+    }
+
+    my $cache = $self->cache;
+    my $error;
+    my $orig_contents = read_file($file);
+    if ( $cache && ( my $sig = $cache->get("sig/$small_path") ) ) {
+        return if $sig eq $self->_file_sig( $file, $orig_contents );
+    }
+
+    foreach my $plugin (@plugins) {
+        try {
+            $plugin->process_file($file);
         }
-        $cache->set( "sig/$small_path", $self->_file_sig($file) ) unless $self->no_cache;
+        catch {
+            $error = sprintf( "*** '%s': %s", $plugin->name, $_ );
+        };
+        last if $error;
+    }
+
+    my $new_contents = read_file($file);
+    my $was_tidied   = $orig_contents ne $new_contents;
+    my $status       = $was_tidied ? "[tidied]  " : "[checked] ";
+    my $plugin_names =
+      $self->verbose ? sprintf( " (%s)", join( ", ", map { $_->name } @plugins ) ) : "";
+    $self->msg( "%s%s%s", $status, $small_path, $plugin_names );
+    $self->_backup_file( $file, $orig_contents ) if $was_tidied;
+
+    if ($error) {
+        $self->msg( "%s", $error );
+    }
+    else {
+        $cache->set( "sig/$small_path", $self->_file_sig( $file, $new_contents ) ) if $cache;
     }
 }
 
+sub _read_conf_file {
+    my ( $class, $conf_file ) = @_;
+    my $conf_string = read_file($conf_file);
+    my $root_dir    = basename($conf_file);
+    $conf_string =~ s/\$ROOT/$root_dir/g;
+    my $conf_hash = Config::INI::Reader->read_string($conf_string);
+    die "'$conf_file' did not evaluate to a hash"
+      unless ( ref($conf_hash) eq 'HASH' );
+    return $conf_hash;
+}
+
 sub _backup_file {
-    my ( $self, $file ) = @_;
+    my ( $self, $file, $contents ) = @_;
     unless ( $self->no_backups ) {
         my $backup_file = join( "/", $self->backup_dir, $self->_backup_filename($file) );
         mkpath( dirname($backup_file), 0, 0775 );
-        write_file( $backup_file, read_file($file) );
+        write_file( $backup_file, $contents );
     }
 }
 
@@ -223,7 +225,7 @@ sub _purge_backups {
     );
 }
 
-sub _find_file_upwards {
+sub find_conf_file {
     my ( $class, $search_dir, $search_file ) = @_;
 
     $search_dir  =~ s{/+$}{};
@@ -243,16 +245,41 @@ sub _find_file_upwards {
     }
 }
 
+sub _find_matched_files {
+    my ($self) = @_;
+
+    my %matched_files;
+    foreach my $plugin ( @{ $self->plugin_objects } ) {
+        my @selected = $self->_zglob( $plugin->select );
+        if ( defined( $plugin->ignore ) ) {
+            my %is_ignored = map { ( $_, 1 ) } $self->_zglob( $plugin->ignore );
+            @selected = grep { !$is_ignored{$_} } @selected;
+        }
+        foreach my $file (@selected) {
+            $matched_files{$file} ||= [];
+            push( @{ $matched_files{$file} }, $plugin );
+        }
+    }
+    return \%matched_files;
+}
+
+sub _zglob {
+    my ( $self, $expr ) = @_;
+
+    return File::Zglob::zglob( join( "/", $self->root_dir, $expr ) );
+}
+
 sub _small_path {
     my ( $self, $path ) = @_;
-    die "'%s' is not underneath root dir '%s'!" unless index( $path, $self->root_dir ) == 0;
+    die sprintf( "'%s' is not underneath root dir '%s'!", $path, $self->root_dir )
+      unless index( $path, $self->root_dir ) == 0;
     return substr( $path, length( $self->root_dir ) + 1 );
 }
 
 sub _file_sig {
-    my ( $self, $file ) = @_;
+    my ( $self, $file, $contents ) = @_;
     my $last_mod = ( stat($file) )[9];
-    my $contents = read_file($file);
+    $contents = read_file($file) if !defined($contents);
     return $self->_sig( [ $self->base_sig, $last_mod, $contents ] );
 }
 
@@ -282,81 +309,54 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
     use Code::TidyAll;
 
     my $ct = Code::TidyAll->new(
-        data_dir => '/tmp/.tidyall',
-        recursive => 1,
+        conf_file => '/path/to/conf/file'
+    );
+
+    # or
+
+    my $ct = Code::TidyAll->new(
+        root_dir => '/path/to/root',
         plugins  => {
             perltidy => {
-                include => qr/\.(pl|pm|t)$/,
+                select => qr/\.(pl|pm|t)$/,
                 options => { argv => '-noll -it=2' },
             },
             perlcritic => {
-                include => qr/\.(pl|pm|t)$/,
+                select => qr/\.(pl|pm|t)$/,
                 options => { '-include' => ['layout'], '-severity' => 3, }
-            },
-            podtidy => {
-                include => qr/\.(pl|pm|t)$/,
-                options => { columns => 80 }
-            },
-            htmltidy => {
-                include => qr/\.html$/,
-                options => {
-                    output_xhtml => 1,
-                    tidy_mark    => 0,
-                }
-            },
-            '+My::Javascript::Tidier' => {
-                include => qr/\.js$/,
-                ...
-            }, 
+            }
         }
     );
-    $ct->process_path($path1, $path2);
+    $ct->process_paths($path1, $path2);
 
 =head1 DESCRIPTION
 
+This is the engine used by L<tidyall|tidyall>, which you can use from your
+own program instead of calling C<tidyall>.
+
 =head1 CONSTRUCTOR OPTIONS
 
-=over
-
-=item plugins
-
-Required. A hash of one or more plugin specifications.
-
-Each key is the name of a plugin; it is automatically prefixed with
-C<TidyAll::Plugin::> unless it is a full classname preceded by a '+'.
-
-Each value is a configuration hash for the plugin. The configuration hash may
-contain:
+These options are the same as the equivalents in C<tidyall>, replacing dashes
+with underscore (e.g. the C<backup-ttl> option becomes C<backup_ttl> here).
 
 =over
 
-=item include
+=item backup_ttl
 
-A regex or code reference which is applied to each full pathname to determine
-whether it should be processed with this plugin.
-
-=item exclude
-
-A regex or code reference which is applied to each full pathname to determine
-whether it should be excluded. This overrides C<include> above.
-
-=item options
-
-Options specific to the plugin to be used for its tidying/validation.
-
-=back
-
-=item cache
-
-A cache object, or a hashref of parameters to pass to L<CHI|CHI> to construct a
-cache. This overrides the default cache.
+=item conf_file
 
 =item data_dir
 
-Data directory for backups and cache.
+=item no_backups
+
+=item no_cache
+
+=item plugins
 
 =item recursive
 
-Indcates whether L</process> will follow directories. Defaults to false.
+=item root_dir
+
+=item verbose
 
 =back

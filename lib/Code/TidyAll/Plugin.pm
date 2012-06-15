@@ -1,6 +1,8 @@
 package Code::TidyAll::Plugin;
-use Object::Tiny qw(conf exclude include matcher name options root_dir);
+use Object::Tiny qw(conf ignore matcher name options root_dir select);
 use Code::TidyAll::Util qw(read_file write_file);
+use strict;
+use warnings;
 
 sub new {
     my $class = shift;
@@ -8,15 +10,16 @@ sub new {
     die "conf required" unless $self->{conf};
     die "name required" unless $self->{name};
 
-    $self->{include} = $self->_build_include();
-    $self->{exclude} = $self->_build_exclude();
-    $self->{matcher} = $self->_build_matcher();
+    my $name = $self->{name};
+    $self->{select} = $self->{conf}->{select} or die "select required for '$name'";
+    die "select for '$name' should not begin with /" if substr( $self->{select}, 0, 1 ) eq '/';
+    $self->{ignore} = $self->{conf}->{ignore};
+    die "ignore for '$name' should not begin with /"
+      if defined( $self->{ignore} ) && substr( $self->{ignore}, 0, 1 ) eq '/';
     $self->{options} = $self->_build_options();
 
     return $self;
 }
-
-sub defaults { return {} }
 
 sub process_file {
     my ( $self, $file ) = @_;
@@ -25,58 +28,16 @@ sub process_file {
     write_file( $file, $dest );
 }
 
-sub _build_matcher {
-    my $self = shift;
-    my $conf = $self->conf;
-
-    my $include = $self->_match_spec_to_coderef( 'include', $self->include );
-    my $exclude = $self->_match_spec_to_coderef( 'exclude', $self->exclude );
-
-    return sub { my $file = shift; return $include->($file) && !$exclude->($file) };
-}
-
-sub _build_include {
-    my $self = shift;
-    return
-         $self->conf->{include}
-      || $self->defaults->{include}
-      || die sprintf( "did not specify include for plugin '%s', and no default", $self->name );
-}
-
-sub _build_exclude {
-    my $self = shift;
-    return $self->conf->{exclude} || $self->defaults->{exclude} || sub { 0 };
+sub process_source {
+    my ( $self, $source ) = @_;
+    die sprintf( "plugin '%s' must implement either process_file or process_source", $self->name );
 }
 
 sub _build_options {
     my $self    = shift;
     my %options = %{ $self->{conf} };
-    delete( @options{qw(include exclude)} );
+    delete( @options{qw(select ignore)} );
     return \%options;
-}
-
-sub _match_spec_to_coderef {
-    my ( $self, $type, $spec ) = @_;
-
-    $spec = $self->_glob_to_regex($spec) if !ref($spec);
-    if ( ref($spec) eq 'Regexp' ) {
-        return sub { $_[0] =~ $spec };
-    }
-    elsif ( ref($spec) eq 'CODE' ) {
-        return $spec;
-    }
-    else {
-        die sprintf( "bad '%s' conf value for plugin '%s': '%s'", $type, $self->name, $spec );
-    }
-}
-
-sub _glob_to_regex {
-    my ( $self, $spec ) = @_;
-
-    my @patterns = split( /\s+/, $spec );
-    foreach (@patterns) { s/\./\\\./g; s/\*/.*/g }
-    my $regex = join( '|', @patterns );
-    return qr/$regex/;
 }
 
 1;
