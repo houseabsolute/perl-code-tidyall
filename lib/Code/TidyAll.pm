@@ -22,7 +22,6 @@ sub valid_params {
       no_backups
       no_cache
       plugins
-      recursive
       root_dir
       verbose
     );
@@ -353,19 +352,30 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
             }
         }
     );
-    $ct->process_paths($path1, $path2);
+
+    # then...
+
+    $ct->process_files($file1, $file2);
+
+    # or
+
+    $ct->process_all();
 
 =head1 DESCRIPTION
 
-This is the engine used by L<tidyall|tidyall>, which you can use from your own
-program instead of calling C<tidyall>.
+This is the engine used by L<tidyall|tidyall>. You can call this API from your
+own program instead of executing C<tidyall>.
 
 =head1 CONSTRUCTOR OPTIONS
 
-These options are the same as the equivalents in C<tidyall>, replacing dashes
-with underscore (e.g. the C<backup-ttl> option becomes C<backup_ttl> here).
+You must either pass C<conf_file>, or both C<plugins> and C<root_dir>.
 
 =over
+
+=item plugins
+
+Specify a hash of plugins, each of which is itself a hash of options. This is
+equivalent to what would be parsed out of the sections in C<tidyall.ini>.
 
 =item backup_ttl
 
@@ -379,10 +389,33 @@ with underscore (e.g. the C<backup-ttl> option becomes C<backup_ttl> here).
 
 =item plugins
 
-=item recursive
-
 =item root_dir
 
 =item verbose
 
+These options are the same as the equivalent C<tidyall> command-line options,
+replacing dashes with underscore (e.g. the C<backup-ttl> option becomes
+C<backup_ttl> here).
+
 =back
+
+=head1 METHODS
+
+=over
+
+=item process_all
+
+Process all files; this implements the C<tidyall -a> option.
+
+=item process_files (file, ...)
+
+Process the specified files.
+
+=item find_conf_file (start_dir)
+
+Start in the I<start_dir> and work upwards, looking for a C<tidyall.ini>.
+Return the pathname if found or throw an error if not found.
+
+=back
+
+=cut

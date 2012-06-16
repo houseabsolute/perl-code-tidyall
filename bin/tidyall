@@ -92,9 +92,11 @@ tidyall - Your all-in-one code tidier and validator
  -h, --help       Print help message
  --backup-ttl     When backup files can be purged. Defaults to "1h"
  --class          Code::TidyAll subclass to use. Defaults to "Code::TidyAll"
+ --conf-file      Specify conf file explicitly; usually inferred from specified files or cwd
  --data-dir       Contains data like backups and cache. Defaults to root_dir/.tidyall.d
  --no-backup      Don't backup files
  --no-cache       Don't cache last processed times; process all files every time
+ --root-dir       Specify root dir explicitly; usually inferred from specified files or cwd
 
 =head1 DESCRIPTION
 
@@ -132,7 +134,7 @@ hierarchy of files. svn or git working directories are typical examples of
 projects.
 
 The top of the project is called the I<root directory>. In the root directory
-you'll need a C<tidyall.ini> config file. It defines how various tidiers and
+you'll need a C<tidyall.ini> config file; it defines how various tidiers and
 validators will be applied to the files in your project.
 
 C<tidyall> will find your root directory and config file automatically
@@ -151,7 +153,7 @@ C<tidyall.ini>.
 
 =item tidyall -a --root-dir dir
 
-C<tidyall> will expect to find C<tidyall.ini> in the specified directory.
+C<tidyall> will expect to find C<tidyall.ini> in the specified root directory.
 
 =back
 
