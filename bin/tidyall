@@ -173,11 +173,7 @@ The config file is in L<Config::INI|Config::INI> format. Here's a sample:
     [PodTidy]
     select = lib/**/*.{pm,pod}
 
-    [HTMLTidy]
-    argv = -wrap 70 -indent
-    select = docs/**/*.html
-
-In order, the four sections declare:
+In order, the three sections declare:
 
 =over
 
@@ -194,11 +190,6 @@ Apply C<PerlCritic> with severity 3 to all Perl modules somewhere underneath
 
 Apply C<PodTidy> with default settings to all .pm and .pod files underneath
 "lib/".
-
-=item *
-
-Apply C<HTMLTidy> with settings "-wrap 70 -indent" to all *.html files under
-"docs/".
 
 =back
 
