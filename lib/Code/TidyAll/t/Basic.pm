@@ -38,9 +38,14 @@ sub tidy {
         %$options
     );
 
-    my $output = capture_stdout { $ct->process_all() };
+    my $result;
+    my $output = capture_stdout { $result = $ct->process_all() };
     if ( $params{errors} ) {
         like( $output, $params{errors}, "$desc - errors" );
+        ok( $result->error_count > 0, "$desc - error_count > 0" );
+    }
+    else {
+        is( $result->error_count, 0, "$desc - error_count == 0" );
     }
     while ( my ( $path, $content ) = each( %{ $params{dest} } ) ) {
         is( read_file("$root_dir/$path"), $content, "$desc - $path content" );

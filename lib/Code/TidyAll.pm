@@ -4,6 +4,7 @@ use Config::INI::Reader;
 use Code::TidyAll::Cache;
 use Code::TidyAll::Util
   qw(abs2rel basename can_load dirname dump_one_line mkpath read_dir read_file uniq write_file);
+use Code::TidyAll::Result;
 use Date::Format;
 use Digest::SHA1 qw(sha1_hex);
 use File::Find qw(find);
@@ -121,14 +122,17 @@ sub load_plugin {
 sub process_all {
     my $self = shift;
 
-    $self->process_files( keys( %{ $self->matched_files } ) );
+    return $self->process_files( keys( %{ $self->matched_files } ) );
 }
 
 sub process_files {
     my ( $self, @files ) = @_;
+
+    my $error_count = 0;
     foreach my $file (@files) {
-        $self->_process_file($file);
+        $error_count++ if $self->_process_file($file);
     }
+    return Code::TidyAll::Result->new( error_count => $error_count );
 }
 
 sub _process_file {
@@ -138,6 +142,7 @@ sub _process_file {
     my $small_path = $self->_small_path($file);
     if ( !@plugins ) {
         $self->msg( "[no plugins apply] %s", $small_path );
+        return;
     }
 
     my $cache = $self->cache;
@@ -167,9 +172,11 @@ sub _process_file {
 
     if ($error) {
         $self->msg( "%s", $error );
+        return 1;
     }
     else {
         $cache->set( "sig/$small_path", $self->_file_sig( $file, $new_contents ) ) if $cache;
+        return;
     }
 }
 
