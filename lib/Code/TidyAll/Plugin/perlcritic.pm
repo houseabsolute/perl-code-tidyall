@@ -23,3 +23,37 @@ sub process_file {
 }
 
 1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+Code::TidyAll::Plugin::PerlCritic - use perlcritic with tidyall
+
+=head1 SYNOPSIS
+
+   # In tidyall.ini:
+
+   # Configure in-line
+   #
+   [PerlCritic]
+   argv = --severity 5 --exclude=nowarnings
+   select = lib/**/*.pm
+
+   # or refer to a .perlcriticrc in the same directory
+   #
+   [PerlCritic]
+   argv = --profile $ROOT/.perlcriticrc
+   select = lib/**/*.pm
+
+=head1 OPTIONS
+
+=over
+
+=item argv
+
+Arguments to pass to perlcritic.
+
+=back

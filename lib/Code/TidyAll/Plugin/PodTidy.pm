@@ -24,3 +24,29 @@ sub process_file {
 }
 
 1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+Code::TidyAll::Plugin::PodTidy - use podtidy with tidyall
+
+=head1 SYNOPSIS
+
+   # In tidyall.ini:
+
+   [PodTidy]
+   argv = --column=90
+   select = lib/**/*.{pm,pod}
+
+=head1 OPTIONS
+
+=over
+
+=item argv
+
+Arguments to pass to podtidy.
+
+=back

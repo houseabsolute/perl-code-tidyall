@@ -64,6 +64,7 @@ tidyall - Your all-in-one code tidier and validator
 =head1 SYNOPSIS
 
     # Create a tidyall.ini at the top of your project
+    #
     [PerlTidy]
     argv = -noll -it=2
     select = **/*.{pl,pm,t}
@@ -73,10 +74,16 @@ tidyall - Your all-in-one code tidier and validator
     select = lib/**/*.pm
     ignore = lib/UtterHack.pm
 
-    # Process all files in the current project, look upwards from the cwd for tidyall.ini
+    # Process all files in the current project, look upwards from cwd for tidyall.ini
+    #
     % tidyall -a
 
+    # Process all files in a particular project
+    #
+    % tidyall -a --root-dir /home/joe/project
+
     # Process one or more specific files, look upwards from the first file for tidyall.ini
+    #
     % tidyall file [file...]
 
 =head1 OPTIONS
@@ -94,10 +101,10 @@ tidyall - Your all-in-one code tidier and validator
 There are a lot of great code tidiers and validators out there. C<tidyall>
 makes them available from a single unified interface.
 
-You can run C<tidyall> on a single file or an entire hierarchy of files, and
-configure which tidiers/validators are applied to which types of files.
-C<tidyall> will back up files beforehand, and for efficiency will only consider
-files that have changed since they were last processed.
+You can run C<tidyall> on a single file or on an entire project hierarchy,
+and configure which tidiers/validators are applied to which files.
+C<tidyall> will back up files beforehand, and for efficiency will only
+consider files that have changed since they were last processed.
 
 =head2 What's a tidier? What's a validator?
 
@@ -111,6 +118,13 @@ L<xmllint|http://xmlsoft.org/xmllint.html>.
 
 Many tidiers are also validators, e.g. C<perltidy> will throw an error on badly
 formed Perl.
+
+To use a tidier or validator with C<tidyall> it must have a corresponding
+plugin, usually under the prefix C<Code::TidyAll::Plugin::>.  This
+distribution comes with plugins for
+L<perltidy|Code::TidyAll::Plugin::PerlTidy>,
+C<perlcritic|Code::TidyAll::Plugin::PerlCritic> and
+C<podtidy|Code::TidyAll::Plugin::PodTidy>.
 
 =head1 USING TIDYALL
 
@@ -205,9 +219,16 @@ with a '+', e.g.
 
 =item select
 
-A L<File::Zglob|File::Zglob> pattern indicating which files to select. The
-pattern is relative to the root directory and should have no leading slash.
-Special characters are:
+A L<File::Zglob|File::Zglob> pattern indicating which files to select, e.g.
+
+    # All .pl and .pm files somewhere under bin, lib and t
+    select = {bin,lib,t}/**/*.p[lm]
+
+    # All .txt files anywhere in the project
+    select = **/*.txt
+
+The pattern is relative to the root directory and should have no leading
+slash.  Special characters are:
 
 =over
 
@@ -232,7 +253,7 @@ At the beginning of a component, matches a character except a period (.). Otherw
 
 Matches any one of the set.
 
-=item C<< {pm,pl} >>
+=item C<< {a,b,c} >>
 
 Matches any of the alternatives.
 
@@ -240,14 +261,19 @@ Matches any of the alternatives.
 
 =item ignore
 
-A L<File::Zglob|File::Zglob> pattern indicating which files to ignore.
-This overrides C<select>.
+A L<File::Zglob|File::Zglob> pattern, of the same format described above,
+indicating which files to ignore.  This overrides C<select>.
+
+=item argv
+
+Many plugins (such as L<perltidy|Code::TidyAll::Plugin::PerlTidy>,
+C<perlcritic|Code::TidyAll::Plugin::PerlCritic> and
+C<podtidy|Code::TidyAll::Plugin::PodTidy>) take this option, which specifies
+arguments to pass to the underlying command-line utility.
 
 =back
 
-=head1 OTHER FEATURES
-
-=head2 Last-processed cache
+=head1 LAST-PROCESSED CACHE
 
 C<tidyall> keeps track of each file's signature after it was last processed. On
 subsequent runs, it will only process a file if its signature has changed.
@@ -255,7 +281,7 @@ The cache is kept in files under the data dir.
 
 You can turn off this behavior with C<--no-cache>.
 
-=head2 Backups
+=head1 BACKUPS
 
 C<tidyall> will backup each file before modifying it. The timestamped backups
 are kept in a separate directory hierarchy under the data dir.

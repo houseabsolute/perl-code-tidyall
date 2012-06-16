@@ -14,7 +14,7 @@ sub process_source {
 
     # Determine parameters
     #
-    my %params = slice_exists( $self->options, qw(argv prefilter postfilter perltidyrc) );
+    my %params = slice_exists( $self->options, qw(argv prefilter postfilter) );
 
     no strict 'refs';
     &$perl_tidy_function(
@@ -28,3 +28,46 @@ sub process_source {
 }
 
 1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+Code::TidyAll::Plugin::PerlTidy - use perltidy with tidyall
+
+=head1 SYNOPSIS
+
+   # In tidyall.ini:
+
+   # Configure in-line
+   #
+   [Perltidy]
+   argv = --noll
+   select = lib/**/*.pm
+
+   # or refer to a .perltidyrc in the same directory
+   #
+   [Perltidy]
+   argv = --profile=$ROOT/.perltidyrc
+   select = lib/**/*.pm
+
+=head1 OPTIONS
+
+=over
+
+=item argv
+
+Arguments to pass to C<perltidy>.
+
+=item perl_tidy_class
+
+Specify a C<Perl::Tidy> subclass to use instead of C<Perl::Tidy>.
+
+=item prefilter, postfilter
+
+Specify a prefilter and/or postfilter coderef. This can only be specified via
+the L<Code::TidyAll|Code::TidyAll> module API.
+
+=back
