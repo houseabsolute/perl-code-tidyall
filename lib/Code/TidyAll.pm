@@ -130,6 +130,7 @@ sub process_files {
 
     my $error_count = 0;
     foreach my $file (@files) {
+        $file = realpath($file);
         $error_count++ if $self->_process_file($file);
     }
     return Code::TidyAll::Result->new( error_count => $error_count );
@@ -273,6 +274,7 @@ sub _find_matched_files {
 sub _zglob {
     my ( $self, $expr ) = @_;
 
+    local $File::Zglob::NOCASE = 0;
     return File::Zglob::zglob( join( "/", $self->root_dir, $expr ) );
 }
 
