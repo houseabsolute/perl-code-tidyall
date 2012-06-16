@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-use Cwd qw(realpath);
+use Cwd qw(cwd realpath);
 use Getopt::Long;
 use Pod::Usage;
 use Code::TidyAll::Util qw(can_load dirname);
@@ -40,13 +40,13 @@ $params{conf_file} ||= "$params{root_dir}/tidyall.ini" if ( $params{root_dir} );
 
 my $result;
 if ($all) {
-    $params{conf_file} ||= $class->find_conf_file( realpath(), "tidyall.ini" );
+    $params{conf_file} ||= $class->find_conf_file( cwd() );
     my $ct = $class->new(%params);
     $result = $ct->process_all();
 }
 else {
     my @files = @ARGV or die "file(s) or -a required";
-    $params{conf_file} ||= $class->find_conf_file( dirname( $files[0] ), "tidyall.ini" );
+    $params{conf_file} ||= $class->find_conf_file( dirname( $files[0] ) );
     my $ct = $class->new(%params);
     $result = $ct->process_files(@files);
 }

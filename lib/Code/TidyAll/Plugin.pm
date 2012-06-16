@@ -11,7 +11,8 @@ sub new {
     die "name required" unless $self->{name};
 
     my $name = $self->{name};
-    $self->{select} = $self->{conf}->{select} or die "select required for '$name'";
+    $self->{select} = $self->{conf}->{select}
+      or die "select required for '$name'";
     die "select for '$name' should not begin with /" if substr( $self->{select}, 0, 1 ) eq '/';
     $self->{ignore} = $self->{conf}->{ignore};
     die "ignore for '$name' should not begin with /"
@@ -25,7 +26,7 @@ sub process_file {
     my ( $self, $file ) = @_;
     my $source = read_file($file);
     my $dest   = $self->process_source($source);
-    write_file( $file, $dest );
+    write_file( $file, $dest ) if $dest ne $source;
 }
 
 sub process_source {

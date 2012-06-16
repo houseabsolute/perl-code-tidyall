@@ -69,8 +69,18 @@ sub test_basic : Tests {
     );
     $self->tidy(
         plugins => { %UpperText, %ReverseFoo },
-        source => { "foo.txt" => "abc", "bar.txt" => "def", "foo.tx" => "ghi", "bar.tx" => "jkl" },
-        dest   => { "foo.txt" => "CBA", "bar.txt" => "DEF", "foo.tx" => "ihg", "bar.tx" => "jkl" },
+        source  => {
+            "foo.txt" => "abc",
+            "bar.txt" => "def",
+            "foo.tx"  => "ghi",
+            "bar.tx"  => "jkl"
+        },
+        dest => {
+            "foo.txt" => "CBA",
+            "bar.txt" => "DEF",
+            "foo.tx"  => "ihg",
+            "bar.tx"  => "jkl"
+        },
         desc => 'four files UpperText ReverseFoo',
     );
     $self->tidy(
@@ -92,7 +102,8 @@ sub test_caching_and_backups : Tests {
             my $ct       = Code::TidyAll->new(
                 plugins  => {%UpperText},
                 root_dir => $root_dir,
-                ( $no_cache ? ( no_cache => 1 ) : () ), ( $no_backups ? ( no_backups => 1 ) : () )
+                ( $no_cache   ? ( no_cache   => 1 ) : () ),
+                ( $no_backups ? ( no_backups => 1 ) : () )
             );
             my $output;
             my $file = "$root_dir/foo.txt";
@@ -124,8 +135,15 @@ sub test_caching_and_backups : Tests {
             my $backup_dir = $ct->data_dir . "/backups";
             mkpath( $backup_dir, 0, 0775 );
             my @files;
-            find( { follow => 0, wanted => sub { push @files, $_ if -f }, no_chdir => 1 },
-                $backup_dir );
+            find(
+                {
+                    follow   => 0,
+                    wanted   => sub { push @files, $_ if -f },
+                    no_chdir => 1
+                },
+                $backup_dir
+            );
+
             if ($no_backups) {
                 ok( @files == 0, "no backup files $desc" );
             }
@@ -204,9 +222,12 @@ sub test_cli : Tests {
     my $self      = shift;
     my $root_dir  = $self->create_dir();
     my $conf_file = "$root_dir/tidyall.ini";
-    write_file( $conf_file,          $conf2 );
+    write_file( $conf_file, $conf2 );
+
     write_file( "$root_dir/foo.txt", "hello" );
-    my $output = capture_stdout { system( "$^X", "bin/tidyall", "$root_dir/foo.txt", "-v" ) };
+    my $output = capture_stdout {
+        system( "$^X", "bin/tidyall", "$root_dir/foo.txt", "-v" );
+    };
     my ($params_msg) = ( $output =~ /constructing Code::TidyAll with these params:(.*)/ );
     ok( defined($params_msg), "params msg" );
     like( $params_msg, qr/backup_ttl => '15m'/,                              'backup_ttl' );
@@ -214,6 +235,16 @@ sub test_cli : Tests {
     like( $params_msg, qr/\Qroot_dir => '$root_dir'\E/,                      'root_dir' );
     like( $output,     qr/\[tidied\]  foo.txt \(.*RepeatFoo, .*UpperText\)/, 'foo.txt' );
     is( read_file("$root_dir/foo.txt"), "HELLOHELLOHELLO", "tidied" );
+
+    mkpath( "$root_dir/subdir", 0, 0775 );
+    write_file( "$root_dir/subdir/foo.txt",  "bye" );
+    write_file( "$root_dir/subdir/foo2.txt", "bye" );
+    my $cwd = realpath();
+    capture_stdout {
+        system("cd $root_dir/subdir; $^X $cwd/bin/tidyall foo.txt");
+    };
+    is( read_file("$root_dir/subdir/foo.txt"),  "BYEBYEBYE", "foo.txt tidied" );
+    is( read_file("$root_dir/subdir/foo2.txt"), "bye",       "foo2.txt not tidied" );
 }
 
 $conf1 = '

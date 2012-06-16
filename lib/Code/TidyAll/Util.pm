@@ -3,7 +3,7 @@ use Data::Dumper;
 use File::Basename;
 use File::Path;
 use File::Slurp qw(read_file write_file read_dir);
-use File::Spec::Functions qw(abs2rel);
+use File::Spec::Functions qw(abs2rel rel2abs);
 use File::Temp qw(tempdir);
 use List::MoreUtils qw(uniq);
 use Try::Tiny;
@@ -12,7 +12,7 @@ use warnings;
 use base qw(Exporter);
 
 our @EXPORT_OK =
-  qw(abs2rel basename can_load dirname dump_one_line mkpath read_dir read_file tempdir_simple uniq write_file );
+  qw(abs2rel basename can_load dirname dump_one_line mkpath read_dir read_file rel2abs tempdir_simple uniq write_file );
 
 sub can_load {
 

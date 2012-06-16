@@ -3,7 +3,7 @@ use Cwd qw(realpath);
 use Config::INI::Reader;
 use Code::TidyAll::Cache;
 use Code::TidyAll::Util
-  qw(abs2rel basename can_load dirname dump_one_line mkpath read_dir read_file uniq write_file);
+  qw(abs2rel basename can_load dirname dump_one_line mkpath read_dir read_file rel2abs uniq write_file);
 use Code::TidyAll::Result;
 use Date::Format;
 use Digest::SHA1 qw(sha1_hex);
@@ -40,6 +40,8 @@ use Object::Tiny qw(
   matched_files
   plugin_objects
 );
+
+my $ini_name = 'tidyall.ini';
 
 sub new {
     my $class  = shift;
@@ -234,13 +236,27 @@ sub _purge_backups {
 }
 
 sub find_conf_file {
-    my ( $class, $search_dir, $search_file ) = @_;
+    my ( $class, $start_dir ) = @_;
 
-    $search_dir  =~ s{/+$}{};
-    $search_file =~ s{^/+}{};
+    my $path1     = rel2abs($start_dir);
+    my $path2     = realpath($start_dir);
+    my $conf_file = $class->_find_conf_file_upward($path1)
+      || $class->_find_conf_file_upward($path2);
+    unless ( defined $conf_file ) {
+        die sprintf( "could not find $ini_name upwards from %s",
+            ( $path1 eq $path2 ) ? "'$path1'" : "'$path1' or '$path2'" );
+    }
+    return $conf_file;
+}
 
+sub _find_conf_file_upward {
+    my ( $class, $search_dir ) = @_;
+
+    $search_dir =~ s{/+$}{};
+
+    my $cnt = 0;
     while (1) {
-        my $try_path = "$search_dir/$search_file";
+        my $try_path = "$search_dir/$ini_name";
         if ( -f $try_path ) {
             return $try_path;
         }
@@ -250,6 +266,7 @@ sub find_conf_file {
         else {
             $search_dir = dirname($search_dir);
         }
+        die "inf loop!" if ++$cnt > 100;
     }
 }
 
