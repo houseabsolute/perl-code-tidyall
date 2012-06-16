@@ -51,7 +51,7 @@ else {
     $result = $ct->process_files(@files);
 }
 
-exit($result->error_count ? 1 : 0);
+exit( $result->error_count ? 1 : 0 );
 
 1;
 
@@ -101,10 +101,10 @@ tidyall - Your all-in-one code tidier and validator
 There are a lot of great code tidiers and validators out there. C<tidyall>
 makes them available from a single unified interface.
 
-You can run C<tidyall> on a single file or on an entire project hierarchy,
-and configure which tidiers/validators are applied to which files.
-C<tidyall> will back up files beforehand, and for efficiency will only
-consider files that have changed since they were last processed.
+You can run C<tidyall> on a single file or on an entire project hierarchy, and
+configure which tidiers/validators are applied to which files. C<tidyall> will
+back up files beforehand, and for efficiency will only consider files that have
+changed since they were last processed.
 
 =head2 What's a tidier? What's a validator?
 
@@ -120,21 +120,20 @@ Many tidiers are also validators, e.g. C<perltidy> will throw an error on badly
 formed Perl.
 
 To use a tidier or validator with C<tidyall> it must have a corresponding
-plugin, usually under the prefix C<Code::TidyAll::Plugin::>.  This
-distribution comes with plugins for
-L<perltidy|Code::TidyAll::Plugin::PerlTidy>,
+plugin, usually under the prefix C<Code::TidyAll::Plugin::>.  This distribution
+comes with plugins for L<perltidy|Code::TidyAll::Plugin::PerlTidy>,
 C<perlcritic|Code::TidyAll::Plugin::PerlCritic> and
 C<podtidy|Code::TidyAll::Plugin::PodTidy>.
 
 =head1 USING TIDYALL
 
 C<tidyall> works on a project basis, where a project is just a directory
-hierarchy of files. svn or git working directories are typical examples
-of projects.
+hierarchy of files. svn or git working directories are typical examples of
+projects.
 
 The top of the project is called the I<root directory>. In the root directory
-you'll need a C<tidyall.ini> config file. It defines how various tidiers
-and validators will be applied to the files in your project.
+you'll need a C<tidyall.ini> config file. It defines how various tidiers and
+validators will be applied to the files in your project.
 
 C<tidyall> will find your root directory and config file automagically
 depending on how you call it:
@@ -151,7 +150,8 @@ C<tidyall> will search upwards from I<dir> for C<tidyall.ini>.
 
 =item tidyall -a
 
-C<tidyall> will search upwards from the current working directory for C<tidyall.ini>.
+C<tidyall> will search upwards from the current working directory for
+C<tidyall.ini>.
 
 =back
 
@@ -175,14 +175,13 @@ The config file is in L<Config::INI|Config::INI> format. Here's a sample:
     argv = -wrap 70 -indent
     select = docs/**/*.html
 
-=over
-
 In order, the four sections declare:
+
+=over
 
 =item *
 
-Apply C<PerlTidy> with settings "-noll -it=2" to all *.pl, *.pm, and *.t
-files.
+Apply C<PerlTidy> with settings "-noll -it=2" to all *.pl, *.pm, and *.t files.
 
 =item *
 
@@ -227,14 +226,15 @@ A L<File::Zglob|File::Zglob> pattern indicating which files to select, e.g.
     # All .txt files anywhere in the project
     select = **/*.txt
 
-The pattern is relative to the root directory and should have no leading
-slash.  Special characters are:
+The pattern is relative to the root directory and should have no leading slash.
+ Special characters are:
 
 =over
 
 =item C<< * >>
 
-At the beginning of a component, matches zero or more characters except a period (.). Otherwise matches zero or more sequence of any characters.
+At the beginning of a component, matches zero or more characters except a
+period (.). Otherwise matches zero or more sequence of any characters.
 
 =item C<< ** >>
 
@@ -247,7 +247,8 @@ Matches zero or more components that match *. For example, src/**/*.h matches
 
 =item C<< ? >>
 
-At the beginning of a component, matches a character except a period (.). Otherwise, it matches any single character.
+At the beginning of a component, matches a character except a period (.).
+Otherwise, it matches any single character.
 
 =item C<< [chars] >>
 
@@ -276,8 +277,8 @@ arguments to pass to the underlying command-line utility.
 =head1 LAST-PROCESSED CACHE
 
 C<tidyall> keeps track of each file's signature after it was last processed. On
-subsequent runs, it will only process a file if its signature has changed.
-The cache is kept in files under the data dir.
+subsequent runs, it will only process a file if its signature has changed. The
+cache is kept in files under the data dir.
 
 You can turn off this behavior with C<--no-cache>.
 
