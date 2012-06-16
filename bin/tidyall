@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+use Cwd qw(realpath);
 use Getopt::Long;
 use Pod::Usage;
 use Code::TidyAll::Util qw(can_load dirname);
@@ -19,9 +20,11 @@ my $class = 'Code::TidyAll';
 GetOptions(
     'backup-ttl=i' => \$params{backup_ttl},
     'class=s'      => \$class,
+    'conf-file=s'  => \$params{conf_file},
     'data-dir=s'   => \$params{data_dir},
     'no-backups'   => \$params{no_backups},
     'no-cache'     => \$params{no_cache},
+    'root-dir=s'   => \$params{root_dir},
     'a|all'        => \$all,
     'h|help'       => \$help,
     'v|verbose'    => \$params{verbose},
@@ -33,16 +36,16 @@ die "cannot load '$class'" unless can_load($class);
 
 %params = slice_def( \%params );
 
+$params{conf_file} ||= "$params{root_dir}/tidyall.ini" if ( $params{root_dir} );
+
 if ($all) {
-    my $start_dir = shift(@ARGV) || cwd();
-    $params{conf_file} = $class->find_conf_file( $start_dir, "tidyall.ini" );
+    $params{conf_file} ||= $class->find_conf_file( realpath(), "tidyall.ini" );
     my $ct = $class->new(%params);
     $ct->process_all();
 }
 else {
     my @files = @ARGV or die "file(s) or -a required";
-    my $start_dir = dirname( $files[0] );
-    $params{conf_file} = $class->find_conf_file( $start_dir, "tidyall.ini" );
+    $params{conf_file} ||= $class->find_conf_file( dirname( $files[0] ), "tidyall.ini" );
     my $ct = $class->new(%params);
     $ct->process_files(@files);
 }

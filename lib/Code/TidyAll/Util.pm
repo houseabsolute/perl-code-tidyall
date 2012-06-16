@@ -23,7 +23,7 @@ sub can_load {
 
     my $result;
     try {
-        eval "require $class_name";
+        eval "require $class_name";    ## no critic
         die $@ if $@;
         $result = 1;
     }

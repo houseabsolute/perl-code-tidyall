@@ -91,7 +91,7 @@ sub new {
 
     my $plugins = $self->plugins;
 
-    $self->{base_sig} = $self->_sig( [ $Code::TidyAll::VERSION || 0, $plugins ] );
+    $self->{base_sig} = $self->_sig( [ $Code::TidyAll::VERSION || 0 ] );
     $self->{plugin_objects} =
       [ map { $self->load_plugin( $_, $plugins->{$_} ) } sort keys( %{ $self->plugins } ) ];
     $self->{matched_files} = $self->_find_matched_files;
@@ -134,7 +134,7 @@ sub process_files {
 sub _process_file {
     my ( $self, $file ) = @_;
 
-    my @plugins    = @{ $self->matched_files->{$file} || [] };
+    my @plugins = @{ $self->matched_files->{$file} || [] };
     my $small_path = $self->_small_path($file);
     if ( !@plugins ) {
         $self->msg( "[no plugins apply] %s", $small_path );
@@ -176,7 +176,7 @@ sub _process_file {
 sub _read_conf_file {
     my ( $class, $conf_file ) = @_;
     my $conf_string = read_file($conf_file);
-    my $root_dir    = basename($conf_file);
+    my $root_dir    = dirname($conf_file);
     $conf_string =~ s/\$ROOT/$root_dir/g;
     my $conf_hash = Config::INI::Reader->read_string($conf_string);
     die "'$conf_file' did not evaluate to a hash"
@@ -331,8 +331,8 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
 =head1 DESCRIPTION
 
-This is the engine used by L<tidyall|tidyall>, which you can use from your
-own program instead of calling C<tidyall>.
+This is the engine used by L<tidyall|tidyall>, which you can use from your own
+program instead of calling C<tidyall>.
 
 =head1 CONSTRUCTOR OPTIONS
 
