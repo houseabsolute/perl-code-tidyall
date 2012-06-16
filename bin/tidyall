@@ -122,8 +122,8 @@ formed Perl.
 To use a tidier or validator with C<tidyall> it must have a corresponding
 plugin, usually under the prefix C<Code::TidyAll::Plugin::>.  This distribution
 comes with plugins for L<perltidy|Code::TidyAll::Plugin::PerlTidy>,
-C<perlcritic|Code::TidyAll::Plugin::PerlCritic> and
-C<podtidy|Code::TidyAll::Plugin::PodTidy>.
+L<perlcritic|Code::TidyAll::Plugin::PerlCritic> and
+L<podtidy|Code::TidyAll::Plugin::PodTidy>.
 
 =head1 USING TIDYALL
 
@@ -135,7 +135,7 @@ The top of the project is called the I<root directory>. In the root directory
 you'll need a C<tidyall.ini> config file. It defines how various tidiers and
 validators will be applied to the files in your project.
 
-C<tidyall> will find your root directory and config file automagically
+C<tidyall> will find your root directory and config file automatically
 depending on how you call it:
 
 =over
@@ -144,14 +144,14 @@ depending on how you call it:
 
 C<tidyall> will search upwards from the first I<file> for C<tidyall.ini>.
 
-=item tidyall -a dir
-
-C<tidyall> will search upwards from I<dir> for C<tidyall.ini>.
-
 =item tidyall -a
 
 C<tidyall> will search upwards from the current working directory for
 C<tidyall.ini>.
+
+=item tidyall -a --root-dir dir
+
+C<tidyall> will expect to find C<tidyall.ini> in the specified directory.
 
 =back
 
@@ -186,7 +186,7 @@ Apply C<PerlTidy> with settings "-noll -it=2" to all *.pl, *.pm, and *.t files.
 =item *
 
 Apply C<PerlCritic> with severity 3 to all Perl modules somewhere underneath
-"lib/", except for anything matching "Tmp".
+"lib/", except for C<lib/UtterHack.pm>.
 
 =item *
 
@@ -227,49 +227,23 @@ A L<File::Zglob|File::Zglob> pattern indicating which files to select, e.g.
     select = **/*.txt
 
 The pattern is relative to the root directory and should have no leading slash.
- Special characters are:
-
-=over
-
-=item C<< * >>
-
-At the beginning of a component, matches zero or more characters except a
-period (.). Otherwise matches zero or more sequence of any characters.
-
-=item C<< ** >>
-
-Matches zero or more components that match *. For example, src/**/*.h matches
-
-    src/*.h
-    src/*/*.h
-    src/*/*/*.h
-    ...
-
-=item C<< ? >>
-
-At the beginning of a component, matches a character except a period (.).
-Otherwise, it matches any single character.
-
-=item C<< [chars] >>
-
-Matches any one of the set.
-
-=item C<< {a,b,c} >>
-
-Matches any of the alternatives.
-
-=back
+ All standard glob characters (C<*>, C<?>, C<[]>, C<{}>) will work; in
+addition, C<**> can be used to represent zero or more directories. See
+C<File::Zglob> documentation for more details.
 
 =item ignore
 
-A L<File::Zglob|File::Zglob> pattern, of the same format described above,
-indicating which files to ignore.  This overrides C<select>.
+A C<File::Zglob> pattern, of the same format described above, indicating which
+files to ignore.  This overrides C<select>. e.g.
+
+    select = bin/**/*.pl
+    ignore = bin/tmp/*.pl
 
 =item argv
 
 Many plugins (such as L<perltidy|Code::TidyAll::Plugin::PerlTidy>,
-C<perlcritic|Code::TidyAll::Plugin::PerlCritic> and
-C<podtidy|Code::TidyAll::Plugin::PodTidy>) take this option, which specifies
+L<perlcritic|Code::TidyAll::Plugin::PerlCritic> and
+L<podtidy|Code::TidyAll::Plugin::PodTidy>) take this option, which specifies
 arguments to pass to the underlying command-line utility.
 
 =back
@@ -290,8 +264,8 @@ are kept in a separate directory hierarchy under the data dir.
 Old backup files will be purged automatically as part of occasional C<tidyall>
 runs. The duration specified in C<--backup-ttl> indicates both the minimum
 amount of time backups should be kept, and the frequency that purges should be
-run. It may be specified as "30min" or "4h" or any string acceptable to
-L<Time::Duration::Parse>. It defaults to "1h" (1 hour).
+run. It may be specified as "30m" or "4 hours" or any string acceptable to
+L<Time::Duration::Parse|Time::Duration::Parse>. It defaults to "1h" (1 hour).
 
 You can turn off backups with C<--no-backups>.
 
