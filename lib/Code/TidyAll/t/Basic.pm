@@ -32,9 +32,8 @@ sub tidy {
 
     my $options = $params{options} || {};
     my $ct = Code::TidyAll->new(
-        plugins   => $params{plugins},
-        recursive => 1,
-        root_dir  => $root_dir,
+        plugins  => $params{plugins},
+        root_dir => $root_dir,
         %$options
     );
 
@@ -204,7 +203,6 @@ sub test_conf_file : Tests {
         backup_ttl => 300,
         no_backups => undef,
         no_cache   => 1,
-        recursive  => 1,
         root_dir   => dirname($conf_file),
         data_dir   => "$root_dir/.tidyall.d",
         plugins    => {
@@ -250,7 +248,6 @@ sub test_cli : Tests {
 $conf1 = '
 backup_ttl = 5m
 no_cache = 1
-recursive = 1
 
 [PerlTidy]
 argv = -noll -it=2
