@@ -69,6 +69,7 @@ sub new {
     else {
         die "conf_file or plugins required"  unless $params{plugins};
         die "conf_file or root_dir required" unless $params{root_dir};
+        $params{root_dir} = realpath( $params{root_dir} );
     }
 
     $class->msg( "constructing %s with these params: %s", $class, \%params )
