@@ -206,9 +206,8 @@ sub test_conf_file : Tests {
         root_dir   => dirname($conf_file),
         data_dir   => "$root_dir/.tidyall.d",
         plugins    => {
-            PerlTidy   => { argv   => '-noll -it=2', select => '**/*.{pl,pm,t}' },
-            PodTidy    => { select => '**/*.{pl,pm,t}' },
-            PerlCritic => { argv   => '-severity 3', select => '**/*.pm' },
+            '+Code::TidyAll::Test::Plugin::UpperText' => { select => '**/*.txt' },
+            '+Code::TidyAll::Test::Plugin::RepeatFoo' => { select => '**/foo*', times => 3 }
         }
     );
     while ( my ( $method, $value ) = each(%expected) ) {
@@ -249,16 +248,12 @@ $conf1 = '
 backup_ttl = 5m
 no_cache = 1
 
-[PerlTidy]
-argv = -noll -it=2
-select = **/*.{pl,pm,t}
+[+Code::TidyAll::Test::Plugin::UpperText]
+select = **/*.txt
 
-[PodTidy]
-select = **/*.{pl,pm,t}
-
-[PerlCritic]
-argv = -severity 3
-select = **/*.pm
+[+Code::TidyAll::Test::Plugin::RepeatFoo]
+select = **/foo*
+times = 3
 ';
 
 $conf2 = '
