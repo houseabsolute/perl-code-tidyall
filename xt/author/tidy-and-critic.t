@@ -15,16 +15,6 @@ sub make {
     write_file( $file, $content );
 }
 
-sub got_errors {
-    my ($output) = @_;
-    like( $output, qr/\*\*\*/, 'has errors' );
-}
-
-sub got_no_errors {
-    my ($output) = @_;
-    unlike( $output, qr/\*\*\*/, 'has no errors' );
-}
-
 make(
     "lib/Foo.pm",
     'package Foo;
@@ -32,67 +22,37 @@ make(
 1;
 '
 );
-make( "bin/bar.pl",    "#!/usr/bin/perl\n  $d = 5;" );
+make( "bin/bar.pl",    "#!/usr/bin/perl\n  \$d = 5;" );
+make( "lib/Foo.pod",   "=over\n\n=item a\n\n" . scalar( "Blah " x 25 ) . "\n\n=back\n" );
 make( "data/baz.txt",  "    34" );
 make( ".perlcriticrc", "include = RequireUseStrict" );
 
 my $ct = Code::TidyAll->new(
     root_dir => $root_dir,
     plugins  => {
-        perltidy   => {},
-        perlcritic => {},
+        PerlTidy   => { select => '**/*.{pl,pm}' },
+        PerlCritic => { select => '**/*.{pl,pm}', argv => "--profile $root_dir/.perlcriticrc" },
+        PodTidy    => { select => '**/*.pod' },
     }
 );
 my $output;
-$output = capture_merged { $ct->tidyall() };
-like( $output, qr/.*bar\.pl\n.*Code before strictures are enabled.*/ );
-like( $output, qr/.*Foo\.pm/ );
-is( read_file("$root_dir/lib/Foo.pm"),   "package Foo;\nuse strict;\n1;\n" );
+$output = capture_merged { $ct->process_all() };
+like( $output, qr/Code before strictures are enabled./ );
+is( read_file("$root_dir/lib/Foo.pm"), "package Foo;\nuse strict;\n1;\n" );
+is( read_file("$root_dir/lib/Foo.pod"),
+        "=over\n\n=item a\n\n"
+      . join( " ", ("Blah") x 16 ) . "\n"
+      . join( " ", ("Blah") x 9 )
+      . "\n\n=back\n" );
 is( read_file("$root_dir/data/baz.txt"), "    34" );
-got_errors($output);
 
-$output = capture_merged { $ct->tidyall() };
-like( $output, qr/.*bar\.pl\n.*Code before strictures are enabled.*/ );
+$output = capture_merged { $ct->process_all() };
+like( $output, qr/Code before strictures are enabled./ );
 unlike( $output, qr/Foo\.pm/ );
-got_errors($output);
 
 make( "bin/bar.pl", "#!/usr/bin/perl\nuse strict;\n  \$d = 5;" );
-$output = capture_merged { $ct->tidyall() };
+$output = capture_merged { $ct->process_all() };
 like( $output, qr/.*bar\.pl/ );
-got_no_errors($output);
 is( read_file("$root_dir/bin/bar.pl"), "#!/usr/bin/perl\nuse strict;\n\$d = 5;\n" );
-
-$output = capture_merged { $ct->tidyall() };
-is($output, '', 'no output');
-
-$ct = Code::TidyAll->new(
-    root_dir => $root_dir,
-    plugins  => {
-        perltidy   => {},
-        perlcritic => {},
-    }
-);
-$output = capture_merged { $ct->tidyall() };
-is($output, '', 'no output');
-
-sleep(1);
-utime(time, time, "$root_dir/bin/bar.pl");
-$output = capture_merged { $ct->tidyall() };
-like( $output, qr/.*bar\.pl/ );
-$output = capture_merged { $ct->tidyall() };
-is($output, '', 'no output');
-
-$ct = Code::TidyAll->new(
-    root_dir => $root_dir,
-    plugins  => {
-        perltidy   => {argv => '-noll'},
-        perlcritic => {},
-    }
-);
-$output = capture_merged { $ct->tidyall() };
-like( $output, qr/.*Foo\.pm/ );
-like( $output, qr/.*bar\.pl/ );
-$output = capture_merged { $ct->tidyall() };
-is($output, '', 'no output');
 
 done_testing();
