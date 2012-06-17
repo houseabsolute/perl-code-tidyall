@@ -146,7 +146,7 @@ depending on how you call it:
 
 =item tidyall file [file...]
 
-C<tidyall> will search upwards from the first I<file> for C<tidyall.ini>.
+C<tidyall> will search upwards from the first file for C<tidyall.ini>.
 
 =item tidyall -a
 
