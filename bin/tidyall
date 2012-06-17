@@ -66,15 +66,16 @@ tidyall - Your all-in-one code tidier and validator
     # Create a tidyall.ini at the top of your project
     #
     [PerlTidy]
-    argv = -noll -it=2
     select = **/*.{pl,pm,t}
+    argv = -noll -it=2
 
     [PerlCritic]
-    argv = -severity 3
     select = lib/**/*.pm
     ignore = lib/UtterHack.pm
+    argv = -severity 3
 
-    # Process all files in the current project, look upwards from cwd for tidyall.ini
+    # Process all files in the current project,
+    # look upwards from cwd for tidyall.ini
     #
     % tidyall -a
 
@@ -82,7 +83,8 @@ tidyall - Your all-in-one code tidier and validator
     #
     % tidyall -a --root-dir /home/joe/project
 
-    # Process one or more specific files, look upwards from the first file for tidyall.ini
+    # Process one or more specific files,
+    # look upwards from the first file for tidyall.ini
     #
     % tidyall file [file...]
 
@@ -162,13 +164,13 @@ C<tidyall> will expect to find C<tidyall.ini> in the specified root directory.
 The config file is in L<Config::INI|Config::INI> format. Here's a sample:
 
     [PerlTidy]
-    argv = -noll -it=2
     select = **/*.{pl,pm,t}
+    argv = -noll -it=2
 
     [PerlCritic]
-    argv = -severity 3
     select = lib/**/*.pm
     ignore = lib/UtterHack.pm
+    argv = -severity 3
 
     [PodTidy]
     select = lib/**/*.{pm,pod}
@@ -229,6 +231,7 @@ C<File::Zglob> documentation for more details.
 A C<File::Zglob> pattern, of the same format described above, indicating which
 files to ignore.  This overrides C<select>. e.g.
 
+    # All .pl files under bin, except under bin/tmp
     select = bin/**/*.pl
     ignore = bin/tmp/*.pl
 
