@@ -270,6 +270,16 @@ You can turn off backups with C<--no-backups>.
 C<tidyall> will exit with status 1 if any errors occurred while processing
 files, and 0 otherwise.
 
+=head1 KNOWN BUGS
+
+=over
+
+=item *
+
+Does not yet work on Windows
+
+=back
+
 =head1 ACKNOWLEDGEMENTS
 
 Thanks to Jeff Thalhammer for helping me refine this API. Thanks to Jeff for
