@@ -16,12 +16,15 @@ sub process_source {
     #
     my %params = slice_exists( $self->options, qw(argv prefilter postfilter) );
 
+    my $errorfile;
     no strict 'refs';
     &$perl_tidy_function(
         %params,
         source      => \$source,
-        destination => \my $destination
+        destination => \my $destination,
+        errorfile   => \$errorfile
     );
+    die $errorfile if $errorfile;
     return $destination;
 }
 
