@@ -275,7 +275,7 @@ sub _find_matched_files {
 
     my %matched_files;
     foreach my $plugin ( @{ $self->plugin_objects } ) {
-        my @selected = $self->_zglob( $plugin->select );
+        my @selected = grep { -f && !-l } $self->_zglob( $plugin->select );
         if ( defined( $plugin->ignore ) ) {
             my %is_ignored = map { ( $_, 1 ) } $self->_zglob( $plugin->ignore );
             @selected = grep { !$is_ignored{$_} } @selected;
