@@ -1,6 +1,6 @@
 package Code::TidyAll::Plugin;
-use Object::Tiny qw(conf ignore matcher name options root_dir select);
-use Code::TidyAll::Util qw(read_file write_file);
+use Object::Tiny qw(conf ignore name options root_dir select);
+use Code::TidyAll::Util qw(basename read_file tempdir_simple write_file);
 use strict;
 use warnings;
 
@@ -22,16 +22,22 @@ sub new {
     return $self;
 }
 
-sub process_file {
-    my ( $self, $file ) = @_;
-    my $source = read_file($file);
-    my $dest   = $self->process_source($source);
-    write_file( $file, $dest ) if $dest ne $source;
-}
+sub process_source_or_file {
+    my ( $self, $source, $file ) = @_;
 
-sub process_source {
-    my ( $self, $source ) = @_;
-    die sprintf( "plugin '%s' must implement either process_file or process_source", $self->name );
+    if ( $self->can('process_source') ) {
+        return $self->process_source($source);
+    }
+    elsif ( $self->can('process_file') ) {
+        my $tempfile = join( "/", tempdir_simple(), basename($file) );
+        write_file( $tempfile, $source );
+        $self->process_file($tempfile);
+        return read_file($tempfile);
+    }
+    else {
+        die sprintf( "plugin '%s' must implement either process_file or process_source",
+            $self->name );
+    }
 }
 
 sub _build_options {

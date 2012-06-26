@@ -3,7 +3,7 @@ use Cwd qw(realpath);
 use Config::INI::Reader;
 use Code::TidyAll::Cache;
 use Code::TidyAll::Util
-  qw(abs2rel basename can_load dirname dump_one_line mkpath read_dir read_file rel2abs uniq write_file);
+  qw(abs2rel basename can_load dirname dump_one_line mkpath read_dir read_file rel2abs tempdir_simple uniq write_file);
 use Code::TidyAll::Result;
 use Date::Format;
 use Digest::SHA1 qw(sha1_hex);
@@ -156,14 +156,14 @@ sub _process_file {
 
     my $cache = $self->cache;
     my $error;
-    my $orig_contents = read_file($file);
+    my $new_contents = my $orig_contents = read_file($file);
     if ( $cache && ( my $sig = $cache->get("sig/$small_path") ) ) {
         return if $sig eq $self->_file_sig( $file, $orig_contents );
     }
 
     foreach my $plugin (@plugins) {
         try {
-            $plugin->process_file($file);
+            $new_contents = $plugin->process_source_or_file( $new_contents, $file );
         }
         catch {
             $error = sprintf( "*** '%s': %s", $plugin->name, $_ );
@@ -171,13 +171,16 @@ sub _process_file {
         last if $error;
     }
 
-    my $new_contents = read_file($file);
-    my $was_tidied   = $orig_contents ne $new_contents;
-    my $status       = $was_tidied ? "[tidied]  " : "[checked] ";
+    my $was_tidied = $orig_contents ne $new_contents;
+    my $status = $was_tidied ? "[tidied]  " : "[checked] ";
     my $plugin_names =
       $self->verbose ? sprintf( " (%s)", join( ", ", map { $_->name } @plugins ) ) : "";
     $self->msg( "%s%s%s", $status, $small_path, $plugin_names ) unless $self->quiet;
-    $self->_backup_file( $file, $orig_contents ) if $was_tidied;
+
+    if ($was_tidied) {
+        $self->_backup_file( $file, $orig_contents );
+        write_file( $file, $new_contents );
+    }
 
     if ($error) {
         $self->msg( "%s", $error );
