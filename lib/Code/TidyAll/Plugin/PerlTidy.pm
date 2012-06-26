@@ -20,10 +20,8 @@ sub process_source {
     &$perl_tidy_function(
         %params,
         source      => \$source,
-        destination => \my $destination,
-        stderr      => \my $stderr,
+        destination => \my $destination
     );
-    die $stderr if $stderr;
     return $destination;
 }
 
