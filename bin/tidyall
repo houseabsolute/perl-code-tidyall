@@ -27,6 +27,7 @@ GetOptions(
     'root-dir=s'   => \$params{root_dir},
     'a|all'        => \$all,
     'h|help'       => \$help,
+    'q|quiet'      => \$params{quiet},
     'v|verbose'    => \$params{verbose},
 ) or usage();
 
@@ -92,6 +93,8 @@ tidyall - Your all-in-one code tidier and validator
 
  -a, --all        Process all files in the project
  -h, --help       Print help message
+ -q, --quiet      Suppress output except for errors
+ -v, --verbose    Show extra output
  --backup-ttl     When backup files can be purged. Defaults to "1h"
  --class          Code::TidyAll subclass to use. Defaults to "Code::TidyAll"
  --conf-file      Specify conf file explicitly; usually inferred from specified files or cwd

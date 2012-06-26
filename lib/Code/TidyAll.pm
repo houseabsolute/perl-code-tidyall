@@ -23,6 +23,7 @@ sub valid_params {
       no_cache
       plugins
       root_dir
+      quiet
       verbose
     );
 }
@@ -144,7 +145,7 @@ sub _process_file {
     my @plugins = @{ $self->matched_files->{$file} || [] };
     my $small_path = $self->_small_path($file);
     if ( !@plugins ) {
-        $self->msg( "[no plugins apply] %s", $small_path );
+        $self->msg( "[no plugins apply] %s", $small_path ) unless $self->quiet;
         return;
     }
 
@@ -170,7 +171,7 @@ sub _process_file {
     my $status       = $was_tidied ? "[tidied]  " : "[checked] ";
     my $plugin_names =
       $self->verbose ? sprintf( " (%s)", join( ", ", map { $_->name } @plugins ) ) : "";
-    $self->msg( "%s%s%s", $status, $small_path, $plugin_names );
+    $self->msg( "%s%s%s", $status, $small_path, $plugin_names ) unless $self->quiet;
     $self->_backup_file( $file, $orig_contents ) if $was_tidied;
 
     if ($error) {
@@ -391,6 +392,8 @@ equivalent to what would be parsed out of the sections in C<tidyall.ini>.
 =item plugins
 
 =item root_dir
+
+=item quiet
 
 =item verbose
 

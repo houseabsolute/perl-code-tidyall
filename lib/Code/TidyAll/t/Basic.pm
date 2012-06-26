@@ -91,6 +91,34 @@ sub test_basic : Tests {
     );
 }
 
+sub test_quiet_and_verbose : Tests {
+    my $self = shift;
+
+    foreach my $mode ( 'normal', 'quiet', 'verbose' ) {
+        foreach my $error ( 0, 1 ) {
+            my $root_dir = $self->create_dir( { "foo.txt" => ( $error ? "123" : "abc" ) } );
+            my $output = capture_stdout {
+                my $ct = Code::TidyAll->new(
+                    plugins  => {%UpperText},
+                    root_dir => $root_dir,
+                    ( $mode eq 'normal' ? () : ( $mode => 1 ) )
+                );
+                $ct->process_files("$root_dir/foo.txt");
+            };
+            if ($error) {
+                like( $output, qr/non-alpha content found/ );
+            }
+            else {
+                is( $output, "[tidied]  foo.txt\n" ) if $mode eq 'normal';
+                is( $output, "" ) if $mode eq 'quiet';
+                like( $output,
+                    qr/constructing Code::TidyAll with these params.*purging old backups.*\[tidied\]  foo\.txt \(\+Code::TidyAll::Test::Plugin::UpperText\)/s
+                ) if $mode eq 'verbose';
+            }
+        }
+    }
+}
+
 sub test_caching_and_backups : Tests {
     my $self = shift;
 
