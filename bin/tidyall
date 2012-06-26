@@ -24,7 +24,9 @@ GetOptions(
     'data-dir=s'   => \$params{data_dir},
     'no-backups'   => \$params{no_backups},
     'no-cache'     => \$params{no_cache},
+    'only-plugins' => \$params{only_plugins},
     'root-dir=s'   => \$params{root_dir},
+    'stdout'       => \$params{stdout},
     'a|all'        => \$all,
     'h|help'       => \$help,
     'q|quiet'      => \$params{quiet},
@@ -38,6 +40,7 @@ die "cannot load '$class'" unless can_load($class);
 %params = slice_def( \%params );
 
 $params{conf_file} ||= "$params{root_dir}/tidyall.ini" if ( $params{root_dir} );
+$params{only_plugins} = [ split( /\s*,\s*/, $params{only_plugins} ) ] if $params{only_plugins};
 
 my $result;
 if ($all) {

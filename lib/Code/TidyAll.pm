@@ -21,6 +21,7 @@ sub valid_params {
       data_dir
       no_backups
       no_cache
+      only_plugins
       plugins
       root_dir
       quiet
@@ -60,6 +61,10 @@ sub new {
     #
     if ( my $conf_file = $params{conf_file} ) {
         my $conf_params = $class->_read_conf_file($conf_file);
+        if ( my $only_plugins = $params{only_plugins} ) {
+            my %allow = map { ( $_, 1 ) } @$only_plugins;
+            $conf_params = { slice_grep { $allow{$_} } $conf_params };
+        }
         my $main_params = delete( $conf_params->{'_'} ) || {};
         %params = (
             plugins  => $conf_params,
