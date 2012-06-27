@@ -18,19 +18,20 @@ my ( %params, $help, $all );
 my $class = 'Code::TidyAll';
 
 GetOptions(
-    'backup-ttl=i' => \$params{backup_ttl},
-    'class=s'      => \$class,
-    'conf-file=s'  => \$params{conf_file},
-    'data-dir=s'   => \$params{data_dir},
-    'no-backups'   => \$params{no_backups},
-    'no-cache'     => \$params{no_cache},
-    'only-plugins' => \$params{only_plugins},
-    'root-dir=s'   => \$params{root_dir},
-    'stdout'       => \$params{stdout},
-    'a|all'        => \$all,
-    'h|help'       => \$help,
-    'q|quiet'      => \$params{quiet},
-    'v|verbose'    => \$params{verbose},
+    'backup-ttl=i'    => \$params{backup_ttl},
+    'class=s'         => \$class,
+    'conf-file=s'     => \$params{conf_file},
+    'data-dir=s'      => \$params{data_dir},
+    'no-backups'      => \$params{no_backups},
+    'no-cache'        => \$params{no_cache},
+    'only-plugins=s'  => \$params{only_plugins},
+    'output-suffix=s' => \$params{output_suffix},
+    'refresh-cache'   => \$params{refresh_cache},
+    'root-dir=s'      => \$params{root_dir},
+    'a|all'           => \$all,
+    'h|help'          => \$help,
+    'q|quiet'         => \$params{quiet},
+    'v|verbose'       => \$params{verbose},
 ) or usage();
 
 Pod::Usage::pod2usage( { verbose => 2 } ) if $help;
@@ -102,8 +103,10 @@ tidyall - Your all-in-one code tidier and validator
  --class          Code::TidyAll subclass to use. Defaults to "Code::TidyAll"
  --conf-file      Specify conf file explicitly; usually inferred from specified files or cwd
  --data-dir       Contains data like backups and cache. Defaults to root_dir/.tidyall.d
- --no-backup      Don't backup files
+ --no-backups     Don't backup files
  --no-cache       Don't cache last processed times; process all files every time
+ --output-suffix  Suffix to add to output file, e.g. "tdy"; default is none (overwrite file)
+ --refresh-cache  Erase any existing cache info before processing each file
  --root-dir       Specify root dir explicitly; usually inferred from specified files or cwd
 
 =head1 DESCRIPTION

@@ -22,7 +22,9 @@ sub valid_params {
       no_backups
       no_cache
       only_plugins
+      output_suffix
       plugins
+      refresh_cache
       root_dir
       quiet
       verbose
@@ -62,8 +64,13 @@ sub new {
     if ( my $conf_file = $params{conf_file} ) {
         my $conf_params = $class->_read_conf_file($conf_file);
         if ( my $only_plugins = $params{only_plugins} ) {
-            my %allow = map { ( $_, 1 ) } @$only_plugins;
-            $conf_params = { slice_grep { $allow{$_} } $conf_params };
+            $conf_params = {
+                map {
+                    $conf_params->{$_}
+                      ? ( $_, $conf_params->{$_} )
+                      : die "no conf for plugin '$_'"
+                } @$only_plugins
+            };
         }
         my $main_params = delete( $conf_params->{'_'} ) || {};
         %params = (
@@ -84,6 +91,7 @@ sub new {
     my $self = $class->SUPER::new(%params);
 
     $self->{data_dir} ||= $self->root_dir . "/.tidyall.d";
+    $self->{output_suffix} ||= '';
 
     unless ( $self->no_cache ) {
         $self->{cache} = Code::TidyAll::Cache->new( cache_dir => $self->data_dir . "/cache" );
@@ -154,11 +162,17 @@ sub _process_file {
         return;
     }
 
-    my $cache = $self->cache;
+    my $cache     = $self->cache;
+    my $cache_key = "sig/$small_path";
     my $error;
     my $new_contents = my $orig_contents = read_file($file);
-    if ( $cache && ( my $sig = $cache->get("sig/$small_path") ) ) {
-        return if $sig eq $self->_file_sig( $file, $orig_contents );
+    if ( $cache && ( my $sig = $cache->get($cache_key) ) ) {
+        if ( $self->refresh_cache ) {
+            $cache->remove($cache_key);
+        }
+        else {
+            return if $sig eq $self->_file_sig( $file, $orig_contents );
+        }
     }
 
     foreach my $plugin (@plugins) {
@@ -172,14 +186,16 @@ sub _process_file {
     }
 
     my $was_tidied = $orig_contents ne $new_contents;
-    my $status = $was_tidied ? "[tidied]  " : "[checked] ";
-    my $plugin_names =
-      $self->verbose ? sprintf( " (%s)", join( ", ", map { $_->name } @plugins ) ) : "";
-    $self->msg( "%s%s%s", $status, $small_path, $plugin_names ) unless $self->quiet;
+    unless ( $self->quiet ) {
+        my $status = $was_tidied ? "[tidied]  " : "[checked] ";
+        my $plugin_names =
+          $self->verbose ? sprintf( " (%s)", join( ", ", map { $_->name } @plugins ) ) : "";
+        $self->msg( "%s%s%s", $status, $small_path, $plugin_names );
+    }
 
     if ($was_tidied) {
         $self->_backup_file( $file, $orig_contents );
-        write_file( $file, $new_contents );
+        write_file( join( '', $file, $self->output_suffix ), $new_contents );
     }
 
     if ($error) {
@@ -187,7 +203,7 @@ sub _process_file {
         return 1;
     }
     else {
-        $cache->set( "sig/$small_path", $self->_file_sig( $file, $new_contents ) ) if $cache;
+        $cache->set( $cache_key, $self->_file_sig( $file, $new_contents ) ) if $cache;
         return;
     }
 }

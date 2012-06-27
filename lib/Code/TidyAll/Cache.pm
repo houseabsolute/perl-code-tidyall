@@ -38,4 +38,11 @@ sub set {
     write_file( $file, $value );
 }
 
+sub remove {
+    my ( $self, $key, $value ) = @_;
+
+    my $file = $self->path_to_key($key);
+    unlink($file);
+}
+
 1;
