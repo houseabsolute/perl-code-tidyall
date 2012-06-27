@@ -24,9 +24,11 @@ sub valid_params {
       only_plugins
       output_suffix
       plugins
+      postfilter
+      prefilter
+      quiet
       refresh_cache
       root_dir
-      quiet
       verbose
     );
 }
@@ -50,19 +52,11 @@ sub new {
     my $class  = shift;
     my %params = @_;
 
-    # Check param validity
-    #
-    my $valid_params_hash = $valid_params_hash{$class} ||=
-      { map { ( $_, 1 ) } $class->valid_params() };
-    if ( my @bad_params = grep { !$valid_params_hash->{$_} } keys(%params) ) {
-        die sprintf( "unknown constructor param(s) %s",
-            join( ", ", sort map { "'$_'" } @bad_params ) );
-    }
-
     # Read params from conf file
     #
-    if ( my $conf_file = $params{conf_file} ) {
+    if ( my $conf_file = delete( $params{conf_file} ) ) {
         my $conf_params = $class->_read_conf_file($conf_file);
+        my $main_params = delete( $conf_params->{'_'} ) || {};
         if ( my $only_plugins = $params{only_plugins} ) {
             $conf_params = {
                 map {
@@ -72,7 +66,6 @@ sub new {
                 } @$only_plugins
             };
         }
-        my $main_params = delete( $conf_params->{'_'} ) || {};
         %params = (
             plugins  => $conf_params,
             root_dir => realpath( dirname($conf_file) ),
@@ -83,6 +76,22 @@ sub new {
         die "conf_file or plugins required"  unless $params{plugins};
         die "conf_file or root_dir required" unless $params{root_dir};
         $params{root_dir} = realpath( $params{root_dir} );
+    }
+
+    # Initialize with alternate class if given
+    #
+    if ( my $tidyall_class = delete( $params{tidyall_class} ) ) {
+        die "cannot load '$tidyall_class'" unless can_load($tidyall_class);
+        return $tidyall_class->new(%params);
+    }
+
+    # Check param validity
+    #
+    my $valid_params_hash = $valid_params_hash{$class} ||=
+      { map { ( $_, 1 ) } $class->valid_params() };
+    if ( my @bad_params = grep { !$valid_params_hash->{$_} } keys(%params) ) {
+        die sprintf( "unknown constructor param(s) %s",
+            join( ", ", sort map { "'$_'" } @bad_params ) );
     }
 
     $class->msg( "constructing %s with these params: %s", $class, \%params )
@@ -138,7 +147,7 @@ sub load_plugin {
 sub process_all {
     my $self = shift;
 
-    return $self->process_files( keys( %{ $self->matched_files } ) );
+    return $self->process_files( sort keys( %{ $self->matched_files } ) );
 }
 
 sub process_files {
@@ -175,6 +184,8 @@ sub _process_file {
         }
     }
 
+    $new_contents = $self->prefilter->($new_contents) if $self->prefilter;
+
     foreach my $plugin (@plugins) {
         try {
             $new_contents = $plugin->process_source_or_file( $new_contents, $file );
@@ -185,7 +196,9 @@ sub _process_file {
         last if $error;
     }
 
-    my $was_tidied = $orig_contents ne $new_contents;
+    $new_contents = $self->postfilter->($new_contents) if $self->postfilter;
+
+    my $was_tidied = ( $orig_contents ne $new_contents ) && !$error;
     unless ( $self->quiet ) {
         my $status = $was_tidied ? "[tidied]  " : "[checked] ";
         my $plugin_names =
@@ -402,6 +415,18 @@ You must either pass C<conf_file>, or both C<plugins> and C<root_dir>.
 
 Specify a hash of plugins, each of which is itself a hash of options. This is
 equivalent to what would be parsed out of the sections in C<tidyall.ini>.
+
+=item prefilter
+
+A code reference that will be applied to code before processing. It is expected
+to take the full content as a string in its input, and output the transformed
+content.
+
+=item postfilter
+
+A code reference that will be applied to code after processing. It is expected
+to take the full content as a string in its input, and output the transformed
+content.
 
 =item backup_ttl
 

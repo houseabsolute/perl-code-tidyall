@@ -2,6 +2,7 @@
 use Cwd qw(cwd realpath);
 use Getopt::Long;
 use Pod::Usage;
+use Code::TidyAll;
 use Code::TidyAll::Util qw(can_load dirname);
 use Hash::MoreUtils qw(slice_def);
 use strict;
@@ -15,11 +16,9 @@ sub usage {
 }
 
 my ( %params, $help, $all );
-my $class = 'Code::TidyAll';
 
 GetOptions(
     'backup-ttl=i'    => \$params{backup_ttl},
-    'class=s'         => \$class,
     'conf-file=s'     => \$params{conf_file},
     'data-dir=s'      => \$params{data_dir},
     'no-backups'      => \$params{no_backups},
@@ -28,6 +27,7 @@ GetOptions(
     'output-suffix=s' => \$params{output_suffix},
     'refresh-cache'   => \$params{refresh_cache},
     'root-dir=s'      => \$params{root_dir},
+    'tidyall-class=s' => \$params{tidyall_class},
     'a|all'           => \$all,
     'h|help'          => \$help,
     'q|quiet'         => \$params{quiet},
@@ -36,8 +36,6 @@ GetOptions(
 
 Pod::Usage::pod2usage( { verbose => 2 } ) if $help;
 
-die "cannot load '$class'" unless can_load($class);
-
 %params = slice_def( \%params );
 
 $params{conf_file} ||= "$params{root_dir}/tidyall.ini" if ( $params{root_dir} );
@@ -45,14 +43,14 @@ $params{only_plugins} = [ split( /\s*,\s*/, $params{only_plugins} ) ] if $params
 
 my $result;
 if ($all) {
-    $params{conf_file} ||= $class->find_conf_file( cwd() );
-    my $ct = $class->new(%params);
+    $params{conf_file} ||= Code::TidyAll->find_conf_file( cwd() );
+    my $ct = Code::TidyAll->new(%params);
     $result = $ct->process_all();
 }
 else {
     my @files = @ARGV or die "file(s) or -a required";
-    $params{conf_file} ||= $class->find_conf_file( dirname( $files[0] ) );
-    my $ct = $class->new(%params);
+    $params{conf_file} ||= Code::TidyAll->find_conf_file( dirname( $files[0] ) );
+    my $ct = Code::TidyAll->new(%params);
     $result = $ct->process_files(@files);
 }
 
@@ -100,7 +98,6 @@ tidyall - Your all-in-one code tidier and validator
  -q, --quiet      Suppress output except for errors
  -v, --verbose    Show extra output
  --backup-ttl     When backup files can be purged. Defaults to "1h"
- --class          Code::TidyAll subclass to use. Defaults to "Code::TidyAll"
  --conf-file      Specify conf file explicitly; usually inferred from specified files or cwd
  --data-dir       Contains data like backups and cache. Defaults to root_dir/.tidyall.d
  --no-backups     Don't backup files
@@ -108,6 +105,7 @@ tidyall - Your all-in-one code tidier and validator
  --output-suffix  Suffix to add to output file, e.g. "tdy"; default is none (overwrite file)
  --refresh-cache  Erase any existing cache info before processing each file
  --root-dir       Specify root dir explicitly; usually inferred from specified files or cwd
+ --tidyall-class  Code::TidyAll subclass to use. Defaults to "Code::TidyAll"
 
 =head1 DESCRIPTION
 
