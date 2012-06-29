@@ -23,13 +23,13 @@ GetOptions(
     'data-dir=s'      => \$params{data_dir},
     'no-backups'      => \$params{no_backups},
     'no-cache'        => \$params{no_cache},
-    'only-plugins=s'  => \$params{only_plugins},
     'output-suffix=s' => \$params{output_suffix},
     'refresh-cache'   => \$params{refresh_cache},
     'root-dir=s'      => \$params{root_dir},
     'tidyall-class=s' => \$params{tidyall_class},
     'a|all'           => \$all,
     'h|help'          => \$help,
+    'm|mode=s'        => \$params{mode},
     'q|quiet'         => \$params{quiet},
     'v|verbose'       => \$params{verbose},
 ) or usage();
@@ -39,7 +39,6 @@ Pod::Usage::pod2usage( { verbose => 2 } ) if $help;
 %params = slice_def( \%params );
 
 $params{conf_file} ||= "$params{root_dir}/tidyall.ini" if ( $params{root_dir} );
-$params{only_plugins} = [ split( /\s*,\s*/, $params{only_plugins} ) ] if $params{only_plugins};
 
 my $result;
 if ($all) {
