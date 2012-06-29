@@ -9,6 +9,7 @@ use Date::Format;
 use Digest::SHA1 qw(sha1_hex);
 use File::Find qw(find);
 use File::Zglob;
+use List::Pairwise qw(grepp mapp);
 use Time::Duration::Parse qw(parse_duration);
 use Try::Tiny;
 use strict;
@@ -19,9 +20,9 @@ sub valid_params {
       backup_ttl
       conf_file
       data_dir
+      mode
       no_backups
       no_cache
-      only_plugins
       output_suffix
       plugins
       postfilter
@@ -57,15 +58,6 @@ sub new {
     if ( my $conf_file = delete( $params{conf_file} ) ) {
         my $conf_params = $class->_read_conf_file($conf_file);
         my $main_params = delete( $conf_params->{'_'} ) || {};
-        if ( my $only_plugins = $params{only_plugins} ) {
-            $conf_params = {
-                map {
-                    $conf_params->{$_}
-                      ? ( $_, $conf_params->{$_} )
-                      : die "no conf for plugin '$_'"
-                } @$only_plugins
-            };
-        }
         %params = (
             plugins  => $conf_params,
             root_dir => realpath( dirname($conf_file) ),
@@ -115,11 +107,14 @@ sub new {
         $self->_purge_backups_periodically();
     }
 
-    my $plugins = $self->plugins;
+    if ( my $mode = $self->mode ) {
+        $self->{plugins} =
+          { grepp { $b->{modes} && ( " " . $b->{modes} . " " =~ /$mode/ ) } %{ $self->plugins } };
+    }
 
     $self->{base_sig} = $self->_sig( [ $Code::TidyAll::VERSION || 0 ] );
     $self->{plugin_objects} =
-      [ map { $self->load_plugin( $_, $plugins->{$_} ) } sort keys( %{ $self->plugins } ) ];
+      [ map { $self->load_plugin( $_, $self->plugins->{$_} ) } sort keys( %{ $self->plugins } ) ];
     $self->{matched_files} = $self->_find_matched_files;
 
     return $self;

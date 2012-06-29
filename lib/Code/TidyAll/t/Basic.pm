@@ -67,6 +67,15 @@ sub test_basic : Tests {
         desc    => 'one file UpperText',
     );
     $self->tidy(
+        plugins => {
+            %UpperText, test_plugin('ReverseFoo') => { select => '**/foo*', modes => 'reversals' }
+        },
+        source  => { "foo.txt" => "abc" },
+        dest    => { "foo.txt" => "cba" },
+        desc    => 'one file reversals mode',
+        options => { mode      => 'reversals' },
+    );
+    $self->tidy(
         plugins => { %UpperText, %ReverseFoo },
         source  => {
             "foo.txt" => "abc",
