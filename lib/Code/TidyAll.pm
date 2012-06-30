@@ -429,6 +429,8 @@ content.
 
 =item data_dir
 
+=item mode
+
 =item no_backups
 
 =item no_cache

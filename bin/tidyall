@@ -94,6 +94,7 @@ tidyall - Your all-in-one code tidier and validator
 
  -a, --all        Process all files in the project
  -h, --help       Print help message
+ -m, --mode       Optional mode (e.g. "editor", "commit") indicating a subset of plugins to run
  -q, --quiet      Suppress output except for errors
  -v, --verbose    Show extra output
  --backup-ttl     When backup files can be purged. Defaults to "1h"
@@ -240,6 +241,16 @@ files to ignore.  This overrides C<select>. e.g.
     # All .pl files under bin, except under bin/tmp
     select = bin/**/*.pl
     ignore = bin/tmp/*.pl
+
+=item modes
+
+An optional list of modes, separated by whitespace, in which this plugin should
+run. e.g.
+
+    modes = editor commit
+
+When a mode is passed to C<tidyall> via C<-m> or C<--mode>, only the plugins
+with that mode will run. If no mode is passed to C<tidyall>, all plugins run.
 
 =item argv
 
