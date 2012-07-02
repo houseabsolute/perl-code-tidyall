@@ -180,18 +180,15 @@ sub _process_file {
     }
 
     $new_contents = $self->prefilter->($new_contents) if $self->prefilter;
-
     foreach my $plugin (@plugins) {
         try {
-            $new_contents = $plugin->process_source_or_file( $new_contents, $file );
+            $new_contents = $plugin->process_source_or_file( $new_contents, basename($file) );
         }
         catch {
             $error = sprintf( "*** '%s': %s", $plugin->name, $_ );
         };
-        last if $error;
     }
-
-    $new_contents = $self->postfilter->($new_contents) if $self->postfilter;
+    $new_contents = $self->postfilter->($new_contents) if !$error && $self->postfilter;
 
     my $was_tidied = ( $orig_contents ne $new_contents ) && !$error;
     unless ( $self->quiet ) {

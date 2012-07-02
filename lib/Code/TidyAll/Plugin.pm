@@ -23,13 +23,13 @@ sub new {
 }
 
 sub process_source_or_file {
-    my ( $self, $source, $file ) = @_;
+    my ( $self, $source, $basename ) = @_;
 
     if ( $self->can('process_source') ) {
         return $self->process_source($source);
     }
     elsif ( $self->can('process_file') ) {
-        my $tempfile = join( "/", tempdir_simple(), basename($file) );
+        my $tempfile = join( "/", tempdir_simple(), $basename );
         write_file( $tempfile, $source );
         $self->process_file($tempfile);
         return read_file($tempfile);
