@@ -385,10 +385,7 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
                 select => qr/\.(pl|pm|t)$/,
                 options => { argv => '-noll -it=2' },
             },
-            perlcritic => {
-                select => qr/\.(pl|pm|t)$/,
-                options => { '-include' => ['layout'], '-severity' => 3, }
-            }
+            ...
         }
     );
 
@@ -402,8 +399,10 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
 =head1 DESCRIPTION
 
-This is the engine used by L<tidyall|tidyall>. You can call this API from your
-own program instead of executing C<tidyall>.
+This is the engine used by L<tidyall|tidyall> - read that first to get an
+overview.
+
+You can call this API from your own program instead of executing C<tidyall>.
 
 =head1 CONSTRUCTOR OPTIONS
 
