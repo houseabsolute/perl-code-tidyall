@@ -116,10 +116,13 @@ Many tidiers are also validators, e.g. C<perltidy> will throw an error on badly
 formed Perl.
 
 To use a tidier or validator with C<tidyall> it must have a corresponding
-plugin, usually under the prefix C<Code::TidyAll::Plugin::>.  This distribution
-comes with plugins for L<perltidy|Code::TidyAll::Plugin::PerlTidy>,
+plugin class, usually under the prefix C<Code::TidyAll::Plugin::>.  This
+distribution comes with plugins for
+L<perltidy|Code::TidyAll::Plugin::PerlTidy>,
 L<perlcritic|Code::TidyAll::Plugin::PerlCritic> and
-L<podtidy|Code::TidyAll::Plugin::PodTidy>.
+L<podtidy|Code::TidyAll::Plugin::PodTidy>. See
+L<Code::TidyAll::Plugin|Code::TidyAll::Plugin> for information about creating
+your own plugin.
 
 =head1 USING TIDYALL
 

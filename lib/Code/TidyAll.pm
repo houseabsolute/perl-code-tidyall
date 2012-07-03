@@ -185,7 +185,7 @@ sub process_file {
     $contents = $self->prefilter->($contents) if $self->prefilter;
     foreach my $plugin (@plugins) {
         try {
-            my $new_contents = $plugin->process_source_or_file( $contents, basename($file) );
+            my $new_contents = $plugin->process_source_or_file( $contents, $file );
             if ( $new_contents ne $contents ) {
                 die "needs tidying\n" if $self->check_only;
                 $contents = $new_contents;

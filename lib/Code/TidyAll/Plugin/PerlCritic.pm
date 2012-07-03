@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use base qw(Code::TidyAll::Plugin);
 
-sub process_file {
+sub validate_file {
     my ( $self, $file ) = @_;
     my $options = $self->options;
 
