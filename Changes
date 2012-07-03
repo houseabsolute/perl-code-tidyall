@@ -2,7 +2,19 @@ Revision history for Code-TidyAll
 
 ** denotes an incompatible change
 
-0.02  Jun 17, 2012
+0.02  Jul 3, 2012
+
+* Improvements
+  - Add Test::Code::TidyAll, to test that a project is tidied
+  - Add prefilter and postfilter params, to be applied to code before and after processing
+  - Add --check-only option to check but not tidy
+  - Add --mode option and modes config entry, to activate only a subset of plugins in config
+  - Add --output-suffix to write file to a different destination
+  - Add --quiet option to suppress most output
+  - Add --tidyall-class option to specify a different Code::TidyAll subclass
+
+* Documentation
+  - Document how to create new plugins in Code::Tidy::Plugin
 
 0.01  Jun 17, 2012
 
