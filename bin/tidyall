@@ -92,24 +92,6 @@ tidyall - Your all-in-one code tidier and validator
     #
     % tidyall file [file...]
 
-=head1 OPTIONS
-
- -a, --all        Process all files in the project
- -h, --help       Print help message
- -m, --mode       Optional mode (e.g. "editor", "commit") indicating a subset of plugins to run
- -q, --quiet      Suppress output except for errors
- -v, --verbose    Show extra output
- --backup-ttl     When backup files can be purged. Defaults to "1h"
- --check-only     Just check if files are tidied and throw error if not; don't modify files
- --conf-file      Specify conf file explicitly; usually inferred from specified files or cwd
- --data-dir       Contains data like backups and cache. Defaults to root_dir/.tidyall.d
- --no-backups     Don't backup files
- --no-cache       Don't cache last processed times; process all files every time
- --output-suffix  Suffix to add to output file, e.g. "tdy"; default is none (overwrite file)
- --refresh-cache  Erase any existing cache info before processing each file
- --root-dir       Specify root dir explicitly; usually inferred from specified files or cwd
- --tidyall-class  Code::TidyAll subclass to use. Defaults to "Code::TidyAll"
-
 =head1 DESCRIPTION
 
 There are a lot of great code tidiers and validators out there. C<tidyall>
@@ -169,9 +151,10 @@ C<tidyall> will expect to find C<tidyall.ini> in the specified root directory.
 
 =back
 
-=head2 Configuration format
+=head1 CONFIGURATION
 
-The config file is in L<Config::INI|Config::INI> format. Here's a sample:
+The config file (C<tidyall.ini>) is in L<Config::INI|Config::INI> format.
+Here's a sample:
 
     [PerlTidy]
     select = **/*.{pl,pm,t}
@@ -261,6 +244,84 @@ Many plugins (such as L<perltidy|Code::TidyAll::Plugin::PerlTidy>,
 L<perlcritic|Code::TidyAll::Plugin::PerlCritic> and
 L<podtidy|Code::TidyAll::Plugin::PodTidy>) take this option, which specifies
 arguments to pass to the underlying command-line utility.
+
+=back
+
+=head1 COMMAND-LINE OPTIONS
+
+=over
+
+=item -a, --all        
+
+Process all files. Does a recursive search for all files in the project
+hierarchy, starting at the root, and processes any file that matches at least
+one plugin in the configuration.
+
+=item -h, --help       
+
+Print help message
+
+=item -m, --mode       
+
+Optional mode (e.g. "editor", "commit") indicating a subset of plugins to run. 
+For example, if you pass "-m editor", only plugins with "editor" in their modes
+list will run. If no mode is passed, all plugins run.
+
+=item -q, --quiet      
+
+Suppress output except for errors.
+
+=item -v, --verbose    
+
+Show extra output.
+
+=item --backup-ttl     
+
+Amount of time before backup files can be purged; defaults to "1h". Can be any
+string recognized by L<Time::Duration::Parse|Time::Duration::Parse>.
+
+=item --check-only     
+
+Just check if each file is tidied (i.e. if its tidied version is equal to its
+current version) and consider it an error if not; don't actually modify the
+file. This is used by L<Test::Code::TidyAll|Test::Code::TidyAll>, for example.
+
+=item --conf-file      
+
+Specify conf file explicitly. Usually this is inferred from the specified
+file(s) or from the current working directory.
+
+=item --data-dir       
+
+Contains data like backups and cache. Defaults to root_dir/.tidyall.d
+
+=item --no-backups     
+
+Don't backup files before processing.
+
+=item --no-cache       
+
+Don't cache last processed times; process all files every time. See also
+C<--refresh-cache>.
+
+=item --output-suffix  
+
+Suffix to add to a filename before outputting the modified version, e.g.
+".tdy". Default is none, which means overwrite the file.
+
+=item --refresh-cache  
+
+Erase any existing cache info before processing each file, then write new cache
+info. See also C<--no-cache>.
+
+=item --root-dir       
+
+Specify root dir explicitly. Usually this is inferred from the specified files
+or the current working directory.
+
+=item --tidyall-class  
+
+Subclass to use instead of C<Code::TidyAll>.
 
 =back
 
