@@ -37,14 +37,15 @@ sub tidy {
         %$options
     );
 
-    my $result;
-    my $output = capture_stdout { $result = $ct->process_all() };
+    my @results;
+    my $output = capture_stdout { @results = $ct->process_all() };
+    my $error_count = grep { $_->error } @results;
     if ( $params{errors} ) {
         like( $output, $params{errors}, "$desc - errors" );
-        ok( $result->error_count > 0, "$desc - error_count > 0" );
+        ok( $error_count > 0, "$desc - error_count > 0" );
     }
     else {
-        is( $result->error_count, 0, "$desc - error_count == 0" );
+        is( $error_count, 0, "$desc - error_count == 0" );
     }
     while ( my ( $path, $content ) = each( %{ $params{dest} } ) ) {
         is( read_file("$root_dir/$path"), $content, "$desc - $path content" );
