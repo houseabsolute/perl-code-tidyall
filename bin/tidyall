@@ -194,9 +194,9 @@ Apply C<PodTidy> with default settings to all .pm and .pod files underneath
 
 =item [class]
 
-The header of each configuration section refers to a tidyall I<plugin>. The
-name is automatically prefixed with C<Code::TidyAll::Plugin::> unless it begins
-with a '+', e.g.
+The header of each section refers to a tidyall I<plugin>. The name is
+automatically prefixed with C<Code::TidyAll::Plugin::> unless it begins with a
+'+', e.g.
 
     # Uses plugin Code::TidyAll::Plugin::PerlTidy
     [PerlTidy]
@@ -288,7 +288,7 @@ file. This is used by L<Test::Code::TidyAll|Test::Code::TidyAll>, for example.
 
 =item --conf-file      
 
-Specify conf file explicitly. Usually this is inferred from the specified
+Specify config file explicitly. Usually this is inferred from the specified
 file(s) or from the current working directory.
 
 =item --data-dir       
@@ -324,6 +324,22 @@ or the current working directory.
 Subclass to use instead of C<Code::TidyAll>.
 
 =back
+
+=head2 Specifying options in configuration
+
+Almost any command-line option can be specified at the top of the config file,
+above the plugin sections. Replace dashes with underscores. e.g.
+
+    backup_ttl = 4h
+    tidyall_class = My::Code::TidyAll
+
+    [PerlTidy]
+    select = **/*.{pl,pm,t}
+    argv = -noll -it=2
+
+    ...
+
+If an option is passed in both places, the command-line takes precedence.
 
 =head1 LAST-PROCESSED CACHE
 
