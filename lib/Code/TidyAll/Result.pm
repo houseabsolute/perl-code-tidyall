@@ -2,7 +2,10 @@ package Code::TidyAll::Result;
 use strict;
 use warnings;
 
-use Object::Tiny qw(error_count);
+use Object::Tiny qw(msg state);
+
+sub error { return $_[0]->state eq 'error' }
+sub ok { return $_[0]->state ne 'error' }
 
 1;
 
@@ -21,5 +24,9 @@ Code::TidyAll::Result - Result returned from Code::TidyAll methods
 =item error_count
 
 The number of errors that occurred.
+
+=item ok
+
+Returns true iff there were no errors.
 
 =back

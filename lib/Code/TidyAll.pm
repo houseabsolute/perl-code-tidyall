@@ -18,6 +18,7 @@ use warnings;
 sub valid_params {
     return qw(
       backup_ttl
+      check_only
       conf_file
       data_dir
       mode
@@ -86,7 +87,7 @@ sub new {
             join( ", ", sort map { "'$_'" } @bad_params ) );
     }
 
-    $class->msg( "constructing %s with these params: %s", $class, \%params )
+    $class->msg( "constructing %s with these params: %s", $class, dump_one_line( \%params ) )
       if ( $params{verbose} );
 
     my $self = $class->SUPER::new(%params);
@@ -149,48 +150,55 @@ sub process_files {
     my ( $self, @files ) = @_;
 
     my $error_count = 0;
+    my @results;
     foreach my $file (@files) {
         $file = realpath($file);
-        $error_count++ if $self->_process_file($file);
+        push( @results, $self->process_file($file) );
     }
-    return Code::TidyAll::Result->new( error_count => $error_count );
+    return @results;
 }
 
-sub _process_file {
+sub process_file {
     my ( $self, $file ) = @_;
 
     my @plugins = @{ $self->matched_files->{$file} || [] };
     my $small_path = $self->_small_path($file);
     if ( !@plugins ) {
         $self->msg( "[no plugins apply] %s", $small_path ) unless $self->quiet;
-        return;
+        return Code::TidyAll::Result->new( state => 'no_match' );
     }
 
     my $cache     = $self->cache;
     my $cache_key = "sig/$small_path";
     my $error;
-    my $new_contents = my $orig_contents = read_file($file);
+    my $contents = my $orig_contents = read_file($file);
     if ( $cache && ( my $sig = $cache->get($cache_key) ) ) {
         if ( $self->refresh_cache ) {
             $cache->remove($cache_key);
         }
         else {
-            return if $sig eq $self->_file_sig( $file, $orig_contents );
+            return Code::TidyAll::Result->new( state => 'cached' )
+              if $sig eq $self->_file_sig( $file, $orig_contents );
         }
     }
 
-    $new_contents = $self->prefilter->($new_contents) if $self->prefilter;
+    $contents = $self->prefilter->($contents) if $self->prefilter;
     foreach my $plugin (@plugins) {
         try {
-            $new_contents = $plugin->process_source_or_file( $new_contents, basename($file) );
+            my $new_contents = $plugin->process_source_or_file( $contents, basename($file) );
+            if ( $new_contents ne $contents ) {
+                die "needs tidying\n" if $self->check_only;
+                $contents = $new_contents;
+            }
         }
         catch {
             $error = sprintf( "*** '%s': %s", $plugin->name, $_ );
         };
+        last if $error;
     }
-    $new_contents = $self->postfilter->($new_contents) if !$error && $self->postfilter;
+    $contents = $self->postfilter->($contents) if !$error && $self->postfilter;
 
-    my $was_tidied = ( $orig_contents ne $new_contents ) && !$error;
+    my $was_tidied = ( $contents ne $orig_contents ) && !$error;
     unless ( $self->quiet ) {
         my $status = $was_tidied ? "[tidied]  " : "[checked] ";
         my $plugin_names =
@@ -200,16 +208,16 @@ sub _process_file {
 
     if ($was_tidied) {
         $self->_backup_file( $file, $orig_contents );
-        write_file( join( '', $file, $self->output_suffix ), $new_contents );
+        write_file( join( '', $file, $self->output_suffix ), $contents );
     }
 
     if ($error) {
         $self->msg( "%s", $error );
-        return 1;
+        return Code::TidyAll::Result->new( state => 'error', msg => $error );
     }
     else {
-        $cache->set( $cache_key, $self->_file_sig( $file, $new_contents ) ) if $cache;
-        return;
+        $cache->set( $cache_key, $self->_file_sig( $file, $contents ) ) if $cache;
+        return Code::TidyAll::Result->new( state => ( $was_tidied ? 'tidied' : 'checked' ) );
     }
 }
 
@@ -346,8 +354,7 @@ sub _sig {
 
 sub msg {
     my ( $self, $format, @params ) = @_;
-    @params = map { ref($_) ? dump_one_line($_) : $_ } @params;
-    printf( "$format\n", @params );
+    printf "$format\n", @params;
 }
 
 1;

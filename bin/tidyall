@@ -19,6 +19,7 @@ my ( %params, $help, $all );
 
 GetOptions(
     'backup-ttl=i'    => \$params{backup_ttl},
+    'check-only=s'    => \$params{check_only},
     'conf-file=s'     => \$params{conf_file},
     'data-dir=s'      => \$params{data_dir},
     'no-backups'      => \$params{no_backups},
@@ -40,20 +41,21 @@ Pod::Usage::pod2usage( { verbose => 2 } ) if $help;
 
 $params{conf_file} ||= "$params{root_dir}/tidyall.ini" if ( $params{root_dir} );
 
-my $result;
+my @results;
 if ($all) {
     $params{conf_file} ||= Code::TidyAll->find_conf_file( cwd() );
     my $ct = Code::TidyAll->new(%params);
-    $result = $ct->process_all();
+    @results = $ct->process_all();
 }
 else {
     my @files = @ARGV or die "file(s) or -a required";
     $params{conf_file} ||= Code::TidyAll->find_conf_file( dirname( $files[0] ) );
     my $ct = Code::TidyAll->new(%params);
-    $result = $ct->process_files(@files);
+    @results = $ct->process_files(@files);
 }
 
-exit( $result->error_count ? 1 : 0 );
+my $status = ( grep { $_->error } @results ) ? 1 : 0;
+exit($status);
 
 1;
 
@@ -98,6 +100,7 @@ tidyall - Your all-in-one code tidier and validator
  -q, --quiet      Suppress output except for errors
  -v, --verbose    Show extra output
  --backup-ttl     When backup files can be purged. Defaults to "1h"
+ --check-only     Just check if files are tidied and throw error if not; don't modify files
  --conf-file      Specify conf file explicitly; usually inferred from specified files or cwd
  --data-dir       Contains data like backups and cache. Defaults to root_dir/.tidyall.d
  --no-backups     Don't backup files
