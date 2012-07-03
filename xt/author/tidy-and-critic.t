@@ -1,4 +1,4 @@
-#!perl
+#!/usr/bin/perl
 use Code::TidyAll::Util qw(read_file tempdir_simple write_file);
 use Code::TidyAll;
 use File::Basename;
