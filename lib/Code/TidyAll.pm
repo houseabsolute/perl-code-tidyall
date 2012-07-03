@@ -115,13 +115,13 @@ sub new {
 
     $self->{base_sig} = $self->_sig( [ $Code::TidyAll::VERSION || 0 ] );
     $self->{plugin_objects} =
-      [ map { $self->load_plugin( $_, $self->plugins->{$_} ) } sort keys( %{ $self->plugins } ) ];
+      [ map { $self->_load_plugin( $_, $self->plugins->{$_} ) } sort keys( %{ $self->plugins } ) ];
     $self->{matched_files} = $self->_find_matched_files;
 
     return $self;
 }
 
-sub load_plugin {
+sub _load_plugin {
     my ( $self, $plugin_name, $plugin_conf ) = @_;
     my $class_name = (
         $plugin_name =~ /^\+/
@@ -165,7 +165,7 @@ sub process_file {
     my $small_path = $self->_small_path($file);
     if ( !@plugins ) {
         $self->msg( "[no plugins apply] %s", $small_path ) unless $self->quiet;
-        return Code::TidyAll::Result->new( state => 'no_match' );
+        return Code::TidyAll::Result->new( file => $file, state => 'no_match' );
     }
 
     my $cache     = $self->cache;
@@ -177,7 +177,7 @@ sub process_file {
             $cache->remove($cache_key);
         }
         else {
-            return Code::TidyAll::Result->new( state => 'cached' )
+            return Code::TidyAll::Result->new( file => $file, state => 'cached' )
               if $sig eq $self->_file_sig( $file, $orig_contents );
         }
     }
@@ -213,11 +213,12 @@ sub process_file {
 
     if ($error) {
         $self->msg( "%s", $error );
-        return Code::TidyAll::Result->new( state => 'error', msg => $error );
+        return Code::TidyAll::Result->new( file => $file, state => 'error', msg => $error );
     }
     else {
         $cache->set( $cache_key, $self->_file_sig( $file, $contents ) ) if $cache;
-        return Code::TidyAll::Result->new( state => ( $was_tidied ? 'tidied' : 'checked' ) );
+        my $state = $was_tidied ? 'tidied' : 'checked';
+        return Code::TidyAll::Result->new( file => $file, state => $state );
     }
 }
 
@@ -429,6 +430,8 @@ content.
 
 =item backup_ttl
 
+=item check_only
+
 =item conf_file
 
 =item data_dir
@@ -438,8 +441,6 @@ content.
 =item no_backups
 
 =item no_cache
-
-=item plugins
 
 =item root_dir
 
@@ -463,7 +464,36 @@ Process all files; this implements the C<tidyall -a> option.
 
 =item process_files (file, ...)
 
-Process the specified files.
+Calls L</process_file> on each file. Return a list of
+L<Code::TidyAll::Result|Code::TidyAll::Result> objects, one for each file.
+
+=item process_file (file)
+
+Process the file, meaning
+
+=over
+
+=item *
+
+Check the cache and return immediately if file has not changed
+
+=item *
+
+Apply prefilters, appropriate matching plugins, and postfilters
+
+=item *
+
+Print success or failure result to STDOUT, depending on quiet/verbose settings
+
+=item *
+
+Write the cache if enabled
+
+=item *
+
+Return a L<Code::TidyAll::Result|Code::TidyAll::Result> object
+
+=back
 
 =item find_conf_file (start_dir)
 
