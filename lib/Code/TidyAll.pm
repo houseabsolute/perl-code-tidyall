@@ -151,13 +151,7 @@ sub process_all {
 sub process_files {
     my ( $self, @files ) = @_;
 
-    my $error_count = 0;
-    my @results;
-    foreach my $file (@files) {
-        $file = realpath($file);
-        push( @results, $self->process_file($file) );
-    }
-    return @results;
+    return map { $self->process_file( realpath($_) ) } @files;
 }
 
 sub process_file {
