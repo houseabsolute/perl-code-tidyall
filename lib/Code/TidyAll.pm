@@ -499,12 +499,12 @@ Process all files; this implements the C<tidyall -a> option.
 
 =item process_files (file, ...)
 
-Calls L</process_file> on each file. Return a list of
+Call L</process_file> on each file. Return a list of
 L<Code::TidyAll::Result|Code::TidyAll::Result> objects, one for each file.
 
 =item process_file (file)
 
-Process the file, meaning
+Process the I<file>, meaning
 
 =over
 
@@ -529,6 +529,13 @@ Write the cache if enabled
 Return a L<Code::TidyAll::Result|Code::TidyAll::Result> object
 
 =back
+
+=item process_source (source, path)
+
+Same as L</process_file>, but process the I<source> string instead of a file.
+You must still pass the relative I<path> from the root as the second argument,
+so that we know which plugins to apply. Return a
+L<Code::TidyAll::Result|Code::TidyAll::Result> object.
 
 =item find_conf_file (start_dir)
 
