@@ -10,6 +10,7 @@ use Digest::SHA1 qw(sha1_hex);
 use File::Find qw(find);
 use File::Zglob;
 use List::Pairwise qw(grepp mapp);
+use List::MoreUtils qw(uniq);
 use Time::Duration::Parse qw(parse_duration);
 use Try::Tiny;
 use strict;
@@ -116,6 +117,7 @@ sub new {
     $self->{base_sig} = $self->_sig( [ $Code::TidyAll::VERSION || 0 ] );
     $self->{plugin_objects} =
       [ map { $self->_load_plugin( $_, $self->plugins->{$_} ) } sort keys( %{ $self->plugins } ) ];
+    $self->{plugins_for_path} = {};
 
     return $self;
 }
@@ -144,8 +146,7 @@ sub _load_plugin {
 sub process_all {
     my $self = shift;
 
-    $self->{matched_files} ||= $self->_find_matched_files;
-    return $self->process_files( sort keys( %{ $self->matched_files } ) );
+    return $self->process_files( $self->_find_matched_files );
 }
 
 sub process_files {
@@ -174,7 +175,7 @@ sub process_file {
     my $result = $self->process_source( $orig_contents, $path );
 
     if ( $result->state eq 'tidied' ) {
-        $self->_backup_file( $file, $contents );
+        $self->_backup_file( $path, $contents );
         $contents = $result->new_contents;
         write_file( join( '', $file, $self->output_suffix ), $contents );
     }
@@ -186,10 +187,7 @@ sub process_file {
 sub process_source {
     my ( $self, $contents, $path ) = @_;
 
-    my @plugins =
-      $self->matched_files
-      ? @{ $self->matched_files->{ join( "/", $self->root_dir, $path ) } }
-      : $self->_plugins_for_path($path);
+    my @plugins = $self->_plugins_for_path($path);
     if ( !@plugins ) {
         $self->msg( "[no plugins apply%s] %s",
             $self->mode ? " for mode '" . $self->mode . "'" : "", $path )
@@ -253,18 +251,18 @@ sub _read_conf_file {
 }
 
 sub _backup_file {
-    my ( $self, $file, $contents ) = @_;
+    my ( $self, $path, $contents ) = @_;
     unless ( $self->no_backups ) {
-        my $backup_file = join( "/", $self->backup_dir, $self->_backup_filename($file) );
+        my $backup_file = join( "/", $self->backup_dir, $self->_backup_filename($path) );
         mkpath( dirname($backup_file), 0, 0775 );
         write_file( $backup_file, $contents );
     }
 }
 
 sub _backup_filename {
-    my ( $self, $file ) = @_;
+    my ( $self, $path ) = @_;
 
-    return join( "", $self->_small_path($file), "-", time2str( "%Y%m%d-%H%M%S", time ), ".bak" );
+    return join( "", $path, "-", time2str( "%Y%m%d-%H%M%S", time ), ".bak" );
 }
 
 sub _purge_backups_periodically {
@@ -331,25 +329,31 @@ sub _find_conf_file_upward {
 sub _find_matched_files {
     my ($self) = @_;
 
-    my %matched_files;
+    my @matched_files;
+    my $plugins_for_path = $self->{plugins_for_path};
+    my $root_length      = length( $self->root_dir );
     foreach my $plugin ( @{ $self->plugin_objects } ) {
         my @selected = grep { -f && !-l } $self->_zglob( $plugin->select );
         if ( defined( $plugin->ignore ) ) {
             my %is_ignored = map { ( $_, 1 ) } $self->_zglob( $plugin->ignore );
             @selected = grep { !$is_ignored{$_} } @selected;
         }
+        push( @matched_files, @selected );
         foreach my $file (@selected) {
-            $matched_files{$file} ||= [];
-            push( @{ $matched_files{$file} }, $plugin );
+            my $path = substr( $file, $root_length + 1 );
+            $plugins_for_path->{$path} ||= [];
+            push( @{ $plugins_for_path->{$path} }, $plugin );
         }
     }
-    return \%matched_files;
+    return sort( uniq(@matched_files) );
 }
 
 sub _plugins_for_path {
     my ( $self, $path ) = @_;
 
-    return grep { $_->matches_path($path) } @{ $self->plugin_objects };
+    $self->{plugins_for_path}->{$path} ||=
+      [ grep { $_->matches_path($path) } @{ $self->plugin_objects } ];
+    return @{ $self->{plugins_for_path}->{$path} };
 }
 
 sub _zglob {
