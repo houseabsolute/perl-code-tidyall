@@ -16,11 +16,11 @@ use constant debug => 0;
 
 sub zglob_to_regex {
     my $glob  = shift;
-    my $regex = glob_to_regex_string($glob);
+    my $regex = zglob_to_regex_string($glob);
     return qr/^$regex$/;
 }
 
-sub glob_to_regex_string {
+sub zglob_to_regex_string {
     my $glob = shift;
     my ( $regex, $in_curlies, $escaping );
     local $_;
@@ -96,14 +96,6 @@ sub glob_to_regex_string {
     print "# $glob $regex\n" if debug;
 
     return $regex;
-}
-
-sub match_glob {
-    print "# ", join( ', ', map { "'$_'" } @_ ), "\n" if debug;
-    my $glob  = shift;
-    my $regex = glob_to_regex $glob;
-    local $_;
-    grep { $_ =~ $regex } @_;
 }
 
 1;
