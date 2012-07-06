@@ -5,8 +5,7 @@ Revision history for Code-TidyAll
 0.03  Jul 3, 2012
 
 * Improvements
-  - Only scan the project hierarchy for --all (process_all). When files are specified,
-    just determine plugins for those files.
+  - When only specified files are being processed, don't scan the whole hierarchy.
 
 0.02  Jul 3, 2012
 

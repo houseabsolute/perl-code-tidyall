@@ -2,7 +2,7 @@ package Code::TidyAll::Result;
 use strict;
 use warnings;
 
-use Object::Tiny qw(msg state new_contents);
+use Object::Tiny qw(msg path state new_contents);
 
 sub error { return $_[0]->state eq 'error' }
 sub ok { return $_[0]->state ne 'error' }
@@ -35,6 +35,10 @@ returned from L<Code::TidyAll::process_files|Code::TidyAll/process_files>.
 =head1 METHODS
 
 =over
+
+=item path
+
+The path that was processed, relative to the root (e.g. "lib/Foo.pm")
 
 =item state
 
