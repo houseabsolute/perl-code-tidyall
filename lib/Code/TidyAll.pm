@@ -116,7 +116,6 @@ sub new {
     $self->{base_sig} = $self->_sig( [ $Code::TidyAll::VERSION || 0 ] );
     $self->{plugin_objects} =
       [ map { $self->_load_plugin( $_, $self->plugins->{$_} ) } sort keys( %{ $self->plugins } ) ];
-    $self->{matched_files} = $self->_find_matched_files;
 
     return $self;
 }
@@ -143,6 +142,7 @@ sub _load_plugin {
 sub process_all {
     my $self = shift;
 
+    $self->{matched_files} ||= $self->_find_matched_files;
     return $self->process_files( sort keys( %{ $self->matched_files } ) );
 }
 
@@ -161,10 +161,15 @@ sub process_files {
 sub process_file {
     my ( $self, $file ) = @_;
 
-    my @plugins = @{ $self->matched_files->{$file} || [] };
     my $small_path = $self->_small_path($file);
+    my @plugins =
+      $self->matched_files
+      ? @{ $self->matched_files->{$file} }
+      : $self->_plugins_for_path($small_path);
     if ( !@plugins ) {
-        $self->msg( "[no plugins apply] %s", $small_path ) unless $self->quiet;
+        $self->msg( "[no plugins apply%s] %s",
+            $self->mode ? " for mode '" . $self->mode . "'" : "", $small_path )
+          unless $self->quiet;
         return Code::TidyAll::Result->new( file => $file, state => 'no_match' );
     }
 
@@ -325,6 +330,12 @@ sub _find_matched_files {
         }
     }
     return \%matched_files;
+}
+
+sub _plugins_for_path {
+    my ( $self, $path ) = @_;
+
+    return grep { $_->matches_path($path) } @{ $self->plugin_objects };
 }
 
 sub _zglob {

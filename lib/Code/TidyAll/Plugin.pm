@@ -1,6 +1,7 @@
 package Code::TidyAll::Plugin;
 use Object::Tiny qw(conf ignore name options root_dir select);
 use Code::TidyAll::Util qw(basename read_file tempdir_simple write_file);
+use Code::TidyAll::Util::Zglob qw(zglob_to_regex);
 use strict;
 use warnings;
 
@@ -54,6 +55,13 @@ sub _build_options {
     my %options = %{ $self->{conf} };
     delete( @options{qw(select ignore)} );
     return \%options;
+}
+
+sub matches_path {
+    my ( $self, $path ) = @_;
+    $self->{select_regex} ||= zglob_to_regex( $self->select );
+    $self->{ignore_regex} ||= ( $self->ignore ? zglob_to_regex( $self->ignore ) : qr/(?!)/ );
+    return $path =~ $self->{select_regex} && $path !~ $self->{ignore_regex};
 }
 
 1;
