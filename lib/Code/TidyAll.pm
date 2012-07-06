@@ -195,10 +195,11 @@ sub process_source {
         return Code::TidyAll::Result->new( path => $path, state => 'no_match' );
     }
 
-    my $orig_contents = $contents;
-    $contents = $self->prefilter->($contents) if $self->prefilter;
     my $basename = basename($path);
     my $error;
+
+    my $orig_contents = $contents;
+    $contents = $self->prefilter->($contents) if $self->prefilter;
     foreach my $plugin (@plugins) {
         try {
             my $new_contents = $plugin->process_source_or_file( $contents, $basename );
