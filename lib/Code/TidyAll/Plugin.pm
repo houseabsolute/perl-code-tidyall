@@ -1,17 +1,20 @@
 package Code::TidyAll::Plugin;
-use Object::Tiny qw(conf ignore name options root_dir select);
-use Code::TidyAll::Util qw(basename read_file tempdir_simple write_file);
+use Object::Tiny qw(conf ignore name options root_dir select tidyall);
+use Code::TidyAll::Util qw(basename read_file write_file);
 use Code::TidyAll::Util::Zglob qw(zglob_to_regex);
+use Scalar::Util qw(weaken);
 use strict;
 use warnings;
 
 sub new {
     my $class = shift;
     my $self  = $class->SUPER::new(@_);
-    die "conf required" unless $self->{conf};
-    die "name required" unless $self->{name};
+    die "conf required"    unless $self->{conf};
+    die "name required"    unless $self->{name};
+    die "tidyall required" unless $self->{tidyall};
 
     my $name = $self->{name};
+    weaken( $self->{tidyall} );
     $self->{select} = $self->{conf}->{select}
       or die "select required for '$name'";
     die "select for '$name' should not begin with /" if substr( $self->{select}, 0, 1 ) eq '/';
@@ -24,14 +27,13 @@ sub new {
 }
 
 sub process_source_or_file {
-    my ( $self, $source, $file ) = @_;
+    my ( $self, $source, $basename ) = @_;
 
     if ( $self->can('process_source') ) {
         return $self->process_source($source);
     }
     elsif ( $self->can('process_file') ) {
-        my $tempfile = join( "/", tempdir_simple(), basename($file) );
-        write_file( $tempfile, $source );
+        my $tempfile = $self->_write_temp_file( $basename, $source );
         $self->process_file($tempfile);
         return read_file($tempfile);
     }
@@ -40,7 +42,8 @@ sub process_source_or_file {
         return $source;
     }
     elsif ( $self->can('validate_file') ) {
-        $self->validate_file($file);
+        my $tempfile = $self->_write_temp_file( $basename, $source );
+        $self->validate_file($tempfile);
         return $source;
     }
     else {
@@ -48,6 +51,14 @@ sub process_source_or_file {
             "plugin '%s' must implement one of process_file, process_source, validate_file, or validate_source",
             $self->name );
     }
+}
+
+sub _write_temp_file {
+    my ( $self, $basename, $source ) = @_;
+
+    my $tempfile = join( "/", $self->tidyall->_tempdir(), $basename );
+    write_file( $tempfile, $source );
+    return $tempfile;
 }
 
 sub _build_options {

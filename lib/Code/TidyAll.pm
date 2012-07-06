@@ -133,9 +133,11 @@ sub _load_plugin {
     catch {
         die "could not load plugin class '$class_name': $_";
     };
+
     return $class_name->new(
-        conf => $plugin_conf,
-        name => $plugin_name
+        conf    => $plugin_conf,
+        name    => $plugin_name,
+        tidyall => $self
     );
 }
 
@@ -161,36 +163,53 @@ sub process_files {
 sub process_file {
     my ( $self, $file ) = @_;
 
-    my $small_path = $self->_small_path($file);
-    my @plugins =
-      $self->matched_files
-      ? @{ $self->matched_files->{$file} }
-      : $self->_plugins_for_path($small_path);
-    if ( !@plugins ) {
-        $self->msg( "[no plugins apply%s] %s",
-            $self->mode ? " for mode '" . $self->mode . "'" : "", $small_path )
-          unless $self->quiet;
-        return Code::TidyAll::Result->new( file => $file, state => 'no_match' );
-    }
-
+    my $path      = $self->_small_path($file);
     my $cache     = $self->cache;
-    my $cache_key = "sig/$small_path";
-    my $error;
-    my $contents = my $orig_contents = read_file($file);
+    my $cache_key = "sig/$path";
+    my $contents  = my $orig_contents = read_file($file);
     if ( $cache && ( my $sig = $cache->get($cache_key) ) ) {
         if ( $self->refresh_cache ) {
             $cache->remove($cache_key);
         }
-        else {
-            return Code::TidyAll::Result->new( file => $file, state => 'cached' )
-              if $sig eq $self->_file_sig( $file, $orig_contents );
+        elsif ( $sig eq $self->_file_sig( $file, $orig_contents ) ) {
+            $self->msg( "[cached] %s", $path ) if $self->verbose;
+            return Code::TidyAll::Result->new( path => $path, state => 'cached' );
         }
     }
 
+    my $result = $self->process_source( $orig_contents, $path );
+
+    if ( $result->state eq 'tidied' ) {
+        $self->_backup_file( $file, $contents );
+        $contents = $result->new_contents;
+        write_file( join( '', $file, $self->output_suffix ), $contents );
+    }
+    $cache->set( $cache_key, $self->_file_sig( $file, $contents ) ) if $cache && $result->ok;
+
+    return $result;
+}
+
+sub process_source {
+    my ( $self, $contents, $path ) = @_;
+
+    my @plugins =
+      $self->matched_files
+      ? @{ $self->matched_files->{ join( "/", $self->root_dir, $path ) } }
+      : $self->_plugins_for_path($path);
+    if ( !@plugins ) {
+        $self->msg( "[no plugins apply%s] %s",
+            $self->mode ? " for mode '" . $self->mode . "'" : "", $path )
+          unless $self->quiet;
+        return Code::TidyAll::Result->new( path => $path, state => 'no_match' );
+    }
+
+    my $orig_contents = $contents;
     $contents = $self->prefilter->($contents) if $self->prefilter;
+    my $basename = basename($path);
+    my $error;
     foreach my $plugin (@plugins) {
         try {
-            my $new_contents = $plugin->process_source_or_file( $contents, $file );
+            my $new_contents = $plugin->process_source_or_file( $contents, $basename );
             if ( $new_contents ne $contents ) {
                 die "needs tidying\n" if $self->check_only;
                 $contents = $new_contents;
@@ -202,28 +221,29 @@ sub process_file {
         last if $error;
     }
     $contents = $self->postfilter->($contents) if !$error && $self->postfilter;
+    my $new_contents = $contents;
 
-    my $was_tidied = ( $contents ne $orig_contents ) && !$error;
+    my $was_tidied = !$error && ( $new_contents ne $orig_contents );
     unless ( $self->quiet ) {
         my $status = $was_tidied ? "[tidied]  " : "[checked] ";
         my $plugin_names =
           $self->verbose ? sprintf( " (%s)", join( ", ", map { $_->name } @plugins ) ) : "";
-        $self->msg( "%s%s%s", $status, $small_path, $plugin_names );
-    }
-
-    if ($was_tidied) {
-        $self->_backup_file( $file, $orig_contents );
-        write_file( join( '', $file, $self->output_suffix ), $contents );
+        $self->msg( "%s%s%s", $status, $path, $plugin_names );
     }
 
     if ($error) {
         $self->msg( "%s", $error );
-        return Code::TidyAll::Result->new( file => $file, state => 'error', msg => $error );
+        return Code::TidyAll::Result->new( path => $path, state => 'error', msg => $error );
+    }
+    elsif ($was_tidied) {
+        return Code::TidyAll::Result->new(
+            path         => $path,
+            state        => 'tidied',
+            new_contents => $new_contents
+        );
     }
     else {
-        $cache->set( $cache_key, $self->_file_sig( $file, $contents ) ) if $cache;
-        my $state = $was_tidied ? 'tidied' : 'checked';
-        return Code::TidyAll::Result->new( file => $file, state => $state );
+        return Code::TidyAll::Result->new( path => $path, state => 'checked' );
     }
 }
 
@@ -362,6 +382,12 @@ sub _file_sig {
 sub _sig {
     my ( $self, $data ) = @_;
     return sha1_hex( join( ",", @$data ) );
+}
+
+sub _tempdir {
+    my ($self) = @_;
+    $self->{tempdir} ||= tempdir_simple();
+    return $self->{tempdir};
 }
 
 sub msg {

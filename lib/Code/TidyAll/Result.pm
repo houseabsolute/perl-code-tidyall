@@ -2,7 +2,7 @@ package Code::TidyAll::Result;
 use strict;
 use warnings;
 
-use Object::Tiny qw(msg state);
+use Object::Tiny qw(msg state new_contents);
 
 sub error { return $_[0]->state eq 'error' }
 sub ok { return $_[0]->state ne 'error' }
@@ -15,7 +15,7 @@ __END__
 
 =head1 NAME
 
-Code::TidyAll::Result - Result returned from Code::TidyAll::process_file
+Code::TidyAll::Result - Result returned from processing a file/source
 
 =head1 SYNOPSIS
 
@@ -28,7 +28,8 @@ Code::TidyAll::Result - Result returned from Code::TidyAll::process_file
 =head1 DESCRIPTION
 
 Represents the result of
-L<Code::TidyAll::process_file|Code::TidyAll/process_file>. A list of these is
+L<Code::TidyAll::process_file|Code::TidyAll/process_file> and
+L<Code::TidyAll::process_file|Code::TidyAll/process_source>. A list of these is
 returned from L<Code::TidyAll::process_files|Code::TidyAll/process_files>.
 
 =head1 METHODS
@@ -52,6 +53,10 @@ A string, one of
 =item C<tidied> - File was successfully checked and changed
 
 =back
+
+=item new_contents
+
+Contains the new contents if state is 'tidied'
 
 =item error
 
