@@ -187,7 +187,7 @@ sub process_file {
 sub process_source {
     my ( $self, $contents, $path ) = @_;
 
-    my @plugins = $self->_plugins_for_path($path);
+    my @plugins = $self->plugins_for_path($path);
     if ( !@plugins ) {
         $self->msg( "[no plugins apply%s] %s",
             $self->mode ? " for mode '" . $self->mode . "'" : "", $path )
@@ -349,7 +349,7 @@ sub _find_matched_files {
     return sort( uniq(@matched_files) );
 }
 
-sub _plugins_for_path {
+sub plugins_for_path {
     my ( $self, $path ) = @_;
 
     $self->{plugins_for_path}->{$path} ||=
@@ -541,6 +541,11 @@ L<Code::TidyAll::Result|Code::TidyAll::Result> object.
 
 Start in the I<start_dir> and work upwards, looking for a C<tidyall.ini>.
 Return the pathname if found or throw an error if not found.
+
+=item plugins_for_path (path)
+
+Given a relative I<path> from the root, return a list of Code::TidyAll::Plugin
+objects that apply to it, or an empty list if no plugins apply.
 
 =back
 
