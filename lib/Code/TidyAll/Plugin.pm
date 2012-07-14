@@ -1,5 +1,5 @@
 package Code::TidyAll::Plugin;
-use Object::Tiny qw(conf ignore name options root_dir select tidyall);
+use Object::Tiny qw(conf ignore name options select tidyall);
 use Code::TidyAll::Util qw(basename read_file write_file);
 use Code::TidyAll::Util::Zglob qw(zglob_to_regex);
 use Scalar::Util qw(weaken);
