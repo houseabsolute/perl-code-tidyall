@@ -1,7 +1,7 @@
 package Code::TidyAll::SVN::Precommit;
 use Capture::Tiny qw(capture_stdout capture_stderr);
 use Code::TidyAll;
-use Code::TidyAll::Util qw(dirname mkpath tempdir_simple write_file);
+use Code::TidyAll::Util qw(dirname mkpath realpath tempdir_simple write_file);
 use Log::Any qw($log);
 use Moo;
 use SVN::Look;
@@ -82,12 +82,17 @@ sub _check {
         }
     }
 
-    if ( my $error_count = grep { $_->error } @results ) {
-        die sprintf( "%d file%s did not pass tidyall check\n",
-            $error_count, $error_count > 1 ? "s" : "" );
+    if ( my @error_results = grep { $_->error } @results ) {
+        my $error_count = scalar(@error_results);
+        die join(
+            "\n",
+            sprintf(
+                "%d file%s did not pass tidyall check",
+                $error_count, $error_count > 1 ? "s" : ""
+            ),
+            map { $_->msg } @error_results
+        );
     }
-
-    die "ok!";
 }
 
 sub find_root_for_file {
@@ -101,7 +106,7 @@ sub find_root_for_file {
         if ( $self->cat_file("$search_dir/$conf_file") ) {
             return $search_dir;
         }
-        elsif ( $search_dir eq '/' || $search_dir eq '' ) {
+        elsif ( $search_dir eq '/' || $search_dir eq '' || $search_dir eq '.' ) {
             return undef;
         }
         else {
