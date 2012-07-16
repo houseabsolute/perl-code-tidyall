@@ -63,9 +63,15 @@ sub test_svn_precommit_hook : Tests {
     like( $stderr, qr/UpperText.*needs tidying/ );
 
     write_file( "$work_dir/foo.txt", "ABC" );
-    $stderr =
-      capture_stderr { system( sprintf( 'svn -q commit -m "changed" %s/foo.txt', $work_dir ) ) };
-    ok( $stderr !~ /\S/, "commit ok" );
+    write_file( "$work_dir/bar.dat", "123" );
+    run( sprintf( 'svn -q add %s/bar.dat', $work_dir ) );
+    $stderr = capture_stderr {
+        system(
+            sprintf( 'svn -q commit -m "changed" %s/foo.txt %s/bar.dat', $work_dir, $work_dir ) );
+    };
+    unlike( $stderr, qr/\S/ );
+    $stdout = capture_stdout { system( sprintf( 'svn status %s', $work_dir ) ) };
+    unlike( $stdout, qr/\S/ );
 }
 
 $precommit_hook_template = '#!/usr/bin/perl
