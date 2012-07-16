@@ -62,6 +62,10 @@ A string, one of
 
 Contains the new contents if state is 'tidied'
 
+=item msg
+
+Contains the error message if state is 'error'
+
 =item error
 
 Returns true iff state is 'error'
