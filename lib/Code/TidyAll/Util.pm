@@ -1,4 +1,5 @@
 package Code::TidyAll::Util;
+use Cwd qw(realpath);
 use Data::Dumper;
 use File::Basename;
 use File::Path;
@@ -12,7 +13,7 @@ use warnings;
 use base qw(Exporter);
 
 our @EXPORT_OK =
-  qw(abs2rel basename can_load dirname dump_one_line mkpath read_dir read_file rel2abs tempdir_simple uniq write_file );
+  qw(abs2rel basename can_load dirname dump_one_line mkpath read_dir read_file realpath rel2abs tempdir_simple uniq write_file );
 
 sub can_load {
 
