@@ -77,12 +77,10 @@ sub test_svn_precommit_hook : Tests {
 $precommit_hook_template = '#!/usr/bin/perl
 use lib qw(%s);
 use Code::TidyAll::SVN::Precommit;
-use Log::Any::Adapter;
+use Log::Any::Adapter (File => "%s");
 use strict;
 use warnings;
 
-Log::Any::Adapter->set( "Dispatch",
-    outputs => [ [ "File", filename => "%s", mode => ">>", min_level => "debug", newline => 1 ] ] );
 Code::TidyAll::SVN::Precommit->check(
     extra_conf_files => ["perlcriticrc"],
     tidyall_options => { verbose => 1 }
