@@ -15,7 +15,7 @@ sub usage {
     Pod::Usage::pod2usage( { verbose => 1 } );
 }
 
-my ( %params, $help, $all );
+my ( %params, $help, $all, $inc_dirs );
 
 GetOptions(
     'backup-ttl=i'    => \$params{backup_ttl},
@@ -33,9 +33,12 @@ GetOptions(
     'm|mode=s'        => \$params{mode},
     'q|quiet'         => \$params{quiet},
     'v|verbose'       => \$params{verbose},
+    'I'               => \$inc_dirs,
 ) or usage();
 
 Pod::Usage::pod2usage( { verbose => 2 } ) if $help;
+
+unshift( @INC, split( /\s*,\s*/, $inc_dirs ) ) if defined($inc_dirs);
 
 %params = slice_def( \%params );
 
@@ -277,6 +280,11 @@ Suppress output except for errors.
 =item -v, --verbose    
 
 Show extra output.
+
+=item -I
+
+Add libraries to @INC, as Perl's -I. Useful if --tidyall-class or plugins are
+in an alternate lib directory.
 
 =item --backup-ttl     
 
