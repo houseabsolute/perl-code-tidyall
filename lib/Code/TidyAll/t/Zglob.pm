@@ -7,25 +7,25 @@ sub test_match : Tests {
 
     $zglob = "**/*.txt";
     $regex = zglob_to_regex($zglob);
-    foreach my $path qw(foo.txt foo/baz.txt foo/bar/baz.txt) {
+    foreach my $path (qw(foo.txt foo/baz.txt foo/bar/baz.txt)) {
         like( $path, $regex, "$path matches $zglob" );
     }
-    foreach my $path qw(foo/bar/baz.tx) {
+    foreach my $path (qw(foo/bar/baz.tx)) {
         unlike( $path, $regex, "$path does not match $zglob" );
     }
 
     $zglob = "**/*";
     $regex = zglob_to_regex($zglob);
-    foreach my $path qw(foo foo.txt foo/bar foo/baz.txt) {
+    foreach my $path (qw(foo foo.txt foo/bar foo/baz.txt)) {
         like( $path, $regex, "$path matches $zglob" );
     }
 
     $zglob = "foo/**/*.txt";
     $regex = zglob_to_regex($zglob);
-    foreach my $path qw(foo/baz.txt foo/bar/baz.txt foo/bar/baz/blargh.txt) {
+    foreach my $path (qw(foo/baz.txt foo/bar/baz.txt foo/bar/baz/blargh.txt)) {
         like( $path, $regex, "$path matches $zglob" );
     }
-    foreach my $path qw(foo.txt foo/bar/baz.tx) {
+    foreach my $path (qw(foo.txt foo/bar/baz.tx)) {
         unlike( $path, $regex, "$path does not match $zglob" );
     }
 }
