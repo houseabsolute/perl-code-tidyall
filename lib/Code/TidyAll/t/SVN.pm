@@ -30,6 +30,16 @@ sub test_svn_precommit_hook : Tests {
         run("cat /dev/null > $hook_log");
     };
 
+    my $committed = sub {
+        $stdout = capture_stdout { system( sprintf( 'svn status %s', $work_dir ) ) };
+        unlike( $stdout, qr/\S/, "committed" );
+    };
+
+    my $uncommitted = sub {
+        $stdout = capture_stdout { system( sprintf( 'svn status %s', $work_dir ) ) };
+        like( $stdout, qr/^M/, "uncommitted" );
+    };
+
     run("svnadmin create $repo_dir");
     my $hooks_dir = "$repo_dir/hooks";
     ok( -d $hooks_dir, "$hooks_dir exists" );
@@ -48,9 +58,12 @@ sub test_svn_precommit_hook : Tests {
     chmod( 0775, $precommit_hook_file );
 
     write_file( "$work_dir/foo.txt", "abc " );
-    run( sprintf( 'svn -q commit -m "changed" %s/foo.txt', $work_dir ) );
+    $stderr =
+      capture_stderr { run( sprintf( 'svn -q commit -m "changed" %s/foo.txt', $work_dir ) ) };
+    unlike( $stderr, qr/\S/ );
     $log_contains->(qr|could not find 'tidyall.ini' upwards from 'myapp/trunk/foo.txt'|);
     $clear_log->();
+    $committed->();
 
     write_file( "$work_dir/tidyall.ini", sprintf($tidyall_ini_template) );
     run( sprintf( 'svn -q add %s/tidyall.ini',               $work_dir ) );
@@ -61,6 +74,7 @@ sub test_svn_precommit_hook : Tests {
       capture_stderr { system( sprintf( 'svn -q commit -m "changed" %s/foo.txt', $work_dir ) ) };
     like( $stderr, qr/1 file did not pass tidyall check/ );
     like( $stderr, qr/UpperText.*needs tidying/ );
+    $uncommitted->();
 
     write_file( "$work_dir/foo.txt", "ABC" );
     write_file( "$work_dir/bar.dat", "123" );
@@ -70,8 +84,7 @@ sub test_svn_precommit_hook : Tests {
             sprintf( 'svn -q commit -m "changed" %s/foo.txt %s/bar.dat', $work_dir, $work_dir ) );
     };
     unlike( $stderr, qr/\S/ );
-    $stdout = capture_stdout { system( sprintf( 'svn status %s', $work_dir ) ) };
-    unlike( $stdout, qr/\S/ );
+    $committed->();
 }
 
 $precommit_hook_template = '#!/usr/bin/perl

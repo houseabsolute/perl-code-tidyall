@@ -41,7 +41,7 @@ sub can_load {
 
 sub tempdir_simple {
     my $template = shift || 'Code-TidyAll-XXXX';
-    return tempdir( $template, TMPDIR => 1, CLEANUP => 1 );
+    return tempdir( $template, TMPDIR => 1, CLEANUP => 0 );
 }
 
 sub dump_one_line {

@@ -18,7 +18,7 @@ sub validate_file {
     #
     local @ARGV = @argv;
     my $output = capture_merged { Perl::Critic::Command::run() };
-    die $output if $output !~ /^.* source OK\n/;
+    die "$output\n" if $output !~ /^.* source OK\n/;
 }
 
 1;

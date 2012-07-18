@@ -209,6 +209,7 @@ sub process_source {
             }
         }
         catch {
+            chomp;
             $error = sprintf( "*** '%s': %s", $plugin->name, $_ );
         };
         last if $error;
