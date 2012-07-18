@@ -5,6 +5,7 @@ Revision history for Code-TidyAll
 0.03  Jul 3, 2012
 
 * Improvements
+  - Add 
   - When only specified files are being processed, don't scan the whole hierarchy.
   - Add process_source(), for processing a string instead of a file
 

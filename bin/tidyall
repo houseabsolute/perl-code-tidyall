@@ -370,6 +370,12 @@ You can turn off backups with C<--no-backups>.
 C<tidyall> will exit with status 1 if any errors occurred while processing
 files, and 0 otherwise.
 
+=head1 SUBVERSION PRECOMMIT
+
+L<Code::TidyAll::SVN::Precommit|Code::TidyAll::SVN::Precommit> implements a
+subversion precommit hook that checks if all files are tidied and valid
+according to C<tidyall>, and rejects the commit if not.
+
 =head1 KNOWN BUGS
 
 =over
