@@ -73,7 +73,7 @@ sub test_svn_precommit_hook : Tests {
     $stderr =
       capture_stderr { system( sprintf( 'svn -q commit -m "changed" %s/foo.txt', $work_dir ) ) };
     like( $stderr, qr/1 file did not pass tidyall check/ );
-    like( $stderr, qr/UpperText.*needs tidying/ );
+    like( $stderr, qr/needs tidying/ );
     $uncommitted->();
 
     write_file( "$work_dir/foo.txt", "ABC" );
