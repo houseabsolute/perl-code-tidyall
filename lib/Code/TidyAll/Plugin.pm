@@ -26,31 +26,35 @@ sub new {
     return $self;
 }
 
+# No-ops by default; may be overridden in subclass
+sub preprocess_source {
+    return $_[1];
+}
+
+sub postprocess_source {
+    return $_[1];
+}
+
 sub process_source_or_file {
     my ( $self, $source, $basename ) = @_;
 
-    if ( $self->can('process_source') ) {
-        return $self->process_source($source);
+    if ( $self->can('transform_source') ) {
+        $source = $self->transform_source($source);
     }
-    elsif ( $self->can('process_file') ) {
+    if ( $self->can('transform_file') ) {
         my $tempfile = $self->_write_temp_file( $basename, $source );
-        $self->process_file($tempfile);
-        return read_file($tempfile);
+        $self->transform_file($tempfile);
+        $source = read_file($tempfile);
     }
-    elsif ( $self->can('validate_source') ) {
+    if ( $self->can('validate_source') ) {
         $self->validate_source($source);
-        return $source;
     }
-    elsif ( $self->can('validate_file') ) {
+    if ( $self->can('validate_file') ) {
         my $tempfile = $self->_write_temp_file( $basename, $source );
         $self->validate_file($tempfile);
-        return $source;
     }
-    else {
-        die sprintf(
-            "plugin '%s' must implement one of process_file, process_source, validate_file, or validate_source",
-            $self->name );
-    }
+
+    return $source;
 }
 
 sub _write_temp_file {
@@ -108,21 +112,21 @@ with a plus sign prefix in the config file, e.g.
 
 =head1 METHODS
 
-Your class should define I<one and only one> of these methods. The first two
-methods are for tidiers (which actually modify code); the second two are for
-validators (which simply check code for errors). C<tidyall> can be a bit more
-efficient with the latter, e.g. avoid a file copy.
+Your plugin may define one or more of these methods. They are all no-ops by default.
 
-=over
-
-=item process_source ($source)
+=item preprocess_source ($source)
 
 Receives source code as a string; returns the processed string, or dies with
+error. This runs on all plugins I<before> any of the other methods.
+
+=item transform_source ($source)
+
+Receives source code as a string; returns the transformed string, or dies with
 error.
 
-=item process_file ($file)
+=item transform_file ($file)
 
-Receives filename; processes the file in place, or dies with error. Note that
+Receives filename; transforms the file in place, or dies with error. Note that
 the file will be a temporary copy of the user's file with the same basename;
 your changes will only propagate back if there was no error reported from any
 plugin.
@@ -136,5 +140,10 @@ be ignored.
 
 Receives filename; validates file and dies with error if invalid. Should not
 modify file!
+
+=item postprocess_source ($source)
+
+Receives source code as a string; returns the processed string, or dies with
+error. This runs on all plugins I<after> any of the other methods.
 
 =back

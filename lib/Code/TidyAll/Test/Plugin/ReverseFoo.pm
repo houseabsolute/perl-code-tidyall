@@ -4,7 +4,7 @@ use base qw(Code::TidyAll::Plugin);
 use strict;
 use warnings;
 
-sub process_file {
+sub transform_file {
     my ( $self, $file ) = @_;
     write_file( $file, scalar( reverse( read_file($file) ) ) );
 }

@@ -6,7 +6,7 @@ use strict;
 use warnings;
 use base qw(Code::TidyAll::Plugin);
 
-sub process_file {
+sub transform_file {
     my ( $self, $file ) = @_;
     my $options = $self->options;
 

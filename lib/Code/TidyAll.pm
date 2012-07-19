@@ -27,8 +27,6 @@ sub valid_params {
       no_cache
       output_suffix
       plugins
-      postfilter
-      prefilter
       quiet
       refresh_cache
       root_dir
@@ -198,26 +196,28 @@ sub process_source {
     my $basename = basename($path);
     my $error;
 
-    my $orig_contents = $contents;
-    $contents = $self->prefilter->($contents) if $self->prefilter;
-    foreach my $plugin (@plugins) {
-        try {
-            my $new_contents = $plugin->process_source_or_file( $contents, $basename );
-            if ( $new_contents ne $contents ) {
-                die "needs tidying\n" if $self->check_only;
-                $contents = $new_contents;
+    my $new_contents = my $orig_contents = $contents;
+    my $plugin;
+
+    try {
+        foreach my $method (qw(preprocess_source process_source_or_file postprocess_source)) {
+            foreach $plugin (@plugins) {
+                $new_contents = $plugin->$method( $new_contents, $basename );
             }
         }
-        catch {
-            chomp;
-            $error = sprintf( "*** '%s': %s", $plugin->name, $_ );
-        };
-        last if $error;
     }
-    $contents = $self->postfilter->($contents) if !$error && $self->postfilter;
-    my $new_contents = $contents;
+    catch {
+        chomp;
+        $error = $_;
+        $error = sprintf( "*** '%s': %s", $plugin->name, $_ ) if $plugin;
+    };
 
     my $was_tidied = !$error && ( $new_contents ne $orig_contents );
+    if ( $was_tidied && $self->check_only ) {
+        $error = "*** needs tidying";
+        undef $was_tidied;
+    }
+
     unless ( $self->quiet ) {
         my $status = $was_tidied ? "[tidied]  " : "[checked] ";
         my $plugin_names =
@@ -452,18 +452,6 @@ You must either pass C<conf_file>, or both C<plugins> and C<root_dir>.
 Specify a hash of plugins, each of which is itself a hash of options. This is
 equivalent to what would be parsed out of the sections in C<tidyall.ini>.
 
-=item prefilter
-
-A code reference that will be applied to code before processing. It is expected
-to take the full content as a string in its input, and output the transformed
-content.
-
-=item postfilter
-
-A code reference that will be applied to code after processing. It is expected
-to take the full content as a string in its input, and output the transformed
-content.
-
 =item backup_ttl
 
 =item check_only
@@ -515,7 +503,7 @@ Check the cache and return immediately if file has not changed
 
 =item *
 
-Apply prefilters, appropriate matching plugins, and postfilters
+Apply appropriate matching plugins
 
 =item *
 

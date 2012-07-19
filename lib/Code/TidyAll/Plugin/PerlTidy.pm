@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use base qw(Code::TidyAll::Plugin);
 
-sub process_source {
+sub transform_source {
     my ( $self, $source ) = @_;
     my $options = $self->options;
 
