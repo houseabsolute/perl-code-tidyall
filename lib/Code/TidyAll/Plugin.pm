@@ -112,7 +112,10 @@ with a plus sign prefix in the config file, e.g.
 
 =head1 METHODS
 
-Your plugin may define one or more of these methods. They are all no-ops by default.
+Your plugin may define one or more of these methods. They are all no-ops by
+default.
+
+=over
 
 =item preprocess_source ($source)
 
