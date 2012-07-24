@@ -46,14 +46,14 @@ $params{conf_file} ||= "$params{root_dir}/tidyall.ini" if ( $params{root_dir} );
 
 my @results;
 if ($all) {
-    $params{conf_file} ||= Code::TidyAll->find_conf_file( cwd() );
-    my $ct = Code::TidyAll->new(%params);
+    my $conf_file ||= Code::TidyAll->find_conf_file( cwd() );
+    my $ct = Code::TidyAll->new_from_conf_file( $conf_file, %params );
     @results = $ct->process_all();
 }
 else {
     my @files = @ARGV or die "file(s) or -a required";
-    $params{conf_file} ||= Code::TidyAll->find_conf_file( dirname( $files[0] ) );
-    my $ct = Code::TidyAll->new(%params);
+    my $conf_file ||= Code::TidyAll->find_conf_file( dirname( $files[0] ) );
+    my $ct = Code::TidyAll->new_from_conf_file( $conf_file, %params );
     @results = $ct->process_files(@files);
 }
 
