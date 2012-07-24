@@ -156,7 +156,7 @@ to be tidyall'd
 
 =head1 SYNOPSIS
 
-  In /usr/local/repos/hooks/pre-commit in your svn repo:
+  In hooks/pre-commit in your svn repo:
 
     #!/usr/bin/perl
     use Code::TidyAll::SVN::Precommit;
@@ -170,7 +170,7 @@ to be tidyall'd
 
 This module implements a L<Subversion pre-commit
 hook|http://svnbook.red-bean.com/en/1.7/svn.ref.reposhooks.pre-commit.html>
-that checks if all files are tidied and valid according to L<tidyall|tidyall>>,
+that checks if all files are tidied and valid according to L<tidyall|tidyall>,
 and rejects the commit if not.
 
 =head1 METHODS
@@ -199,8 +199,8 @@ For each file, the hook will look upwards from the file's repo location and use
 the first configuration file it finds.
 
 By default, if C<tidyall.ini> cannot be found, or if a runtime error occurs, a
-warning is logged (see below) but the commit is allowed to proceed. This is so
-that unexpected problems do not prevent a team from committing code.
+warning is logged (see L</LOGGING> below) but the commit is allowed to proceed.
+This is so that unexpected problems do not prevent a team from committing code.
 
 Passes mode = "commit" by default; see L<modes|tidyall/MODES>.
 
@@ -251,7 +251,8 @@ that occur. You can create a simple datestamped log file with
 
     use Log::Any::Adapter (File => "/path/to/hooks/logs/tidyall.log");
 
-or do something fancier with one of the other Log::Any adapters.
+or do something fancier with one of the other L<Log::Any
+adapters|Log::Any::Adapter>.
 
 Having a log file is especially useful with precommit hooks since there is no
 way for the hook to send back output on a successful commit.
