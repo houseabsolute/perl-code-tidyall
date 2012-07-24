@@ -142,16 +142,16 @@ depending on how you call it:
 
 =over
 
-=item tidyall file [file...]
+=item C<< tidyall file [file...] >>
 
 C<tidyall> will search upwards from the first file for C<tidyall.ini>.
 
-=item tidyall -a
+=item C<< tidyall -a >>
 
 C<tidyall> will search upwards from the current working directory for
 C<tidyall.ini>.
 
-=item tidyall -a --root-dir dir
+=item C<< tidyall -a --root-dir dir >>
 
 C<tidyall> will expect to find C<tidyall.ini> in the specified root directory.
 
@@ -185,11 +185,11 @@ Apply C<PerlTidy> with settings "-noll -it=2" to all *.pl, *.pm, and *.t files.
 =item *
 
 Apply C<PerlCritic> with severity 3 to all Perl modules somewhere underneath
-"lib/", except for C<lib/UtterHack.pm>.
+"lib/", except for "lib/UtterHack.pm".
 
 =item *
 
-Apply C<PodTidy> with default settings to all .pm and .pod files underneath
+Apply C<PodTidy> with default settings to all *.pm and *.pod files underneath
 "lib/".
 
 =back
@@ -212,7 +212,8 @@ automatically prefixed with C<Code::TidyAll::Plugin::> unless it begins with a
 
 =item select
 
-A L<File::Zglob|File::Zglob> pattern indicating which files to select, e.g.
+A required L<File::Zglob|File::Zglob> pattern indicating which files to select,
+e.g.
 
     # All .pl and .pm files somewhere under bin, lib and t
     select = {bin,lib,t}/**/*.p[lm]
@@ -222,13 +223,13 @@ A L<File::Zglob|File::Zglob> pattern indicating which files to select, e.g.
 
 The pattern is relative to the root directory and should have no leading slash.
 All standard glob characters (C<*>, C<?>, C<[]>, C<{}>) will work; in addition,
-C<**> can be used to represent zero or more directories. See C<File::Zglob>
-documentation for more details.
+C<**> can be used to represent zero or more directories. See
+L<File::Zglob|File::Zglob> documentation for more details.
 
 =item ignore
 
-A C<File::Zglob> pattern, of the same format described above, indicating which
-files to ignore.  This overrides C<select>. e.g.
+A L<File::Zglob|File::Zglob> pattern, of the same format described above,
+indicating which files to ignore.  This overrides C<select>. e.g.
 
     # All .pl files under bin, except under bin/tmp
     select = bin/**/*.pl
@@ -408,13 +409,17 @@ Or you could specify that it be run in all modes I<except> the editor:
     except_modes = editor
     ...
 
+If you specify neither C<only_modes> nor C<except_modes> for a plugin, then it
+will always run.
+
 =head1 LAST-PROCESSED CACHE
 
 C<tidyall> keeps track of each file's signature after it was last processed. On
 subsequent runs, it will only process a file if its signature has changed. The
 cache is kept in files under the data dir.
 
-You can turn off this behavior with C<--no-cache>.
+You can force a refresh of the cache with C<--refresh-cache>, or turn off the
+behavior entirely with C<--no-cache>.
 
 =head1 BACKUPS
 

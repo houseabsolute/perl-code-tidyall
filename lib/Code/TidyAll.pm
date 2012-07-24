@@ -565,15 +565,16 @@ You must still pass the relative I<path> from the root as the second argument,
 so that we know which plugins to apply. Return a
 L<Code::TidyAll::Result|Code::TidyAll::Result> object.
 
-=item find_conf_file (start_dir)
-
-Start in the I<start_dir> and work upwards, looking for a C<tidyall.ini>.
-Return the pathname if found or throw an error if not found.
-
 =item plugins_for_path (path)
 
-Given a relative I<path> from the root, return a list of Code::TidyAll::Plugin
-objects that apply to it, or an empty list if no plugins apply.
+Given a relative I<path> from the root, return a list of
+L<Code::TidyAll::Plugin|Code::TidyAll::Plugin> objects that apply to it, or an
+empty list if no plugins apply.
+
+=item find_conf_file (start_dir)
+
+Class method. Start in the I<start_dir> and work upwards, looking for a
+C<tidyall.ini>.  Return the pathname if found or throw an error if not found.
 
 =back
 
