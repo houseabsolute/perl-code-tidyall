@@ -119,13 +119,17 @@ sub test_quiet_and_verbose : Tests {
                 $ct->process_files("$root_dir/foo.txt");
             };
             if ($error) {
-                like( $output, qr/non-alpha content found/ );
+                like( $output, qr/non-alpha content found/, "non-alpha content found ($state)" );
             }
             else {
                 is( $output, "[tidied]  foo.txt\n" ) if $state eq 'normal';
                 is( $output, "" ) if $state eq 'quiet';
-                like( $output,
-                    qr/constructing Code::TidyAll with these params.*purging old backups.*\[tidied\]  foo\.txt \(\+Code::TidyAll::Test::Plugin::UpperText\)/s
+                like( $output, qr/purging old backups/, "purging old backups ($state)" )
+                  if $state eq 'verbose';
+                like(
+                    $output,
+                    qr/\[tidied\]  foo\.txt \(\+Code::TidyAll::Test::Plugin::UpperText\)/s,
+                    "foo.txt ($state)"
                 ) if $state eq 'verbose';
             }
         }
@@ -205,8 +209,9 @@ sub test_errors : Tests {
     my $self = shift;
 
     my $root_dir = $self->create_dir( { "foo/bar.txt" => "abc" } );
-    throws_ok { Code::TidyAll->new( root_dir => $root_dir ) } qr/conf_file or plugins required/;
-    throws_ok { Code::TidyAll->new( plugins  => {} ) } qr/conf_file or root_dir required/;
+    throws_ok { Code::TidyAll->new( root_dir => $root_dir ) } qr/Missing required/;
+    throws_ok { Code::TidyAll->new( plugins  => {} ) } qr/Missing required/;
+
     throws_ok {
         Code::TidyAll->new(
             root_dir    => $root_dir,
@@ -216,11 +221,12 @@ sub test_errors : Tests {
         );
     }
     qr/unknown constructor param\(s\) 'bad_param', 'worse_param'/;
+
     throws_ok {
         Code::TidyAll->new(
             root_dir => $root_dir,
             plugins  => { 'DoesNotExist' => { select => '**/*' } }
-        );
+        )->plugin_objects;
     }
     qr/could not load plugin class/;
 
@@ -239,14 +245,15 @@ sub test_conf_file : Tests {
     my $conf_file = "$root_dir/tidyall.ini";
     write_file( $conf_file, $conf1 );
 
-    my $ct = Code::TidyAll->new( conf_file => $conf_file );
+    my $ct       = Code::TidyAll->new_from_conf_file($conf_file);
     my %expected = (
-        backup_ttl => 300,
-        no_backups => undef,
-        no_cache   => 1,
-        root_dir   => dirname($conf_file),
-        data_dir   => "$root_dir/.tidyall.d",
-        plugins    => {
+        backup_ttl      => '5m',
+        backup_ttl_secs => '300',
+        no_backups      => undef,
+        no_cache        => 1,
+        root_dir        => dirname($conf_file),
+        data_dir        => "$root_dir/.tidyall.d",
+        plugins         => {
             '+Code::TidyAll::Test::Plugin::UpperText' => { select => '**/*.txt' },
             '+Code::TidyAll::Test::Plugin::RepeatFoo' => { select => '**/foo*', times => 3 }
         }
@@ -266,6 +273,7 @@ sub test_cli : Tests {
     my $output = capture_stdout {
         system( "$^X", "bin/tidyall", "$root_dir/foo.txt", "-v" );
     };
+
     my ($params_msg) = ( $output =~ /constructing Code::TidyAll with these params:(.*)/ );
     ok( defined($params_msg), "params msg" );
     like( $params_msg, qr/backup_ttl => '15m'/,                              'backup_ttl' );

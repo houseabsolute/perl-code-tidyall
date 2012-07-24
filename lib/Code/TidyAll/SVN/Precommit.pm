@@ -6,8 +6,6 @@ use Log::Any qw($log);
 use Moo;
 use SVN::Look;
 use Try::Tiny;
-use strict;
-use warnings;
 
 # Public
 has 'conf_file'        => ( is => 'ro', default => sub { "tidyall.ini" } );
@@ -70,8 +68,8 @@ sub check {
                 mkpath( dirname($full_path), 0, 0775 );
                 write_file( $full_path, $contents );
             }
-            my $tidyall = $self->tidyall_class->new(
-                conf_file  => join( "/", $tempdir, $self->conf_file ),
+            my $tidyall = $self->tidyall_class->new_from_conf_file(
+                join( "/", $tempdir, $self->conf_file ),
                 no_cache   => 1,
                 check_only => 1,
                 mode       => 'commit',

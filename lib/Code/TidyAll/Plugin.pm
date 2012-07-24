@@ -1,29 +1,34 @@
 package Code::TidyAll::Plugin;
-use Object::Tiny qw(conf ignore name options select tidyall);
 use Code::TidyAll::Util qw(basename read_file write_file);
 use Code::TidyAll::Util::Zglob qw(zglob_to_regex);
 use Scalar::Util qw(weaken);
-use strict;
-use warnings;
+use Moo;
 
-sub new {
-    my $class = shift;
-    my $self  = $class->SUPER::new(@_);
-    die "conf required"    unless $self->{conf};
-    die "name required"    unless $self->{name};
-    die "tidyall required" unless $self->{tidyall};
+# External
+has 'conf'    => ( is => 'ro', required => 1 );
+has 'ignore'  => ( is => 'lazy' );
+has 'name'    => ( is => 'ro', required => 1 );
+has 'select'  => ( is => 'lazy' );
+has 'tidyall' => ( is => 'ro', required => 1, weak_ref => 1 );
 
-    my $name = $self->{name};
-    weaken( $self->{tidyall} );
-    $self->{select} = $self->{conf}->{select}
-      or die "select required for '$name'";
-    die "select for '$name' should not begin with /" if substr( $self->{select}, 0, 1 ) eq '/';
-    $self->{ignore} = $self->{conf}->{ignore};
-    die "ignore for '$name' should not begin with /"
-      if defined( $self->{ignore} ) && substr( $self->{ignore}, 0, 1 ) eq '/';
-    $self->{options} = $self->_build_options();
+# Internal
+has 'options' => ( is => 'lazy', init_arg => undef );
 
-    return $self;
+sub _build_select {
+    my $self = shift;
+    my $path = $self->conf->{select};
+    die sprintf( "select is required for '%s'", $self->name ) unless defined($path);
+    die sprintf( "select for '%s' should not begin with /", $self->name )
+      if ( substr( $path, 0, 1 ) eq '/' );
+    return $path;
+}
+
+sub _build_ignore {
+    my $self = shift;
+    my $path = $self->conf->{ignore};
+    die sprintf( "select for '%s' should not begin with /", $self->name )
+      if ( defined($path) && substr( $path, 0, 1 ) eq '/' );
+    return $path;
 }
 
 # No-ops by default; may be overridden in subclass

@@ -11,114 +11,120 @@ use File::Find qw(find);
 use File::Zglob;
 use List::Pairwise qw(grepp mapp);
 use List::MoreUtils qw(uniq);
+use Moo;
 use Time::Duration::Parse qw(parse_duration);
 use Try::Tiny;
 use strict;
 use warnings;
 
-sub valid_params {
-    return qw(
-      backup_ttl
-      check_only
-      conf_file
-      data_dir
-      mode
-      no_backups
-      no_cache
-      output_suffix
-      plugins
-      quiet
-      refresh_cache
-      root_dir
-      verbose
-    );
-}
-my %valid_params_hash;
-
-# Incoming parameters
-use Object::Tiny ( valid_params() );
+# External
+has 'backup_ttl'    => ( is => 'ro', default => sub { '1 hour' } );
+has 'check_only'    => ( is => 'ro' );
+has 'data_dir'      => ( is => 'lazy' );
+has 'mode'          => ( is => 'ro', default => sub { 'cli' } );
+has 'no_backups'    => ( is => 'ro' );
+has 'no_cache'      => ( is => 'ro' );
+has 'output_suffix' => ( is => 'ro', default => sub { '' } );
+has 'plugins'       => ( is => 'ro', required => 1 );
+has 'quiet'         => ( is => 'ro' );
+has 'refresh_cache' => ( is => 'ro' );
+has 'root_dir'      => ( is => 'ro', required => 1 );
+has 'verbose'       => ( is => 'ro' );
 
 # Internal
-use Object::Tiny qw(
-  backup_dir
-  base_sig
-  cache
-  matched_files
-  plugin_objects
-);
+has 'backup_dir'       => ( is => 'lazy', init_arg => undef, trigger => 1 );
+has 'backup_ttl_secs'  => ( is => 'lazy', init_arg => undef );
+has 'base_sig'         => ( is => 'lazy', init_arg => undef );
+has 'cache'            => ( is => 'lazy', init_arg => undef );
+has 'conf_file'        => ( is => 'ro', init_arg => undef );
+has 'plugin_objects'   => ( is => 'lazy', init_arg => undef );
+has 'plugins_for_mode' => ( is => 'lazy', init_arg => undef );
 
 my $ini_name = 'tidyall.ini';
 
-sub new {
-    my $class  = shift;
-    my %params = @_;
+sub _build_backup_dir {
+    my $self = shift;
+    return $self->data_dir . "/backups";
+}
 
-    # Read params from conf file
+sub _build_backup_ttl_secs {
+    my $self = shift;
+    return parse_duration( $self->backup_ttl );
+}
+
+sub _build_base_sig {
+    my $self = shift;
+    return $self->_sig( [ $Code::TidyAll::VERSION || 0 ] );
+}
+
+sub _build_cache {
+    my $self = shift;
+    return Code::TidyAll::Cache->new( cache_dir => $self->data_dir . "/cache" );
+}
+
+sub _build_data_dir {
+    my $self = shift;
+    return $self->root_dir . "/.tidyall.d";
+}
+
+sub _build_plugins_for_mode {
+    my $self    = shift;
+    my $plugins = $self->plugins;
+    if ( my $mode = $self->mode ) {
+        $plugins = { grepp { $self->_plugin_conf_matches_mode( $b, $mode ) } %{ $self->plugins } };
+    }
+    return $plugins;
+}
+
+sub _build_plugin_objects {
+    my $self = shift;
+    return [
+        map { $self->_load_plugin( $_, $self->plugins->{$_} ) }
+        sort keys( %{ $self->plugins_for_mode } )
+    ];
+}
+
+sub BUILD {
+    my ( $self, $params ) = @_;
+
+    # Strict constructor
     #
-    if ( my $conf_file = delete( $params{conf_file} ) ) {
-        my $conf_params = $class->_read_conf_file($conf_file);
-        my $main_params = delete( $conf_params->{'_'} ) || {};
-        %params = (
-            plugins  => $conf_params,
-            root_dir => realpath( dirname($conf_file) ),
-            %$main_params, %params
-        );
+    if ( my @bad_params = grep { !$self->can($_) } keys(%$params) ) {
+        die sprintf( "unknown constructor param(s) %s",
+            join( ", ", sort map { "'$_'" } @bad_params ) );
     }
-    else {
-        die "conf_file or plugins required"  unless $params{plugins};
-        die "conf_file or root_dir required" unless $params{root_dir};
-        $params{root_dir} = realpath( $params{root_dir} );
+
+    $self->{root_dir}         = realpath( $self->{root_dir} );
+    $self->{plugins_for_path} = {};
+
+    unless ( $self->no_backups ) {
+        mkpath( $self->backup_dir, 0, 0775 );
+        $self->_purge_backups_periodically();
     }
+}
+
+sub new_from_conf_file {
+    my ( $class, $conf_file, %params ) = @_;
+
+    my $conf_params = $class->_read_conf_file($conf_file);
+    my $main_params = delete( $conf_params->{'_'} ) || {};
+    %params = (
+        plugins  => $conf_params,
+        root_dir => realpath( dirname($conf_file) ),
+        %$main_params, %params
+    );
 
     # Initialize with alternate class if given
     #
     if ( my $tidyall_class = delete( $params{tidyall_class} ) ) {
         die "cannot load '$tidyall_class'" unless can_load($tidyall_class);
-        return $tidyall_class->new(%params);
-    }
-
-    # Check param validity
-    #
-    my $valid_params_hash = $valid_params_hash{$class} ||=
-      { map { ( $_, 1 ) } $class->valid_params() };
-    if ( my @bad_params = grep { !$valid_params_hash->{$_} } keys(%params) ) {
-        die sprintf( "unknown constructor param(s) %s",
-            join( ", ", sort map { "'$_'" } @bad_params ) );
+        $class = $tidyall_class;
     }
 
     $class->msg( "constructing %s with these params: %s", $class, dump_one_line( \%params ) )
       if ( $params{verbose} );
 
-    my $self = $class->SUPER::new(%params);
-
-    $self->{data_dir}      ||= $self->root_dir . "/.tidyall.d";
-    $self->{output_suffix} ||= '';
-    $self->{mode}          ||= 'cli';
-
-    unless ( $self->no_cache ) {
-        $self->{cache} = Code::TidyAll::Cache->new( cache_dir => $self->data_dir . "/cache" );
-    }
-
-    unless ( $self->no_backups ) {
-        $self->{backup_dir} = $self->data_dir . "/backups";
-        mkpath( $self->backup_dir, 0, 0775 );
-        $self->{backup_ttl} ||= '1 hour';
-        $self->{backup_ttl} = parse_duration( $self->{backup_ttl} )
-          unless $self->{backup_ttl} =~ /^\d+$/;
-        $self->_purge_backups_periodically();
-    }
-
-    if ( my $mode = $self->mode ) {
-        $self->{plugins} =
-          { grepp { $self->_plugin_conf_matches_mode( $b, $mode ) } %{ $self->plugins } };
-    }
-
-    $self->{base_sig} = $self->_sig( [ $Code::TidyAll::VERSION || 0 ] );
-    $self->{plugin_objects} =
-      [ map { $self->_load_plugin( $_, $self->plugins->{$_} ) } sort keys( %{ $self->plugins } ) ];
-    $self->{plugins_for_path} = {};
-
-    return $self;
+    return $class->new(%params);
 }
 
 sub _load_plugin {
@@ -170,7 +176,7 @@ sub process_file {
     my ( $self, $file ) = @_;
 
     my $path      = $self->_small_path($file);
-    my $cache     = $self->cache;
+    my $cache     = $self->no_cache ? undef : $self->cache;
     my $cache_key = "sig/$path";
     my $contents  = my $orig_contents = read_file($file);
     if ( $cache && ( my $sig = $cache->get($cache_key) ) ) {
@@ -282,12 +288,11 @@ sub _backup_filename {
 
 sub _purge_backups_periodically {
     my ($self) = @_;
-    if ( my $cache = $self->cache ) {
-        my $last_purge_backups = $cache->get("last_purge_backups") || 0;
-        if ( time > $last_purge_backups + $self->backup_ttl ) {
-            $self->_purge_backups();
-            $cache->set( "last_purge_backups", time() );
-        }
+    my $cache = $self->cache;
+    my $last_purge_backups = $cache->get("last_purge_backups") || 0;
+    if ( time > $last_purge_backups + $self->backup_ttl_secs ) {
+        $self->_purge_backups();
+        $cache->set( "last_purge_backups", time() );
     }
 }
 
@@ -298,7 +303,7 @@ sub _purge_backups {
         {
             follow => 0,
             wanted => sub {
-                unlink $_ if -f && /\.bak$/ && time > ( stat($_) )[9] + $self->backup_ttl;
+                unlink $_ if -f && /\.bak$/ && time > ( stat($_) )[9] + $self->backup_ttl_secs;
             },
             no_chdir => 1
         },
@@ -422,8 +427,9 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
     use Code::TidyAll;
 
-    my $ct = Code::TidyAll->new(
-        conf_file => '/path/to/conf/file'
+    my $ct = Code::TidyAll->new_from_conf_file(
+        '/path/to/conf/file',
+        ...
     );
 
     # or
@@ -454,9 +460,28 @@ overview.
 
 You can call this API from your own program instead of executing C<tidyall>.
 
-=head1 CONSTRUCTOR OPTIONS
+=head1 CONSTRUCTION
 
-You must either pass C<conf_file>, or both C<plugins> and C<root_dir>.
+=head2 Construtor methods
+
+=over
+
+=item new (%params)
+
+The regular constructor. Must pass at least I<plugins> and I<root_dir>.
+
+=item new_with_conf_file ($conf_file, %params)
+
+Takes a conf file path, followed optionally by a set of key/value parameters. 
+Reads parameters out of the conf file and combines them with the passed
+parameters (the latter take precedence), and calls the regular constructor.
+
+If the conf file or params defines I<tidyall_class>, then that class is
+constructed instead of C<Code::TidyAll>.
+
+=back
+
+=head2 Constructor parameters
 
 =over
 
@@ -469,8 +494,6 @@ equivalent to what would be parsed out of the sections in C<tidyall.ini>.
 
 =item check_only
 
-=item conf_file
-
 =item data_dir
 
 =item mode
@@ -479,9 +502,11 @@ equivalent to what would be parsed out of the sections in C<tidyall.ini>.
 
 =item no_cache
 
-=item root_dir
+=item output_suffix
 
 =item quiet
+
+=item root_dir
 
 =item verbose
 
