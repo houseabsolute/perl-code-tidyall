@@ -7,12 +7,14 @@ Revision history for Code-TidyAll
 * Improvements
   - Add svn precommit hook (Code::TidyAll::SVN::Precommit)
   - Add preprocess_source and postprocess_source to plugins
+  - Add only_modes and except_modes configuration for plugins
   - Add Code::TidyAll::process_source(), for processing a string instead of a file
   - When only specified files are being processed, don't scan the whole hierarchy
   - Add -I flag to tidyall
 
 * Implementation
   - Switch to Moo
+  - Add separate new_from_conf_file constructor, for cleaner separation of cases
 
 0.02  Jul 3, 2012
 
