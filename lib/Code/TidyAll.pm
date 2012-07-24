@@ -54,7 +54,8 @@ sub _build_backup_ttl_secs {
 
 sub _build_base_sig {
     my $self = shift;
-    return $self->_sig( [ $Code::TidyAll::VERSION || 0 ] );
+    my $active_plugins = join( "|", map { $_->name } @{ $self->plugin_objects } );
+    return $self->_sig( [ $Code::TidyAll::VERSION || 0, $active_plugins ] );
 }
 
 sub _build_cache {
