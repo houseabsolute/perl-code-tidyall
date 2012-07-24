@@ -221,9 +221,9 @@ A L<File::Zglob|File::Zglob> pattern indicating which files to select, e.g.
     select = **/*.txt
 
 The pattern is relative to the root directory and should have no leading slash.
- All standard glob characters (C<*>, C<?>, C<[]>, C<{}>) will work; in
-addition, C<**> can be used to represent zero or more directories. See
-C<File::Zglob> documentation for more details.
+All standard glob characters (C<*>, C<?>, C<[]>, C<{}>) will work; in addition,
+C<**> can be used to represent zero or more directories. See C<File::Zglob>
+documentation for more details.
 
 =item ignore
 
@@ -234,15 +234,23 @@ files to ignore.  This overrides C<select>. e.g.
     select = bin/**/*.pl
     ignore = bin/tmp/*.pl
 
-=item modes
+=item only_modes
 
-An optional list of modes, separated by whitespace, in which this plugin should
-run. e.g.
+A list of modes, separated by whitespace. e.g.
 
-    modes = editor commit
+    only_modes = tests cli
 
-When a mode is passed to C<tidyall> via C<-m> or C<--mode>, only the plugins
-with that mode will run. If no mode is passed to C<tidyall>, all plugins run.
+The plugin will I<only> run if one of these modes is passed to C<tidyall> via
+C<-m> or C<--mode>.
+
+=item except_modes
+
+A list of modes, separated by whitespace. e.g.
+
+    except_modes = commit editor
+
+The plugin will I<not> run if one of these modes is passed to C<tidyall> via
+C<-m> or C<--mode>.
 
 =item argv
 
@@ -269,9 +277,8 @@ Print help message
 
 =item -m, --mode       
 
-Optional mode (e.g. "editor", "commit") indicating a subset of plugins to run. 
-For example, if you pass "-m editor", only plugins with "editor" in their modes
-list will run. If no mode is passed, all plugins run.
+Optional mode that can affect which plugins run. Defaults to 'cli'. See
+L</MODES>.
 
 =item -q, --quiet      
 
@@ -351,6 +358,55 @@ above the plugin sections. Replace dashes with underscores. e.g.
     ...
 
 If an option is passed in both places, the command-line takes precedence.
+
+=head1 MODES
+
+You can use tidyall in a number of different contexts, and you may not want to
+run all plugins in all of them.
+
+You can pass a mode to tidyall via C<-m> or C<--mode>, and then specify that
+certain plugins should only be run in certain modes (via L</only_modes>) or
+should be run in all but certain modes (via L</except_modes>).
+
+Examples of modes:
+
+=over
+
+=item *
+
+C<cli> - when invoking tidyall explicitly from the command-line with no mode
+specified
+
+=item *
+
+C<editor> - when invoking from an editor
+
+=item *
+
+C<commit> - when using a commit hook like
+L<Code::TidyAll::SVN::Precommit|Code::TidyAll::SVN::Precommit>
+
+=item *
+
+C<test> - when using L<Test::Code::TidyAll|Test::Code::TidyAll>
+
+=back
+
+Now since L<perlcritic|Code::TidyAll::Plugin::PerlCritic> is a bit
+time-consuming, you might only want to run it during tests and explicit
+command-line invocation:
+
+    [PerlCritic]
+    select = lib/**/*.pm
+    only_modes = tests cli
+    ...
+
+Or you could specify that it be run in all modes I<except> the editor:
+
+    [PerlCritic]
+    select = lib/**/*.pm
+    except_modes = editor
+    ...
 
 =head1 LAST-PROCESSED CACHE
 

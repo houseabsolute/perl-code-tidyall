@@ -91,8 +91,9 @@ sub new {
 
     my $self = $class->SUPER::new(%params);
 
-    $self->{data_dir} ||= $self->root_dir . "/.tidyall.d";
+    $self->{data_dir}      ||= $self->root_dir . "/.tidyall.d";
     $self->{output_suffix} ||= '';
+    $self->{mode}          ||= 'cli';
 
     unless ( $self->no_cache ) {
         $self->{cache} = Code::TidyAll::Cache->new( cache_dir => $self->data_dir . "/cache" );
@@ -109,7 +110,7 @@ sub new {
 
     if ( my $mode = $self->mode ) {
         $self->{plugins} =
-          { grepp { $b->{modes} && ( " " . $b->{modes} . " " =~ /$mode/ ) } %{ $self->plugins } };
+          { grepp { $self->_plugin_conf_matches_mode( $b, $mode ) } %{ $self->plugins } };
     }
 
     $self->{base_sig} = $self->_sig( [ $Code::TidyAll::VERSION || 0 ] );
@@ -139,6 +140,18 @@ sub _load_plugin {
         name    => $plugin_name,
         tidyall => $self
     );
+}
+
+sub _plugin_conf_matches_mode {
+    my ( $self, $conf, $mode ) = @_;
+
+    if ( my $only_modes = $conf->{only_modes} ) {
+        return 0 if ( " " . $only_modes . " " ) !~ / $mode /;
+    }
+    if ( my $except_modes = $conf->{except_modes} ) {
+        return 0 if ( " " . $except_modes . " " ) =~ / $mode /;
+    }
+    return 1;
 }
 
 sub process_all {

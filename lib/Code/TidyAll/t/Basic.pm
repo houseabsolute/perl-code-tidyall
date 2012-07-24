@@ -69,13 +69,16 @@ sub test_basic : Tests {
     );
     $self->tidy(
         plugins => {
-            %UpperText, test_plugin('ReverseFoo') => { select => '**/foo*', modes => 'reversals' }
+            test_plugin('UpperText')  => { select => '**/*.txt', only_modes => 'upper' },
+            test_plugin('ReverseFoo') => { select => '**/foo*',  only_modes => 'reversals' }
         },
         source  => { "foo.txt" => "abc" },
         dest    => { "foo.txt" => "cba" },
         desc    => 'one file reversals mode',
         options => { mode      => 'reversals' },
     );
+    return;
+
     $self->tidy(
         plugins => { %UpperText, %ReverseFoo },
         source  => {
@@ -104,14 +107,14 @@ sub test_basic : Tests {
 sub test_quiet_and_verbose : Tests {
     my $self = shift;
 
-    foreach my $mode ( 'normal', 'quiet', 'verbose' ) {
+    foreach my $state ( 'normal', 'quiet', 'verbose' ) {
         foreach my $error ( 0, 1 ) {
             my $root_dir = $self->create_dir( { "foo.txt" => ( $error ? "123" : "abc" ) } );
             my $output = capture_stdout {
                 my $ct = Code::TidyAll->new(
                     plugins  => {%UpperText},
                     root_dir => $root_dir,
-                    ( $mode eq 'normal' ? () : ( $mode => 1 ) )
+                    ( $state eq 'normal' ? () : ( $state => 1 ) )
                 );
                 $ct->process_files("$root_dir/foo.txt");
             };
@@ -119,11 +122,11 @@ sub test_quiet_and_verbose : Tests {
                 like( $output, qr/non-alpha content found/ );
             }
             else {
-                is( $output, "[tidied]  foo.txt\n" ) if $mode eq 'normal';
-                is( $output, "" ) if $mode eq 'quiet';
+                is( $output, "[tidied]  foo.txt\n" ) if $state eq 'normal';
+                is( $output, "" ) if $state eq 'quiet';
                 like( $output,
                     qr/constructing Code::TidyAll with these params.*purging old backups.*\[tidied\]  foo\.txt \(\+Code::TidyAll::Test::Plugin::UpperText\)/s
-                ) if $mode eq 'verbose';
+                ) if $state eq 'verbose';
             }
         }
     }

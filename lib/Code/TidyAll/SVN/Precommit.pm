@@ -74,6 +74,7 @@ sub check {
                 conf_file  => join( "/", $tempdir, $self->conf_file ),
                 no_cache   => 1,
                 check_only => 1,
+                mode       => 'commit',
                 %{ $self->tidyall_options },
             );
             my $stdout = capture_stdout {
@@ -202,6 +203,8 @@ the first configuration file it finds.
 By default, if C<tidyall.ini> cannot be found, or if a runtime error occurs, a
 warning is logged (see below) but the commit is allowed to proceed. This is so
 that unexpected problems do not prevent a team from committing code.
+
+Passes mode = "commit" by default; see L<modes|tidyall/MODES>.
 
 Key/value parameters:
 
