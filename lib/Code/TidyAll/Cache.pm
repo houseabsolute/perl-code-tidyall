@@ -1,16 +1,9 @@
 package Code::TidyAll::Cache;
-use Object::Tiny qw(cache_dir);
 use Digest::SHA1 qw(sha1_hex);
 use Code::TidyAll::Util qw(dirname mkpath read_file write_file);
-use strict;
-use warnings;
+use Moo;
 
-sub new {
-    my $class = shift;
-    my $self  = $class->SUPER::new(@_);
-    die "cache_dir required" unless $self->{cache_dir};
-    return $self;
-}
+has 'cache_dir' => ( is => 'ro', required => 1 );
 
 sub path_to_key {
     my ( $self, $key ) = @_;
