@@ -11,6 +11,9 @@ Revision history for Code-TidyAll
   - When only specified files are being processed, don't scan the whole hierarchy
   - Add -I flag to tidyall
 
+* Implementation
+  - Switch to Moo
+
 0.02  Jul 3, 2012
 
 * Improvements
