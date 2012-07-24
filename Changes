@@ -6,8 +6,9 @@ Revision history for Code-TidyAll
 
 * Improvements
   - Add svn precommit hook (Code::TidyAll::SVN::Precommit)
-  - When only specified files are being processed, don't scan the whole hierarchy.
-  - Add process_source(), for processing a string instead of a file
+  - Add preprocess_source and postprocess_source to plugins
+  - Add Code::TidyAll::process_source(), for processing a string instead of a file
+  - When only specified files are being processed, don't scan the whole hierarchy
   - Add -I flag to tidyall
 
 0.02  Jul 3, 2012
