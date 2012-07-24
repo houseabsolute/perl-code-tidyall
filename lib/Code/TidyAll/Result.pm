@@ -1,8 +1,10 @@
 package Code::TidyAll::Result;
-use strict;
-use warnings;
+use Moo;
 
-use Object::Tiny qw(msg path state new_contents);
+has 'msg'          => ( is => 'ro' );
+has 'new_contents' => ( is => 'ro' );
+has 'path'         => ( is => 'ro' );
+has 'state'        => ( is => 'ro' );
 
 sub error { return $_[0]->state eq 'error' }
 sub ok { return $_[0]->state ne 'error' }
