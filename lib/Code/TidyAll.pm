@@ -36,7 +36,6 @@ has 'backup_dir'       => ( is => 'lazy', init_arg => undef, trigger => 1 );
 has 'backup_ttl_secs'  => ( is => 'lazy', init_arg => undef );
 has 'base_sig'         => ( is => 'lazy', init_arg => undef );
 has 'cache'            => ( is => 'lazy', init_arg => undef );
-has 'conf_file'        => ( is => 'ro', init_arg => undef );
 has 'plugin_objects'   => ( is => 'lazy', init_arg => undef );
 has 'plugins_for_mode' => ( is => 'lazy', init_arg => undef );
 

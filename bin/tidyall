@@ -15,12 +15,12 @@ sub usage {
     Pod::Usage::pod2usage( { verbose => 1 } );
 }
 
-my ( %params, $help, $all, $inc_dirs );
+my ( %params, $all_files, $conf_file, $git_files, $help, $inc_dirs, $svn_files );
 
 GetOptions(
     'backup-ttl=i'    => \$params{backup_ttl},
     'check-only=s'    => \$params{check_only},
-    'conf-file=s'     => \$params{conf_file},
+    'conf-file=s'     => \$conf_file,
     'data-dir=s'      => \$params{data_dir},
     'no-backups'      => \$params{no_backups},
     'no-cache'        => \$params{no_cache},
@@ -28,9 +28,11 @@ GetOptions(
     'refresh-cache'   => \$params{refresh_cache},
     'root-dir=s'      => \$params{root_dir},
     'tidyall-class=s' => \$params{tidyall_class},
-    'a|all'           => \$all,
+    'a|all'           => \$all_files,
+    'g|git'           => \$git_files,
     'h|help'          => \$help,
     'm|mode=s'        => \$params{mode},
+    's|svn'           => \$svn_files,
     'q|quiet'         => \$params{quiet},
     'v|verbose'       => \$params{verbose},
     'I'               => \$inc_dirs,
@@ -42,19 +44,23 @@ unshift( @INC, split( /\s*,\s*/, $inc_dirs ) ) if defined($inc_dirs);
 
 %params = slice_def( \%params );
 
-$params{conf_file} ||= "$params{root_dir}/tidyall.ini" if ( $params{root_dir} );
+$conf_file = "$params{root_dir}/tidyall.ini" if $params{root_dir};
+
+my $tidyall_class = $params{tidyall_class} || 'Code::TidyAll';
 
 my @results;
-if ($all) {
-    my $conf_file ||= Code::TidyAll->find_conf_file( cwd() );
-    my $ct = Code::TidyAll->new_from_conf_file( $conf_file, %params );
-    @results = $ct->process_all();
+if ($all_files || $svn_files || $git_files) {
+    my $conf_file = $tidyall_class->find_conf_file( cwd() );
+    my $ct = $tidyall_class->new_from_conf_file( $conf_file, %params );
+    my @files = ($all_files) ? $ct->matched_files : ($svn_files) ? Code::TidyAll::SVN->uncommitted_files() : ($git_files) ? Code::TidyAll::Git->uncommitted_files() : die;
+}
+elsif (my @files = @ARGV) {
+    my $conf_file = $tidyall_class->find_conf_file( dirname( $files[0] ) );
+    my $ct = $tidyall_class->new_from_conf_file( $conf_file, %params );
+    @results = $ct->process_files(@files);
 }
 else {
-    my @files = @ARGV or die "file(s) or -a required";
-    my $conf_file ||= Code::TidyAll->find_conf_file( dirname( $files[0] ) );
-    my $ct = Code::TidyAll->new_from_conf_file( $conf_file, %params );
-    @results = $ct->process_files(@files);
+    die "must pass -a, -s, -g, or filename(s)";
 }
 
 my $status = ( grep { $_->error } @results ) ? 1 : 0;
