@@ -58,11 +58,11 @@ if ( $all_files || $svn_files || $git_files ) {
     }
     elsif ($svn_files) {
         require Code::TidyAll::SVN::Util;
-        @files = Code::TidyAll::SVN::Util::svn_uncommitted_files();
+        @files = Code::TidyAll::SVN::Util::svn_uncommitted_files($ct->root_dir);
     }
     elsif ($git_files) {
         require Code::TidyAll::Git::Util;
-        @files = Code::TidyAll::Git::Util::git_uncommitted_files();
+        @files = Code::TidyAll::Git::Util::git_uncommitted_files($ct->root_dir);
     }
 }
 elsif ( my @files = @ARGV ) {
