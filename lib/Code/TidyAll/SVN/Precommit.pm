@@ -260,7 +260,7 @@ Subclass to use instead of L<Code::TidyAll|Code::TidyAll>
 
 =item tidyall_options
 
-Options to pass to the L<Code::TidyAll|Code::TidyAll> constructor
+Hashref of options to pass to the L<Code::TidyAll|Code::TidyAll> constructor
 
 =item txn
 
