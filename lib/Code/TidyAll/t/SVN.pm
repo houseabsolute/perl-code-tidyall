@@ -1,17 +1,15 @@
 package Code::TidyAll::t::SVN;
+use Capture::Tiny qw(capture_stdout capture_stderr capture);
+use Code::TidyAll::SVN::Precommit;
+use Code::TidyAll::SVN::Util qw(svn_uncommitted_files);
 use Code::TidyAll::Util qw(dirname mkpath read_file realpath tempdir_simple write_file);
 use Code::TidyAll;
-use Capture::Tiny qw(capture_stdout capture_stderr capture);
 use IPC::System::Simple qw(run);
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 
 my ( $precommit_hook_template, $tidyall_ini_template );
 
-sub test_basic : Tests {
-    ok(1);
-}
-
-sub test_svn_precommit_hook : Tests {
+sub test_svn : Tests {
     my ($self) = @_;
 
     my $temp_dir = tempdir_simple;
@@ -51,6 +49,7 @@ sub test_svn_precommit_hook : Tests {
     run( sprintf( 'svn -q checkout file://%s/myapp/trunk %s',           $repo_dir, $work_dir ) );
 
     is( read_file("$work_dir/foo.txt"), "abc", "checkout and import ok" );
+    cmp_deeply( [ svn_uncommitted_files($work_dir) ], [], "no uncommitted files" );
 
     my $precommit_hook_file = "$hooks_dir/pre-commit";
     my $precommit_hook = sprintf( $precommit_hook_template, realpath("lib"), $hook_log );
@@ -58,15 +57,23 @@ sub test_svn_precommit_hook : Tests {
     chmod( 0775, $precommit_hook_file );
 
     write_file( "$work_dir/foo.txt", "abc " );
+    cmp_deeply( [ svn_uncommitted_files($work_dir) ], [ re("foo.txt") ], "one uncommitted file" );
+
     $stderr =
       capture_stderr { run( sprintf( 'svn -q commit -m "changed" %s/foo.txt', $work_dir ) ) };
     unlike( $stderr, qr/\S/ );
     $log_contains->(qr|could not find 'tidyall.ini' upwards from 'myapp/trunk/foo.txt'|);
     $clear_log->();
     $committed->();
+    cmp_deeply( [ svn_uncommitted_files($work_dir) ], [], "no uncommitted files" );
 
     write_file( "$work_dir/tidyall.ini", sprintf($tidyall_ini_template) );
-    run( sprintf( 'svn -q add %s/tidyall.ini',               $work_dir ) );
+    run( sprintf( 'svn -q add %s/tidyall.ini', $work_dir ) );
+    cmp_deeply(
+        [ svn_uncommitted_files($work_dir) ],
+        [ re("tidyall.ini") ],
+        "one uncommitted file"
+    );
     run( sprintf( 'svn -q commit -m "added" %s/tidyall.ini', $work_dir ) );
 
     write_file( "$work_dir/foo.txt", "abc" );

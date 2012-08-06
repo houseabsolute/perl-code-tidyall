@@ -163,7 +163,7 @@ sub _plugin_conf_matches_mode {
 sub process_all {
     my $self = shift;
 
-    return $self->process_files( $self->_find_matched_files );
+    return $self->process_files( $self->find_matched_files );
 }
 
 sub process_files {
@@ -346,7 +346,7 @@ sub _find_conf_file_upward {
     }
 }
 
-sub _find_matched_files {
+sub find_matched_files {
     my ($self) = @_;
 
     my @matched_files;

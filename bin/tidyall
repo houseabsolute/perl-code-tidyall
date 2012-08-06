@@ -49,12 +49,23 @@ $conf_file = "$params{root_dir}/tidyall.ini" if $params{root_dir};
 my $tidyall_class = $params{tidyall_class} || 'Code::TidyAll';
 
 my @results;
-if ($all_files || $svn_files || $git_files) {
+if ( $all_files || $svn_files || $git_files ) {
     my $conf_file = $tidyall_class->find_conf_file( cwd() );
     my $ct = $tidyall_class->new_from_conf_file( $conf_file, %params );
-    my @files = ($all_files) ? $ct->matched_files : ($svn_files) ? Code::TidyAll::SVN->uncommitted_files() : ($git_files) ? Code::TidyAll::Git->uncommitted_files() : die;
+    my @files;
+    if ($all_files) {
+        @files = $ct->find_matched_files;
+    }
+    elsif ($svn_files) {
+        require Code::TidyAll::SVN::Util;
+        @files = Code::TidyAll::SVN::Util::svn_uncommitted_files();
+    }
+    elsif ($git_files) {
+        require Code::TidyAll::Git::Util;
+        @files = Code::TidyAll::Git::Util::git_uncommitted_files();
+    }
 }
-elsif (my @files = @ARGV) {
+elsif ( my @files = @ARGV ) {
     my $conf_file = $tidyall_class->find_conf_file( dirname( $files[0] ) );
     my $ct = $tidyall_class->new_from_conf_file( $conf_file, %params );
     @results = $ct->process_files(@files);
@@ -278,6 +289,10 @@ Process all files. Does a recursive search for all files in the project
 hierarchy, starting at the root, and processes any file that matches at least
 one plugin in the configuration.
 
+=item -g, --git
+
+Process all added or modified files in the current svn working directory.
+
 =item -h, --help       
 
 Print help message
@@ -286,6 +301,10 @@ Print help message
 
 Optional mode that can affect which plugins run. Defaults to 'cli'. See
 L</MODES>.
+
+=item -s, --svn
+
+Process all added or modified files in the current svn working directory.
 
 =item -q, --quiet      
 
