@@ -94,8 +94,9 @@ sub test_svn : Tests {
     $committed->();
 
     write_file( "$work_dir/foo.txt", "def" );
-    $stderr =
-      capture_stderr { system( sprintf( 'svn -q commit -m "NO TIDYALL - emergency fix!" %s/foo.txt', $work_dir ) ) };
+    $stderr = capture_stderr {
+        system( sprintf( 'svn -q commit -m "NO TIDYALL - emergency fix!" %s/foo.txt', $work_dir ) );
+    };
     unlike( $stderr, qr/\S/ );
     $committed->();
 }

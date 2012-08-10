@@ -19,7 +19,7 @@ has 'txn'                      => ( is => 'ro', default => sub { $ARGV[1] } );
 
 # Private
 has 'cat_file_cache' => ( init_arg => undef, is => 'ro', default => sub { {} } );
-has 'revlook' => ( init_arg => undef, is => 'lazy' );
+has 'revlook'        => ( init_arg => undef, is => 'lazy' );
 
 sub _build_revlook {
     my $self = shift;
@@ -32,13 +32,13 @@ sub check {
     my $fail_msg;
 
     try {
-        my $self = $class->new(%params);
+        my $self    = $class->new(%params);
         my $revlook = $self->revlook;
 
         # Skip if emergency comment prefix is present
         #
-        if (my $prefix = $self->emergency_comment_prefix) {
-            if (index($revlook->log_msg, $prefix) == 0) {
+        if ( my $prefix = $self->emergency_comment_prefix ) {
+            if ( index( $revlook->log_msg, $prefix ) == 0 ) {
                 return;
             }
         }
@@ -204,7 +204,8 @@ commit is rejected and the reason(s) are output to the client. e.g.
       at /tmp/Code-TidyAll-0e6K/Driver.pm line 2
       [TestingAndDebugging::RequireUseStrict]
 
-In an emergency the hook can be bypassed by prefixing the comment with "NO TIDYALL", e.g.
+In an emergency the hook can be bypassed by prefixing the comment with "NO
+TIDYALL", e.g.
 
     % svn commit -m "NO TIDYALL - this is an emergency!" CHI.pm CHI/Driver.pm 
     Sending        CHI/Driver.pm
@@ -216,9 +217,9 @@ The configuration file (C<tidyall.ini> by default) must be checked into svn.
 For each file, the hook will look upwards from the file's repo location and use
 the first configuration file it finds.
 
-By default, if C<tidyall.ini> cannot be found, or if a runtime error occurs,
-a warning is logged (see L</LOGGING> below) but the commit is allowed to
-proceed.  This is so that unexpected problems do not prevent valid commits.
+By default, if C<tidyall.ini> cannot be found, or if a runtime error occurs, a
+warning is logged (see L</LOGGING> below) but the commit is allowed to proceed.
+ This is so that unexpected problems do not prevent valid commits.
 
 Passes mode = "commit" by default; see L<modes|tidyall/MODES>.
 

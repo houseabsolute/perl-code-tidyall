@@ -48,7 +48,7 @@ $conf_file = "$params{root_dir}/tidyall.ini" if $params{root_dir};
 
 my $tidyall_class = $params{tidyall_class} || 'Code::TidyAll';
 
-my @results;
+my (@results);
 if ( $all_files || $svn_files || $git_files ) {
     my $conf_file = $tidyall_class->find_conf_file( cwd() );
     my $ct = $tidyall_class->new_from_conf_file( $conf_file, %params );
@@ -58,12 +58,13 @@ if ( $all_files || $svn_files || $git_files ) {
     }
     elsif ($svn_files) {
         require Code::TidyAll::SVN::Util;
-        @files = Code::TidyAll::SVN::Util::svn_uncommitted_files($ct->root_dir);
+        @files = Code::TidyAll::SVN::Util::svn_uncommitted_files( $ct->root_dir );
     }
     elsif ($git_files) {
         require Code::TidyAll::Git::Util;
-        @files = Code::TidyAll::Git::Util::git_uncommitted_files($ct->root_dir);
+        @files = Code::TidyAll::Git::Util::git_uncommitted_files( $ct->root_dir );
     }
+    @results = $ct->process_files(@files);
 }
 elsif ( my @files = @ARGV ) {
     my $conf_file = $tidyall_class->find_conf_file( dirname( $files[0] ) );
@@ -71,7 +72,7 @@ elsif ( my @files = @ARGV ) {
     @results = $ct->process_files(@files);
 }
 else {
-    die "must pass -a, -s, -g, or filename(s)";
+    die "must pass -a/--all, -s/--svn, -g/--git, or filename(s)";
 }
 
 my $status = ( grep { $_->error } @results ) ? 1 : 0;
