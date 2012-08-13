@@ -19,7 +19,7 @@ my ( %params, $all_files, $conf_file, $git_files, $help, $inc_dirs, $svn_files )
 
 GetOptions(
     'backup-ttl=i'    => \$params{backup_ttl},
-    'check-only=s'    => \$params{check_only},
+    'check-only'      => \$params{check_only},
     'conf-file=s'     => \$conf_file,
     'data-dir=s'      => \$params{data_dir},
     'no-backups'      => \$params{no_backups},
