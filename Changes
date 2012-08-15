@@ -6,11 +6,16 @@ Revision history for Code-TidyAll
 
 * Fixes
   - Add back missing plugins
+  - Fix --check-only flag
+
+* Improvements
+  - Add --svn flag
+  - Add emergency_comment_prefix ("NO TIDYALL") to svn precommit hook
 
 0.03  Jul 24, 2012
 
 * Improvements
-  - Add svn precommit hook (Code::TidyAll::SVN::Precommit) and --svn flag
+  - Add svn precommit hook (Code::TidyAll::SVN::Precommit)
   - Add preprocess_source and postprocess_source to plugins
   - Add only_modes and except_modes configuration for plugins
   - Add Code::TidyAll::process_source(), for processing a string instead of a file
