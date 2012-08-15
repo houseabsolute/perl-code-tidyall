@@ -8,5 +8,3 @@ release
 tmp
 z-backup
 .tidyall.d
-lib/Code/TidyAll/Plugin/Mason
-lib/Code/TidyAll/Plugin/Perl
