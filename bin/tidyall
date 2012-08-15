@@ -290,10 +290,6 @@ Process all files. Does a recursive search for all files in the project
 hierarchy, starting at the root, and processes any file that matches at least
 one plugin in the configuration.
 
-=item -g, --git
-
-Process all added or modified files in the current svn working directory.
-
 =item -h, --help       
 
 Print help message
