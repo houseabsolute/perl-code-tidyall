@@ -13,8 +13,6 @@
 ^tmp
 ^weaver.ini
 ^z-backup
-^lib/Code/TidyAll/Plugin/Mason
-^lib/Code/TidyAll/Plugin/Perl
 ~$
 (^|/)#
 (^|/)\.
