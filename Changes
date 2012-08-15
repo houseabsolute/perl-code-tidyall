@@ -2,10 +2,12 @@ Revision history for Code-TidyAll
 
 ** denotes an incompatible change
 
-0.03  Aug 14, 2012
+0.04  July 24, 2012
 
 * Fixes
   - Add back missing plugins
+
+0.03  July 24, 2012
 
 * Improvements
   - Add svn precommit hook (Code::TidyAll::SVN::Precommit) and --svn flag
