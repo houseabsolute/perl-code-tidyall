@@ -208,7 +208,7 @@ sub process_source {
     if ( !@plugins ) {
         $self->msg( "[no plugins apply%s] %s",
             $self->mode ? " for mode '" . $self->mode . "'" : "", $path )
-          unless $self->quiet;
+          if $self->verbose;
         return Code::TidyAll::Result->new( path => $path, state => 'no_match' );
     }
 
