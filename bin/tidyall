@@ -382,6 +382,11 @@ above the plugin sections. Replace dashes with underscores. e.g.
 
 If an option is passed in both places, the command-line takes precedence.
 
+=head1 EXIT STATUS
+
+C<tidyall> will exit with status 1 if any errors occurred while processing
+files, and 0 otherwise.
+
 =head1 MODES
 
 You can use tidyall in a number of different contexts, and you may not want to
@@ -456,16 +461,28 @@ L<Time::Duration::Parse|Time::Duration::Parse>. It defaults to "1h" (1 hour).
 
 You can turn off backups with C<--no-backups>.
 
-=head1 EXIT STATUS
+=head1 RELATED TOOLS
 
-C<tidyall> will exit with status 1 if any errors occurred while processing
-files, and 0 otherwise.
+=over
 
-=head1 SUBVERSION PRECOMMIT
+=item *
+
+C<etc/editors/tidyall.el> in this distribution is an Emacs function that runs
+C<tidyall> on the current buffer. You can assign this to ctrl-t or your
+favorite key binding.
+
+=item *
 
 L<Code::TidyAll::SVN::Precommit|Code::TidyAll::SVN::Precommit> implements a
 subversion precommit hook that checks if all files are tidied and valid
 according to C<tidyall>, and rejects the commit if not.
+
+=item *
+
+L<Test::Code::TidyAll|Test::Code::TidyAll> is a testing library to check that
+all the files in your project are in a tidied and valid state.
+
+=back
 
 =head1 KNOWN BUGS
 
