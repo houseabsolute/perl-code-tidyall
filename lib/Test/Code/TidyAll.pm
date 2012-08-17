@@ -43,7 +43,7 @@ tidyall
   In a file like 't/tidyall.t':
 
     #!/usr/bin/perl
-    use Test::TidyAll;
+    use Test::Code::TidyAll;
     tidyall_ok();
 
 =head1 DESCRIPTION
