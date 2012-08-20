@@ -6,6 +6,7 @@ Revision history for Code-TidyAll
 
 * Improvements
   - Add etc/editors/tidyall.el for Emacs
+  - Only print 'no plugins apply' warning in verbose mode
 
 0.04  Aug 14, 2012
 

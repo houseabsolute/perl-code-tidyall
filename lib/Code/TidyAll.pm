@@ -106,6 +106,7 @@ sub BUILD {
 sub new_from_conf_file {
     my ( $class, $conf_file, %params ) = @_;
 
+    die "no such file '$conf_file'" unless -f $conf_file;
     my $conf_params = $class->_read_conf_file($conf_file);
     my $main_params = delete( $conf_params->{'_'} ) || {};
     %params = (
