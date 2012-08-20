@@ -2,7 +2,7 @@ Revision history for Code-TidyAll
 
 ** denotes an incompatible change
 
-0.05  Aug 16, 2012
+0.05  Aug 19, 2012
 
 * Improvements
   - Add etc/editors/tidyall.el for Emacs
