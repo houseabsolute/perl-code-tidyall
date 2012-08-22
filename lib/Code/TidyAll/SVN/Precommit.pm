@@ -13,7 +13,7 @@ has 'emergency_comment_prefix' => ( is => 'ro', default => sub { "NO TIDYALL" } 
 has 'extra_conf_files'         => ( is => 'ro', default => sub { [] } );
 has 'reject_on_error'          => ( is => 'ro' );
 has 'repos'                    => ( is => 'ro', default => sub { $ARGV[0] } );
-has 'tidyall_class'            => ( is => 'ro', default => sub { 'Code::TidyAll' } );
+has 'tidyall_class'            => ( is => 'ro', default => sub { "Code::TidyAll" } );
 has 'tidyall_options'          => ( is => 'ro', default => sub { {} } );
 has 'txn'                      => ( is => 'ro', default => sub { $ARGV[1] } );
 
