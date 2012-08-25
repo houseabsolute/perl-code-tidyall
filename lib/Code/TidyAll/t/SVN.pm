@@ -57,10 +57,13 @@ sub test_svn : Tests {
     chmod( 0775, $precommit_hook_file );
 
     write_file( "$work_dir/foo.txt", "abc " );
+    mkpath( "$work_dir/bar", 0, 0775 );
+    run( sprintf( 'svn add %s/bar', $work_dir ) );
     cmp_deeply( [ svn_uncommitted_files($work_dir) ], [ re("foo.txt") ], "one uncommitted file" );
 
-    $stderr =
-      capture_stderr { run( sprintf( 'svn -q commit -m "changed" %s/foo.txt', $work_dir ) ) };
+    $stderr = capture_stderr {
+        run( sprintf( 'svn -q commit -m "changed" %s/foo.txt %s/bar', $work_dir, $work_dir ) );
+    };
     unlike( $stderr, qr/\S/ );
     $log_contains->(qr|could not find 'tidyall.ini' upwards from 'myapp/trunk/foo.txt'|);
     $clear_log->();
