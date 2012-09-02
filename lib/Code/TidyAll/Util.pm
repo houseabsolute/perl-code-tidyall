@@ -3,7 +3,6 @@ use Cwd qw(realpath);
 use Data::Dumper;
 use File::Basename;
 use File::Path;
-use File::pushd qw(pushd);
 use File::Slurp qw(read_file write_file read_dir);
 use File::Spec::Functions qw(abs2rel rel2abs);
 use File::Temp qw(tempdir);
@@ -49,6 +48,14 @@ sub dump_one_line {
     my ($value) = @_;
 
     return Data::Dumper->new( [$value] )->Indent(0)->Sortkeys(1)->Quotekeys(0)->Terse(1)->Dump();
+}
+
+sub pushd {
+    my ($dir) = @_;
+
+    my $cwd = realpath();
+    chdir($dir);
+    return guard { chdir($cwd) };
 }
 
 1;
