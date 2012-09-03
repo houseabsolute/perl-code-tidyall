@@ -2,7 +2,7 @@ Revision history for Code-TidyAll
 
 ** denotes an incompatible change
 
-0.06  Sep 2, 2012
+0.06  Sep 3, 2012
 
 * Fixes
   - Omit directories from svn_uncommitted_files (--svn)
