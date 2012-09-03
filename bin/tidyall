@@ -290,6 +290,10 @@ Process all files. Does a recursive search for all files in the project
 hierarchy, starting at the root, and processes any file that matches at least
 one plugin in the configuration.
 
+=item -g, --git
+
+Process all added or modified files in the current git working directory.
+
 =item -h, --help       
 
 Print help message
@@ -476,6 +480,12 @@ favorite key binding.
 L<Code::TidyAll::SVN::Precommit|Code::TidyAll::SVN::Precommit> implements a
 subversion precommit hook that checks if all files are tidied and valid
 according to C<tidyall>, and rejects the commit if not.
+
+=item *
+
+L<Code::TidyAll::Git::Precommit|Code::TidyAll::Git::Precommit> implements a
+precommit hook that checks if all files are tidied and valid according to
+C<tidyall>, and rejects the commit if not.
 
 =item *
 

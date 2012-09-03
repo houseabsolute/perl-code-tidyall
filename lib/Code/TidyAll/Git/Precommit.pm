@@ -12,6 +12,7 @@ use Try::Tiny;
 
 # Public
 has 'conf_file'       => ( is => 'ro', default => sub { "tidyall.ini" } );
+has 'no_stash'        => ( is => 'ro' );
 has 'reject_on_error' => ( is => 'ro' );
 has 'tidyall_class'   => ( is => 'ro', default => sub { "Code::TidyAll" } );
 has 'tidyall_options' => ( is => 'ro', default => sub { {} } );
@@ -32,8 +33,10 @@ sub check {
         die "could not find conf file '$conf_file'" unless -f $conf_file;
 
         # Store the stash, and restore it upon exiting this scope
-        run("git stash -q --keep-index");
-        scope_guard { run("git stash pop -q") };
+        unless ( $self->no_stash ) {
+            run("git stash -q --keep-index");
+            scope_guard { run("git stash pop -q") };
+        }
 
         # Gather file paths to be committed
         my $output = capturex( "git", "status", "--porcelain" );
@@ -96,6 +99,9 @@ hook|http://git-scm.com/book/en/Customizing-Git-Git-Hooks> that checks if all
 files are tidied and valid according to L<tidyall|tidyall>, and rejects the
 commit if not.
 
+Files are not modified by this hook. If you want to actually tidy files before
+commit,
+
 =head1 METHODS
 
 =over
@@ -130,7 +136,7 @@ afterwards, via
     git stash pop -q
 
 This means that if C<tidyall.ini> has uncommitted changes that are not in the
-index, they will not be used during the tidyall run.
+index, they will not affect the tidyall run.
 
 Passes mode = "commit" by default; see L<modes|tidyall/MODES>.
 
@@ -141,7 +147,7 @@ Key/value parameters:
 =item no_stash
 
 Don't attempt to stash changes not in the index. This means the hook will
-process all
+process even files that are not going to be committed.
 
 =item tidyall_class
 
