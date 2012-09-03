@@ -6,6 +6,7 @@ use File::Path;
 use File::Slurp qw(read_file write_file read_dir);
 use File::Spec::Functions qw(abs2rel rel2abs);
 use File::Temp qw(tempdir);
+use Guard;
 use List::MoreUtils qw(uniq);
 use Try::Tiny;
 use strict;
