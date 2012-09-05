@@ -7,11 +7,12 @@ use SVN::Look;
 use Try::Tiny;
 
 # Public
-has 'conf_file'       => ( is => 'ro', default => sub { "tidyall.ini" } );
-has 'git_path'        => ( is => 'ro', default => sub { 'git' } );
-has 'reject_on_error' => ( is => 'ro' );
-has 'tidyall_class'   => ( is => 'ro', default => sub { "Code::TidyAll" } );
-has 'tidyall_options' => ( is => 'ro', default => sub { {} } );
+has 'conf_file'        => ( is => 'ro', default => sub { "tidyall.ini" } );
+has 'extra_conf_files' => ( is => 'ro', default => sub { [] } );
+has 'git_path'         => ( is => 'ro', default => sub { 'git' } );
+has 'reject_on_error'  => ( is => 'ro' );
+has 'tidyall_class'    => ( is => 'ro', default => sub { "Code::TidyAll" } );
+has 'tidyall_options'  => ( is => 'ro', default => sub { {} } );
 
 sub check {
     my ( $class, %params ) = @_;
@@ -63,12 +64,13 @@ sub create_tidyall {
     my ( $self, $commit ) = @_;
 
     my $temp_dir = tempdir_simple();
-    my $conf_contents = $self->get_file_contents( $self->conf_file, $commit )
-      or die sprintf( "could not find conf file '%s' in repo root", $self->conf_file );
-    my $conf_file = "$temp_dir/tidyall.ini";
-    write_file( $conf_file, $conf_contents );
+    foreach my $rel_file ( $self->conf_file, @{ $self->extra_conf_files } ) {
+        my $contents = $self->get_file_contents( $rel_file, $commit )
+          or die sprintf( "could not find file '%s' in repo root", $rel_file );
+        write_file( "$temp_dir/$rel_file", $contents );
+    }
     my $tidyall = $self->tidyall_class->new_from_conf_file(
-        $conf_file,
+        "$temp_dir/" . $self->conf_file,
         mode  => 'commit',
         quiet => 1,
         %{ $self->tidyall_options },
