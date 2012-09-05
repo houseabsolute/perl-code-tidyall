@@ -219,7 +219,7 @@ the first configuration file it finds.
 
 By default, if C<tidyall.ini> cannot be found, or if a runtime error occurs, a
 warning is logged (see L</LOGGING> below) but the commit is allowed to proceed.
- This is so that unexpected problems do not prevent valid commits.
+This is so that unexpected problems do not prevent valid commits.
 
 Passes mode = "commit" by default; see L<modes|tidyall/MODES>.
 
