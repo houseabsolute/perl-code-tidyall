@@ -238,7 +238,7 @@ sub process_source {
         undef $was_tidied;
     }
 
-    unless ( $self->quiet ) {
+    if ( !$self->quiet || $error ) {
         my $status = $was_tidied ? "[tidied]  " : "[checked] ";
         my $plugin_names =
           $self->verbose ? sprintf( " (%s)", join( ", ", map { $_->name } @plugins ) ) : "";
