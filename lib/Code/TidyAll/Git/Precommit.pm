@@ -62,7 +62,7 @@ sub check {
         my $error = $_;
         die "Error during pre-commit hook (use --no-verify to skip hook):\n$error";
     };
-    die $fail_msg if $fail_msg;
+    die "$fail_msg\n" if $fail_msg;
 }
 
 1;

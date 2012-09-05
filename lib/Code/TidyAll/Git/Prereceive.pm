@@ -57,7 +57,7 @@ sub check {
             print STDERR "*** Error running pre-receive hook (allowing push to proceed):\n$error";
         }
     };
-    die $fail_msg if $fail_msg;
+    die "$fail_msg\n" if $fail_msg;
 }
 
 sub create_tidyall {
@@ -140,14 +140,21 @@ tidied and valid according to L<tidyall|tidyall>. If not, then the entire push
 is rejected and the reason(s) are output to the client. e.g.
 
     % git push
-    2 files did not pass tidyall check
-    lib/CHI.pm: *** 'PerlTidy': needs tidying
-    lib/CHI/Driver.pm: *** 'PerlCritic': Code before strictures are enabled
-      at /tmp/Code-TidyAll-0e6K/Driver.pm line 2
-      [TestingAndDebugging::RequireUseStrict]
+    Counting objects: 9, done.
+    ...
+    remote: [checked] lib/CHI/Util.pm        
+    remote: Code before strictures are enabled on line 13 [TestingAndDebugging::RequireUseStrict]        
+    remote: 
+    remote: 1 file did not pass tidyall check        
+    To ...
+     ! [remote rejected] master -> master (pre-receive hook declined)
 
 The configuration file C<tidyall.ini> must be checked into git in the repo root
 directory, i.e. next to the .git directory.
+
+Unfortunately there is no easy way to bypass the pre-receive hook in an
+emergency.  It must be disabled in the repo being pushed to, e.g. by renaming
+.git/hooks/pre-receive.
 
 Passes mode = "commit" by default; see L<modes|tidyall/MODES>.
 
