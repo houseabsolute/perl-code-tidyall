@@ -12,7 +12,7 @@ use Try::Tiny;
 
 # Public
 has 'conf_file'       => ( is => 'ro', default => sub { "tidyall.ini" } );
-has 'git_path'        => ( is => 'ro', default => 'git' );
+has 'git_path'        => ( is => 'ro', default => sub { 'git' } );
 has 'no_stash'        => ( is => 'ro' );
 has 'reject_on_error' => ( is => 'ro' );
 has 'tidyall_class'   => ( is => 'ro', default => sub { "Code::TidyAll" } );
