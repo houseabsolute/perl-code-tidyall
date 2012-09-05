@@ -12,6 +12,7 @@ use Try::Tiny;
 
 # Public
 has 'conf_file'       => ( is => 'ro', default => sub { "tidyall.ini" } );
+has 'git_path'        => ( is => 'ro', default => 'git' );
 has 'no_stash'        => ( is => 'ro' );
 has 'reject_on_error' => ( is => 'ro' );
 has 'tidyall_class'   => ( is => 'ro', default => sub { "Code::TidyAll" } );
@@ -27,19 +28,19 @@ sub check {
         my $tidyall_class = $self->tidyall_class;
 
         # Find conf file at git root
-        my $root_dir = capturex( "git", "rev-parse", "--show-toplevel" );
+        my $root_dir = capturex( $self->git_path, "rev-parse", "--show-toplevel" );
         chomp($root_dir);
         my $conf_file = join( "/", $root_dir, $self->conf_file );
         die "could not find conf file '$conf_file'" unless -f $conf_file;
 
         # Store the stash, and restore it upon exiting this scope
         unless ( $self->no_stash ) {
-            run("git stash -q --keep-index");
-            scope_guard { run("git stash pop -q") };
+            run( $self->git_path, "stash", "-q", "--keep-index" );
+            scope_guard { run( $self->git_path, "stash", "pop", "-q" ) };
         }
 
         # Gather file paths to be committed
-        my $output = capturex( "git", "status", "--porcelain" );
+        my $output = capturex( $self->git_path, "status", "--porcelain" );
         my @files = ( $output =~ /^[MA]\s+(.*)/gm );
 
         my $tidyall = $tidyall_class->new_from_conf_file(
@@ -53,14 +54,8 @@ sub check {
 
         if ( my @error_results = grep { $_->error } @results ) {
             my $error_count = scalar(@error_results);
-            $fail_msg = join(
-                "\n",
-                sprintf(
-                    "%d file%s did not pass tidyall check",
-                    $error_count, $error_count > 1 ? "s" : ""
-                ),
-                map { join( ": ", $_->path, $_->msg ) } @error_results
-            );
+            $fail_msg = sprintf( "%d file%s did not pass tidyall check\n",
+                $error_count, $error_count > 1 ? "s" : "" );
         }
     }
     catch {
@@ -78,7 +73,7 @@ __END__
 
 =head1 NAME
 
-Code::TidyAll::Git::Precommit - Git precommit hook that requires files to be
+Code::TidyAll::Git::Precommit - Git pre-commit hook that requires files to be
 tidyall'd
 
 =head1 SYNOPSIS
@@ -97,10 +92,10 @@ tidyall'd
 This module implements a L<Git pre-commit
 hook|http://git-scm.com/book/en/Customizing-Git-Git-Hooks> that checks if all
 files are tidied and valid according to L<tidyall|tidyall>, and rejects the
-commit if not.
+commit if not. Files/commits are never modified by this hook.
 
-Files are not modified by this hook. If you want to actually tidy files before
-commit,
+See also L<Code::TidyAll::Git::Prereceive|Code::TidyAll::Git::Prereceive>,
+which validates pushes to a shared repo.
 
 =head1 METHODS
 
@@ -144,6 +139,11 @@ Key/value parameters:
 
 =over
 
+=item git_path
+
+Path to git to use in commands, e.g. '/usr/bin/git' or '/usr/local/bin/git'. By
+default, just uses 'git', which will search the user's PATH.
+
 =item no_stash
 
 Don't attempt to stash changes not in the index. This means the hook will
@@ -160,5 +160,38 @@ Hashref of options to pass to the L<Code::TidyAll|Code::TidyAll> constructor
 =back
 
 =back
+
+=head1 USING AND (NOT) ENFORCING THIS HOOK
+
+This hook must be placed manually in each copy of the repo - there is no way to
+automatically distribute or enforce it. However, you can make things easier on
+yourself or your developers as follows:
+
+=over
+
+=item *
+
+Commit the script in C<git/hooks/pre-commit> (note no dot prefix)
+
+=item *
+
+Add a script in C<git/setup.pl> that runs
+
+    ln -s git/hooks/pre-commit .git/hooks/pre-commit
+
+=item *
+
+Run C<git/setup.pl> (or tell your developers to run it) once for each new clone
+of the repo
+
+=back
+
+For more information on pre-commit hooks and the impossibility of enforcing
+them, see
+
+   http://stackoverflow.com/questions/3703159/git-remote-shared-pre-commit-hook
+
+See also L<Code::TidyAll::Git::Prereceive|Code::TidyAll::Git::Prereceive>,
+which enforces tidyall on pushes to a remote shared repository.
 
 =cut
