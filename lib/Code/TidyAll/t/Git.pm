@@ -26,32 +26,46 @@ sub test_git : Tests {
         unlike( $stdout, qr/nothing to commit/, "uncommitted" );
     };
 
+    # Create the repo
+    #
     run( "git", "init", $work_dir );
     ok( -d $_, "$_ exists" ) for ( $work_dir, $hooks_dir );
     my $pushd = pushd($work_dir);
 
+    # Add tidyall.ini and .gitignore
+    #
     write_file( "$work_dir/tidyall.ini", sprintf($tidyall_ini_template) );
     write_file( "$work_dir/.gitignore",  ".tidyall.d" );
     run( "git", "add", "tidyall.ini", ".gitignore" );
     run( "git", "commit", "-m", "added", "tidyall.ini", ".gitignore" );
 
+    # Add foo.txt, which needs tidying
+    #
     write_file( "$work_dir/foo.txt", "abc" );
     cmp_deeply( [ git_uncommitted_files($work_dir) ], [], "no uncommitted files" );
 
+    # git add foo.txt and make sure it is now in uncommitted list
+    #
     run( "git", "add", "foo.txt" );
     cmp_deeply( [ git_uncommitted_files($work_dir) ],
         ["$work_dir/foo.txt"], "one uncommitted file" );
 
+    # Add pre-commit hook
+    #
     my $precommit_hook_file = "$hooks_dir/pre-commit";
     my $precommit_hook = sprintf( $precommit_hook_template, realpath("lib") );
     write_file( $precommit_hook_file, $precommit_hook );
     chmod( 0775, $precommit_hook_file );
 
+    # Try to commit, make sure we get error
+    #
     $stderr = capture_stderr { system( "git", "commit", "-m", "changed", "-a" ) };
     like( $stderr, qr/1 file did not pass tidyall check/ );
     like( $stderr, qr/needs tidying/ );
     $uncommitted->();
 
+    # Fix file and commit successfully
+    #
     write_file( "$work_dir/foo.txt", "ABC" );
     $stderr = capture_stderr { system( "git", "commit", "-m", "changed", "-a" ) };
     like( $stderr, qr/\[checked\] foo\.txt/ );
