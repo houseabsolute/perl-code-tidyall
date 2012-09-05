@@ -488,7 +488,7 @@ according to C<tidyall>, and rejects the commit if not.
 
 L<Code::TidyAll::Git::Precommit|Code::TidyAll::Git::Precommit> and
 L<Code::TidyAll::Git::Prereceive|Code::TidyAll::Git::Prereceive> implement git
-precommit and pre-receive hooks, respectively, that check if all files are
+pre-commit and pre-receive hooks, respectively, that check if all files are
 tidied and valid according to C<tidyall>.
 
 =item *

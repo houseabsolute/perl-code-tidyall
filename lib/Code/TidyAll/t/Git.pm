@@ -3,10 +3,10 @@ use Capture::Tiny qw(capture_stdout capture_stderr capture);
 use Code::TidyAll::Git::Util qw(git_uncommitted_files);
 use Code::TidyAll::Util qw(dirname mkpath pushd read_file realpath tempdir_simple write_file);
 use Code::TidyAll;
-use IPC::System::Simple qw(run);
+use IPC::System::Simple qw(capturex run);
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 
-my ( $precommit_hook_template, $tidyall_ini_template );
+my ( $precommit_hook_template, $prereceive_hook_template, $tidyall_ini_template );
 
 sub test_git : Tests {
     my ($self) = @_;
@@ -14,16 +14,20 @@ sub test_git : Tests {
     my $temp_dir  = tempdir_simple;
     my $work_dir  = "$temp_dir/work";
     my $hooks_dir = "$work_dir/.git/hooks";
-    my ( $stdout, $stderr );
+    my $output;
 
     my $committed = sub {
-        $stdout = capture_stdout { system('git status') };
-        like( $stdout, qr/nothing to commit/, "committed" );
+        like( capturex( 'git', 'status' ), qr/nothing to commit/, "committed" );
+    };
+    my $uncommitted = sub {
+        unlike( capturex( 'git', 'status' ), qr/nothing to commit/, "committed" );
     };
 
-    my $uncommitted = sub {
-        $stdout = capture_stdout { system('git status') };
-        unlike( $stdout, qr/nothing to commit/, "uncommitted" );
+    my $pushed = sub {
+        unlike( capturex( 'git', 'status' ), qr/Your branch is ahead/, "pushed" );
+    };
+    my $unpushed = sub {
+        like( capturex( 'git', 'status' ), qr/Your branch is ahead/, "unpushed" );
     };
 
     # Create the repo
@@ -59,17 +63,57 @@ sub test_git : Tests {
 
     # Try to commit, make sure we get error
     #
-    $stderr = capture_stderr { system( "git", "commit", "-m", "changed", "-a" ) };
-    like( $stderr, qr/1 file did not pass tidyall check/ );
-    like( $stderr, qr/needs tidying/ );
+    $output = capture_stderr { system( "git", "commit", "-m", "changed", "-a" ) };
+    like( $output, qr/1 file did not pass tidyall check/, "1 file did not pass tidyall check" );
+    like( $output, qr/needs tidying/, "needs tidying" );
     $uncommitted->();
 
     # Fix file and commit successfully
     #
     write_file( "$work_dir/foo.txt", "ABC" );
-    $stderr = capture_stderr { system( "git", "commit", "-m", "changed", "-a" ) };
-    like( $stderr, qr/\[checked\] foo\.txt/ );
+    $output = capture_stderr { run( "git", "commit", "-m", "changed", "-a" ) };
+    like( $output, qr/\[checked\] foo\.txt/, "checked foo.txt" );
     $committed->();
+
+    # Create a bare shared repo, then a clone of that
+    #
+    my $shared_dir = "$temp_dir/shared";
+    my $clone_dir  = "$temp_dir/clone";
+    run( "git", "clone", "--bare", $work_dir, $shared_dir );
+    run( "git", "clone", $shared_dir, $clone_dir );
+    chdir($clone_dir);
+    $committed->();
+
+    # Add prereceive hook to shared repo
+    #
+    my $prereceive_hook_file = "$shared_dir/hooks/pre-receive";
+    my $prereceive_hook = sprintf( $prereceive_hook_template, realpath("lib") );
+    write_file( $prereceive_hook_file, $prereceive_hook );
+    chmod( 0775, $prereceive_hook_file );
+
+    # Unfix file and commit
+    #
+    write_file( "$clone_dir/foo.txt", "def" );
+    run( "git", "commit", "-m", "changed", "-a" );
+    $committed->();
+
+    # Try to push, make sure we get error back
+    #
+    $unpushed->();
+    $output = capture_stderr { system( "git", "push" ) };
+    like( $output, qr/master -> master/,                  "master -> master" );
+    like( $output, qr/1 file did not pass tidyall check/, "1 file did not pass tidyall check" );
+    like( $output, qr/needs tidying/,                     "needs tidying" );
+    $unpushed->();
+
+    # Fix file and push successfully
+    #
+    write_file( "$clone_dir/foo.txt", "DEF" );
+    $output = capture_stderr { run( "git", "commit", "-m", "changed", "-a" ) };
+    $committed->();
+    $output = capture_stderr { system( "git", "push" ) };
+    like( $output, qr/master -> master/, "master -> master" );
+    $pushed->();
 }
 
 $precommit_hook_template = '#!/usr/bin/perl
@@ -81,6 +125,15 @@ use warnings;
 Code::TidyAll::Git::Precommit->check(
     tidyall_options => { verbose => 1 }
 );
+';
+
+$prereceive_hook_template = '#!/usr/bin/perl
+use lib qw(%s);
+use Code::TidyAll::Git::Prereceive;
+use strict;
+use warnings;
+
+Code::TidyAll::Git::Prereceive->check();
 ';
 
 $tidyall_ini_template = '

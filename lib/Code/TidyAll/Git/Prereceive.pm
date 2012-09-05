@@ -1,7 +1,6 @@
 package Code::TidyAll::Git::Prereceive;
 use Code::TidyAll;
-use Code::TidyAll::Util qw(realpath);
-use Log::Any qw($log);
+use Code::TidyAll::Util qw(realpath tempdir_simple write_file);
 use IPC::System::Simple qw(capturex run);
 use Moo;
 use SVN::Look;
@@ -25,28 +24,17 @@ sub check {
         my $root_dir = realpath();
         local $ENV{GIT_DIR} = $root_dir;
 
-        my $conf_file = join( "/", $root_dir, $self->conf_file );
-        die "could not find conf file '$conf_file'" unless -f $conf_file;
-
-        my $tidyall = $self->tidyall_class->new_from_conf_file(
-            $conf_file,
-            no_cache   => 1,
-            check_only => 1,
-            mode       => 'commit',
-            %{ $self->tidyall_options },
-        );
-
-        $log->info("----------------------------");
-
-        my @results;
+        my ( @results, $conf_file, $tidyall );
         while ( my $line = <> ) {
             chomp($line);
             my ( $base, $commit, $ref ) = split( /\s+/, $line );
             next unless $ref eq 'refs/heads/master';
 
+            # Create tidyall using configuration found in first commit
+            #
+            $tidyall ||= $self->create_tidyall($commit);
+
             my @files = $self->get_changed_files( $base, $commit );
-            $log->infof( "base='%s', commit='%s', files=[%s]", $base, $commit,
-                join( " ", @files ) );
             foreach my $file (@files) {
                 my $contents = $self->get_file_contents( $file, $commit );
                 push( @results, $tidyall->process_source( $contents, $file ) );
@@ -55,22 +43,40 @@ sub check {
 
         if ( my @error_results = grep { $_->error } @results ) {
             my $error_count = scalar(@error_results);
-            $fail_msg = join(
-                "\n",
-                sprintf(
-                    "%d file%s did not pass tidyall check",
-                    $error_count, $error_count > 1 ? "s" : ""
-                ),
-                map { join( ": ", $_->path, $_->msg ) } @error_results
-            );
+            $fail_msg = sprintf( "%d file%s did not pass tidyall check",
+                $error_count, $error_count > 1 ? "s" : "" );
         }
     }
     catch {
         my $error = $_;
-        $log->error($error);
-        die $error if $params{reject_on_error};
+        if ( $params{reject_on_error} ) {
+            die $error;
+        }
+        else {
+            print STDERR "*** Error running pre-receive hook (allowing push to proceed):\n$error";
+        }
     };
     die $fail_msg if $fail_msg;
+}
+
+sub create_tidyall {
+    my ( $self, $commit ) = @_;
+
+    my $temp_dir = tempdir_simple();
+    my $conf_contents = $self->get_file_contents( $self->conf_file, $commit )
+      or die sprintf( "could not find conf file '%s' in repo root", $self->conf_file );
+    my $conf_file = "$temp_dir/tidyall.ini";
+    write_file( $conf_file, $conf_contents );
+    my $tidyall = $self->tidyall_class->new_from_conf_file(
+        $conf_file,
+        mode  => 'commit',
+        quiet => 1,
+        %{ $self->tidyall_options },
+        no_cache   => 1,
+        no_backups => 1,
+        check_only => 1,
+    );
+    return $tidyall;
 }
 
 sub get_changed_files {
@@ -162,7 +168,13 @@ Subclass to use instead of L<Code::TidyAll|Code::TidyAll>
 
 =item tidyall_options
 
-Hashref of options to pass to the L<Code::TidyAll|Code::TidyAll> constructor
+Hashref of options to pass to the L<Code::TidyAll|Code::TidyAll> constructor.
+You can use this to override the default options
+
+    mode  => 'commit',
+    quiet => 1,
+
+or pass additional options.
 
 =back
 
