@@ -127,7 +127,7 @@ This is typically used to validate pushes from multiple developers to a shared
 repo, possibly on a remote server.
 
 See also L<Code::TidyAll::Git::Precommit|Code::TidyAll::Git::Precommit>, which
-operates locally from the current repo.
+operates locally.
 
 =head1 METHODS
 

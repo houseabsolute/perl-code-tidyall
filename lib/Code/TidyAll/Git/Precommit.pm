@@ -171,12 +171,17 @@ yourself or your developers as follows:
 
 =item *
 
-Commit the script in C<git/hooks/pre-commit> (note no dot prefix)
+Create a directory called C<git> at the top of your repo (note no dot prefix)
 
 =item *
 
-Add a script in C<git/setup.pl> that runs
+Commit your pre-commit script in C<git/hooks/pre-commit>
 
+=item *
+
+Add a setup script in C<git/setup.pl> containing
+
+    #!/bin/bash
     ln -s git/hooks/pre-commit .git/hooks/pre-commit
 
 =item *
@@ -186,10 +191,8 @@ of the repo
 
 =back
 
-For more information on pre-commit hooks and the impossibility of enforcing
-them, see
-
-   http://stackoverflow.com/questions/3703159/git-remote-shared-pre-commit-hook
+More information on pre-commit hooks and the impossibility of enforcing them
+L<here|http://stackoverflow.com/questions/3703159/git-remote-shared-pre-commit-hook>.
 
 See also L<Code::TidyAll::Git::Prereceive|Code::TidyAll::Git::Prereceive>,
 which enforces tidyall on pushes to a remote shared repository.
