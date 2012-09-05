@@ -327,9 +327,11 @@ string recognized by L<Time::Duration::Parse|Time::Duration::Parse>.
 
 =item --check-only     
 
-Just check if each file is tidied (i.e. if its tidied version is equal to its
-current version) and consider it an error if not; don't actually modify the
-file. This is used by L<Test::Code::TidyAll|Test::Code::TidyAll>, for example.
+Instead of actually tidying files, check if each file is tidied (i.e. if its
+tidied version is equal to its current version) and consider it an error if
+not. This is used by L<Test::Code::TidyAll|Test::Code::TidyAll> and the
+L<svn|Code::TidyAll::SVN::Precommit> and L<git|Code::TidyAll::Git::Precommit>
+pre-commit hooks, for example, to enforce that you've tidied your files.
 
 =item --conf-file      
 
@@ -416,7 +418,8 @@ C<editor> - when invoking from an editor
 =item *
 
 C<commit> - when using a commit hook like
-L<Code::TidyAll::SVN::Precommit|Code::TidyAll::SVN::Precommit>
+L<Code::TidyAll::SVN::Precommit|Code::TidyAll::SVN::Precommit> or
+L<Code::TidyAll::Git::Precommit|Code::TidyAll::Git::Precommit>
 
 =item *
 
@@ -483,9 +486,10 @@ according to C<tidyall>, and rejects the commit if not.
 
 =item *
 
-L<Code::TidyAll::Git::Precommit|Code::TidyAll::Git::Precommit> implements a
-precommit hook that checks if all files are tidied and valid according to
-C<tidyall>, and rejects the commit if not.
+L<Code::TidyAll::Git::Precommit|Code::TidyAll::Git::Precommit> and
+L<Code::TidyAll::Git::Prereceive|Code::TidyAll::Git::Prereceive> implement git
+precommit and pre-receive hooks, respectively, that check if all files are
+tidied and valid according to C<tidyall>.
 
 =item *
 
