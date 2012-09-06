@@ -4,6 +4,9 @@ Revision history for Code-TidyAll
 
 0.08  Sep 5, 2012
 
+* Improvements
+  - Make plugins into Moo classes, pass configuration as attributes
+
 0.07  Sep 5, 2012
 
 * Improvements
