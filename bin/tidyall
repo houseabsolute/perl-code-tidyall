@@ -10,9 +10,9 @@ use warnings;
 
 sub usage {
     my $msg = shift;
-    print "$msg\n" if $msg;
+    print STDERR "$msg\n" if $msg;
     require Pod::Usage;
-    Pod::Usage::pod2usage( { verbose => 1 } );
+    Pod::Usage::pod2usage( { verbose => 1, output => \*STDERR } );
 }
 
 my ( %params, $all_files, $conf_file, $git_files, $help, $inc_dirs, $pipe, $svn_files );
@@ -38,11 +38,6 @@ GetOptions(
     'v|verbose'       => \$params{verbose},
     'I'               => \$inc_dirs,
 ) or usage();
-
-if ($pipe) {
-    $params{$_} = 1 for ( 'no_backups', 'no_cache', 'quiet' );
-    $params{$_} = 0 for ('verbose');
-}
 
 Pod::Usage::pod2usage( { verbose => 2 } ) if $help;
 
@@ -92,12 +87,16 @@ my $status = ( grep { $_->error } @results ) ? 1 : 0;
 exit($status);
 
 sub handle_pipe {
-    my ($pipe) = @_;
+    my ($pipe_filename) = @_;
 
-    $conf_file ||= $tidyall_class->find_conf_file( dirname($pipe) );
-    my $ct     = $tidyall_class->new_from_conf_file( $conf_file, %params );
-    my $source = scalar(<STDIN>);
-    my $result = $ct->process_source( $source, $pipe );
+    $params{$_} = 1 for ( 'no_backups', 'no_cache', 'quiet' );
+    $params{$_} = 0 for ('verbose');
+
+    $conf_file ||= $tidyall_class->find_conf_file( dirname($pipe_filename) );
+    my $ct       = $tidyall_class->new_from_conf_file( $conf_file, %params );
+    my $root_dir = $ct->root_dir;
+    my $source   = do { local $/; <STDIN> };
+    my $result   = $ct->process_source( $source, $ct->_small_path($pipe_filename) );
     if ( my $error = $result->error ) {
         print STDERR $error;
         exit(1);
@@ -105,6 +104,10 @@ sub handle_pipe {
     elsif ( $result->state eq 'no_match' ) {
         print STDERR "No match for '$pipe'";
         exit(1);
+    }
+    elsif ( $result->state eq 'checked' ) {
+        print $source;
+        exit(0);
     }
     else {
         print $result->new_contents;
