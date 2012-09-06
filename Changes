@@ -5,6 +5,7 @@ Revision history for Code-TidyAll
 0.08  Sep 5, 2012
 
 * Improvements
+  - Add -p/--pipe flag to read from STDIN and write to STDOUT
   - Make plugins into Moo classes, pass configuration as attributes
 
 0.07  Sep 5, 2012
@@ -18,7 +19,7 @@ Revision history for Code-TidyAll
 0.06  Sep 3, 2012
 
 * Improvements
-  - Add --git flag and git pre-commit hook (Code::TidyAll::Git::Precommit)
+  - Add -g/--git flag and git pre-commit hook (Code::TidyAll::Git::Precommit)
 
 * Fixes
   - Omit directories from svn_uncommitted_files (--svn)
@@ -36,7 +37,7 @@ Revision history for Code-TidyAll
   - Fix --check-only flag
 
 * Improvements
-  - Add --svn flag
+  - Add -s/--svn flag
   - Add emergency_comment_prefix ("NO TIDYALL") to svn precommit hook
 
 0.03  Jul 24, 2012
