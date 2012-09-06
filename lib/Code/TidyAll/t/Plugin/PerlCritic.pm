@@ -18,8 +18,7 @@ sub test_main : Tests {
         conf      => { argv => "--profile $rc_file" },
         expect_ok => 1,
     );
-    write_file( $rc_file,
-        "only = 1\nseverity = 1\n[CodeLayout::ProhibitHardTabs]\n" );
+    write_file( $rc_file, "only = 1\nseverity = 1\n[CodeLayout::ProhibitHardTabs]\n" );
     $self->tidyall(
         source    => 'my $foo = 5\n',
         conf      => { argv => "--profile $rc_file" },

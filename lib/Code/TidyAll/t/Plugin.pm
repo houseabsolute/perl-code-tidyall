@@ -25,7 +25,8 @@ sub tidyall {
     my $source       = $p{source} || die "source required";
     my $plugin_class = $self->plugin_class;
     my %plugin_conf  = ( $plugin_class => { select => '*', %{ $p{conf} || {} } } );
-    my $ct = Code::TidyAll->new( quiet => 1, root_dir => $self->{root_dir}, plugins => \%plugin_conf );
+    my $ct =
+      Code::TidyAll->new( quiet => 1, root_dir => $self->{root_dir}, plugins => \%plugin_conf );
 
     $source =~ s/\\n/\n/g;
     my $result;
@@ -34,7 +35,7 @@ sub tidyall {
 
     if ( my $expect_tidy = $p{expect_tidy} ) {
         $expect_tidy =~ s/\\n/\n/g;
-        is( $result->state,                'tidied',           'state=tidied' );
+        is( $result->state,        'tidied',     'state=tidied' );
         is( $result->new_contents, $expect_tidy, 'new contents' );
     }
     elsif ( my $expect_ok = $p{expect_ok} ) {
