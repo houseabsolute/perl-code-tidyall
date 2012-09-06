@@ -439,8 +439,8 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
         root_dir => '/path/to/root',
         plugins  => {
             perltidy => {
-                select => qr/\.(pl|pm|t)$/,
-                options => { argv => '-noll -it=2' },
+                select => 'lib/**/*.(pl|pm)',
+                argv => '-noll -it=2',
             },
             ...
         }
@@ -463,7 +463,7 @@ You can call this API from your own program instead of executing C<tidyall>.
 
 =head1 CONSTRUCTION
 
-=head2 Construtor methods
+=head2 Constructor methods
 
 =over
 
