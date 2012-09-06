@@ -1,8 +1,7 @@
 package Code::TidyAll::Test::Plugin::ReverseFoo;
 use Code::TidyAll::Util qw(read_file write_file);
-use base qw(Code::TidyAll::Plugin);
-use strict;
-use warnings;
+use Moo;
+extends 'Code::TidyAll::Plugin';
 
 sub transform_file {
     my ( $self, $file ) = @_;
