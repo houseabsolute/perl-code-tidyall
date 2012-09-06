@@ -247,7 +247,7 @@ sub process_source {
 
     if ($error) {
         $self->msg( "%s", $error );
-        return Code::TidyAll::Result->new( path => $path, state => 'error', msg => $error );
+        return Code::TidyAll::Result->new( path => $path, state => 'error', error => $error );
     }
     elsif ($was_tidied) {
         return Code::TidyAll::Result->new(

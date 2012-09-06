@@ -102,7 +102,7 @@ sub check {
                     "%d file%s did not pass tidyall check",
                     $error_count, $error_count > 1 ? "s" : ""
                 ),
-                map { join( ": ", $_->path, $_->msg ) } @error_results
+                map { join( ": ", $_->path, $_->error ) } @error_results
             );
         }
     }
