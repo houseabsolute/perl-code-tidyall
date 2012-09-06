@@ -6,6 +6,7 @@ Revision history for Code-TidyAll
 
 * Improvements
   - Add -p/--pipe flag to read from STDIN and write to STDOUT
+  - Allow tidyall.el to work in narrowed regions
   - Make plugins into Moo classes, pass configuration as attributes
 
 0.07  Sep 5, 2012

@@ -29,7 +29,9 @@
 ;; If tidyall generates any errors, the buffer is not changed, and a separate window
 ;; called *tidyall-output* is opened displaying the error.
 
-;; e.g. To assign this command to ctrl-t in perl-mode and pod-mode:
+;; To operate on just a region of the buffer, use narrow-to-region.
+
+;; To assign this command to ctrl-t in perl-mode and pod-mode:
 ;;
 ;;   (setq perl-mode-hook
 ;;        '(lambda ()
