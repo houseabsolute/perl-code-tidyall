@@ -15,7 +15,7 @@ sub usage {
     Pod::Usage::pod2usage( { verbose => 1 } );
 }
 
-my ( %params, $all_files, $conf_file, $git_files, $help, $inc_dirs, $svn_files );
+my ( %params, $all_files, $conf_file, $git_files, $help, $inc_dirs, $pipe, $svn_files );
 
 GetOptions(
     'backup-ttl=i'    => \$params{backup_ttl},
@@ -32,11 +32,17 @@ GetOptions(
     'g|git'           => \$git_files,
     'h|help'          => \$help,
     'm|mode=s'        => \$params{mode},
+    'p|pipe=s'        => \$pipe,
     's|svn'           => \$svn_files,
     'q|quiet'         => \$params{quiet},
     'v|verbose'       => \$params{verbose},
     'I'               => \$inc_dirs,
 ) or usage();
+
+if ($pipe) {
+    $params{$_} = 1 for ( 'no_backups', 'no_cache', 'quiet' );
+    $params{$_} = 0 for ('verbose');
+}
 
 Pod::Usage::pod2usage( { verbose => 2 } ) if $help;
 
@@ -44,14 +50,18 @@ unshift( @INC, split( /\s*,\s*/, $inc_dirs ) ) if defined($inc_dirs);
 
 %params = slice_def( \%params );
 
-$conf_file = "$params{root_dir}/tidyall.ini" if $params{root_dir};
+$conf_file = "$params{root_dir}/tidyall.ini"
+  if $params{root_dir} && !$conf_file && -f "$params{root_dir}/tidyall.ini";
 
 my $tidyall_class = $params{tidyall_class} || 'Code::TidyAll';
 
 my (@results);
-if ( $all_files || $svn_files || $git_files ) {
-    my $conf_file = $tidyall_class->find_conf_file( cwd() );
+if ( ( $all_files || $svn_files || $git_files ) ) {
+    die "cannot use filename(s) with -a/--all, -s/--svn, or -g/--git"
+      if @ARGV;
+    $conf_file ||= $tidyall_class->find_conf_file( cwd() );
     my $ct = $tidyall_class->new_from_conf_file( $conf_file, %params );
+
     my @files;
     if ($all_files) {
         @files = $ct->find_matched_files;
@@ -66,17 +76,41 @@ if ( $all_files || $svn_files || $git_files ) {
     }
     @results = $ct->process_files(@files);
 }
+elsif ($pipe) {
+    handle_pipe($pipe);
+}
 elsif ( my @files = @ARGV ) {
-    my $conf_file = $tidyall_class->find_conf_file( dirname( $files[0] ) );
+    $conf_file ||= $tidyall_class->find_conf_file( dirname( $files[0] ) );
     my $ct = $tidyall_class->new_from_conf_file( $conf_file, %params );
     @results = $ct->process_files(@files);
 }
 else {
-    die "must pass -a/--all, -s/--svn, -g/--git, or filename(s)";
+    die "must pass -a/--all, -s/--svn, -g/--git, -p/--pipe, or filename(s)";
 }
 
 my $status = ( grep { $_->error } @results ) ? 1 : 0;
 exit($status);
+
+sub handle_pipe {
+    my ($pipe) = @_;
+
+    $conf_file ||= $tidyall_class->find_conf_file( dirname($pipe) );
+    my $ct     = $tidyall_class->new_from_conf_file( $conf_file, %params );
+    my $source = scalar(<STDIN>);
+    my $result = $ct->process_source( $source, $pipe );
+    if ( my $error = $result->error ) {
+        print STDERR $error;
+        exit(1);
+    }
+    elsif ( $result->state eq 'no_match' ) {
+        print STDERR "No match for '$pipe'";
+        exit(1);
+    }
+    else {
+        print $result->new_contents;
+        exit(0);
+    }
+}
 
 1;
 
@@ -164,7 +198,11 @@ depending on how you call it:
 
 C<tidyall> will search upwards from the first file for C<tidyall.ini>.
 
-=item C<< tidyall -a >>
+=item C<< tidyall -p/--pipe file >>
+
+C<tidyall> will search upwards from the specified file for C<tidyall.ini>.
+
+=item C<< tidyall -a/--all >> or C<< tidyall -s/--svn >> or C<< tidyall -g/--git >>
 
 C<tidyall> will search upwards from the current working directory for
 C<tidyall.ini>.
@@ -302,6 +340,25 @@ Print help message
 
 Optional mode that can affect which plugins run. Defaults to 'cli'. See
 L</MODES>.
+
+=item -p, --pipe
+
+Read content from STDIN, and write either the tidied content to STDOUT or the
+error message to STDERR.
+
+When specifying this option you must specify exactly one filename, relative or
+absolute, which will be used to determine which plugins to apply and also where
+the root directory and configuration file are. The file will not actually be
+read and does need even need to exist.
+
+This option implies --no-backups and --no-cache (since there's no actual file)
+and --quiet (since we don't want to mix extraneous output with the tidied
+result).
+
+    # Read from STDIN and write to STDOUT, with appropriate plugins
+    # for some/path.pl (which need not exist)
+    #
+    % tidyall --pipe some/path.pl
 
 =item -s, --svn
 
