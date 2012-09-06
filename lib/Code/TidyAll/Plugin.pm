@@ -5,30 +5,42 @@ use Scalar::Util qw(weaken);
 use Moo;
 
 # External
-has 'conf'    => ( is => 'ro', required => 1 );
-has 'ignore'  => ( is => 'lazy' );
+has 'argv'    => ( is => 'ro', default => sub { '' } );
+has 'cmd'     => ( is => 'lazy' );
+has 'ignore'  => ( is => 'ro' );
 has 'name'    => ( is => 'ro', required => 1 );
-has 'select'  => ( is => 'lazy' );
+has 'select'  => ( is => 'ro' );
 has 'tidyall' => ( is => 'ro', required => 1, weak_ref => 1 );
 
 # Internal
-has 'options' => ( is => 'lazy', init_arg => undef );
+has 'ignore_regex' => ( is => 'lazy' );
+has 'select_regex' => ( is => 'lazy' );
 
-sub _build_select {
-    my $self = shift;
-    my $path = $self->conf->{select};
-    die sprintf( "select is required for '%s'", $self->name ) unless defined($path);
+sub BUILD {
+    my ( $self, $params ) = @_;
+
+    my $select = $self->{select};
+    die sprintf( "select is required for '%s'", $self->name ) unless defined($select);
     die sprintf( "select for '%s' should not begin with /", $self->name )
-      if ( substr( $path, 0, 1 ) eq '/' );
-    return $path;
+      if ( substr( $select, 0, 1 ) eq '/' );
+
+    my $ignore = $self->{ignore};
+    die sprintf( "ignore for '%s' should not begin with /", $self->name )
+      if ( defined($ignore) && substr( $ignore, 0, 1 ) eq '/' );
 }
 
-sub _build_ignore {
-    my $self = shift;
-    my $path = $self->conf->{ignore};
-    die sprintf( "select for '%s' should not begin with /", $self->name )
-      if ( defined($path) && substr( $path, 0, 1 ) eq '/' );
-    return $path;
+sub _build_cmd {
+    die "no default cmd specified";
+}
+
+sub _build_select_regex {
+    my ($self) = @_;
+    return zglob_to_regex( $self->select );
+}
+
+sub _build_ignore_regex {
+    my ($self) = @_;
+    return $self->ignore ? zglob_to_regex( $self->ignore ) : qr/(?!)/;
 }
 
 # No-ops by default; may be overridden in subclass
@@ -70,18 +82,9 @@ sub _write_temp_file {
     return $tempfile;
 }
 
-sub _build_options {
-    my $self    = shift;
-    my %options = %{ $self->{conf} };
-    delete( @options{qw(select ignore)} );
-    return \%options;
-}
-
 sub matches_path {
     my ( $self, $path ) = @_;
-    $self->{select_regex} ||= zglob_to_regex( $self->select );
-    $self->{ignore_regex} ||= ( $self->ignore ? zglob_to_regex( $self->ignore ) : qr/(?!)/ );
-    return $path =~ $self->{select_regex} && $path !~ $self->{ignore_regex};
+    return $path =~ $self->select_regex && $path !~ $self->ignore_regex;
 }
 
 1;
@@ -94,6 +97,28 @@ __END__
 Code::TidyAll::Plugin - Create plugins for tidying or validating code
 
 =head1 SYNOPSIS
+
+    package Code::TidyAll::Plugin::SomeTidier;
+    use Moo;
+    extends 'Code::TidyAll::Plugin';
+    
+    sub transform_source {
+        my ( $self, source ) = @_;
+        ...
+        return $source;
+    }
+
+
+    package Code::TidyAll::Plugin::SomeValidator;
+    use Moo;
+    extends 'Code::TidyAll::Plugin';
+    
+    sub validate_file {
+        my ( $self, $file ) = @_;
+        die "not valid" if ...;
+    }
+
+=head1 DESCRIPTION
 
 To use a tidier or validator with C<tidyall> it must have a corresponding
 plugin class that inherits from this class. This document describes how to
@@ -114,6 +139,51 @@ with a plus sign prefix in the config file, e.g.
 
     [+My::Tidier::Class]
     select = **/*.{pl,pm,t}
+
+=head1 CONSTRUCTOR AND ATTRIBUTES
+
+Your plugin constructor will be called with the configuration key/value pairs
+as parameters. e.g. given
+
+    [PerlCritic]
+    select = lib/**/*.pm
+    ignore = lib/UtterHack.pm
+    argv = -severity 3
+
+then L<Code::TidyAll::Plugin::PerlCritic|Code::TidyAll::Plugin::PerlCritic>
+would be construted with parameters
+
+    select => 'lib/**/*.pm', 
+    ignore = 'lib/UtterHack.pm',
+    argv = '-severity 3'
+
+The following attributes are part of this base class. Your subclass can declare
+others, of course.
+
+=over
+
+=item argv
+
+A standard attribute for passing command line arguments.
+
+=item cmd
+
+A standard attribute for specifying the name of the command to run, e.g.
+"/usr/local/bin/perlcritic".
+
+=item name
+
+Name of the plugin to be used in error messages etc.
+
+=item tidyall
+
+A weak reference back to the L<Code::TidyAll|Code::TidyAll> object.
+
+=item select, ignore
+
+Select and ignore patterns - you can ignore these.
+
+=back
 
 =head1 METHODS
 
@@ -147,7 +217,7 @@ be ignored.
 =item validate_file ($file)
 
 Receives filename; validates file and dies with error if invalid. Should not
-modify file!
+modify file! Return value will be ignored.
 
 =item postprocess_source ($source)
 

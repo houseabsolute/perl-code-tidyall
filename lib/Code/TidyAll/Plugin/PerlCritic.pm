@@ -1,21 +1,13 @@
 package Code::TidyAll::Plugin::PerlCritic;
 use Perl::Critic::Command qw();
 use Capture::Tiny qw(capture_merged);
-use strict;
-use warnings;
-use base qw(Code::TidyAll::Plugin);
+use Moo;
+extends 'Code::TidyAll::Plugin';
 
 sub validate_file {
     my ( $self, $file ) = @_;
-    my $options = $self->options;
 
-    # Determine arguments
-    #
-    my @argv = split( /\s/, $options->{argv} || '' );
-    push( @argv, $file );
-
-    # Run perlcritic
-    #
+    my @argv = ( split( /\s/, $self->argv ), $file );
     local @ARGV = @argv;
     my $output = capture_merged { Perl::Critic::Command::run() };
     die "$output\n" if $output !~ /^.* source OK\n/;
@@ -46,13 +38,3 @@ Code::TidyAll::Plugin::PerlCritic - use perlcritic with tidyall
    [PerlCritic]
    argv = --profile $ROOT/.perlcriticrc
    select = lib/**/*.pm
-
-=head1 OPTIONS
-
-=over
-
-=item argv
-
-Arguments to pass to perlcritic.
-
-=back

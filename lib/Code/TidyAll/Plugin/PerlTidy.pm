@@ -1,22 +1,15 @@
 package Code::TidyAll::Plugin::PerlTidy;
 use Perl::Tidy;
-use Hash::MoreUtils qw(slice_exists);
-use strict;
-use warnings;
-use base qw(Code::TidyAll::Plugin);
+use Moo;
+extends 'Code::TidyAll::Plugin';
 
 sub transform_source {
     my ( $self, $source ) = @_;
-    my $options = $self->options;
-
-    # Determine parameters
-    #
-    my %params = slice_exists( $self->options, qw(argv) );
 
     my $errorfile;
     no strict 'refs';
     Perl::Tidy::perltidy(
-        %params,
+        argv        => $self->argv,
         source      => \$source,
         destination => \my $destination,
         errorfile   => \$errorfile
@@ -41,22 +34,12 @@ Code::TidyAll::Plugin::PerlTidy - use perltidy with tidyall
 
    # Configure in-line
    #
-   [Perltidy]
+   [PerlTidy]
    argv = --noll
    select = lib/**/*.pm
 
    # or refer to a .perltidyrc in the same directory
    #
-   [Perltidy]
+   [PerlTidy]
    argv = --profile=$ROOT/.perltidyrc
    select = lib/**/*.pm
-
-=head1 OPTIONS
-
-=over
-
-=item argv
-
-Arguments to pass to C<perltidy>.
-
-=back

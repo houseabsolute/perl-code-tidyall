@@ -143,9 +143,9 @@ sub _load_plugin {
     };
 
     return $class_name->new(
-        conf    => $plugin_conf,
         name    => $plugin_name,
-        tidyall => $self
+        tidyall => $self,
+        %$plugin_conf
     );
 }
 

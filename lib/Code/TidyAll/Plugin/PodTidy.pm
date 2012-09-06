@@ -1,23 +1,21 @@
 package Code::TidyAll::Plugin::PodTidy;
 use Capture::Tiny qw(capture_merged);
-use Hash::MoreUtils qw(slice_exists);
 use Pod::Tidy;
-use strict;
-use warnings;
-use base qw(Code::TidyAll::Plugin);
+use Moo;
+extends 'Code::TidyAll::Plugin';
+
+has 'columns' => ( is => 'ro' );
 
 sub transform_file {
     my ( $self, $file ) = @_;
-    my $options = $self->options;
 
-    my %params = slice_exists( $self->options, qw(columns) );
     my $output = capture_merged {
         Pod::Tidy::tidy_files(
-            %params,
             files    => [$file],
             inplace  => 1,
             nobackup => 1,
             verbose  => 1,
+            ( $self->columns ? ( columns => $self->columns ) : () ),
         );
     };
     die $output if $output =~ /\S/ && $output !~ /does not contain Pod/;
@@ -38,15 +36,15 @@ Code::TidyAll::Plugin::PodTidy - use podtidy with tidyall
    # In tidyall.ini:
 
    [PodTidy]
-   argv = --column=90
    select = lib/**/*.{pm,pod}
+   columns = 90
 
 =head1 OPTIONS
 
 =over
 
-=item argv
+=item columns
 
-Arguments to pass to podtidy.
+Number of columns to fill
 
 =back
