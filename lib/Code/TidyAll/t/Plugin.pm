@@ -19,6 +19,8 @@ sub plugin_class {
     return ( split( '::', ref($self) ) )[-1];
 }
 
+sub test_filename { 'foo.txt' }
+
 sub tidyall {
     my ( $self, %p ) = @_;
 
@@ -30,16 +32,18 @@ sub tidyall {
 
     $source =~ s/\\n/\n/g;
     my $result;
-    my $output = capture_merged { $result = $ct->process_source( $source, 'foo.txt' ) };
+    my $output = capture_merged { $result = $ct->process_source( $source, $self->test_filename ) };
     $Test->diag($output) if $ENV{TEST_VERBOSE};
 
     if ( my $expect_tidy = $p{expect_tidy} ) {
         $expect_tidy =~ s/\\n/\n/g;
         is( $result->state,        'tidied',     'state=tidied' );
         is( $result->new_contents, $expect_tidy, 'new contents' );
+        is( $result->error,        undef,        'no error' );
     }
     elsif ( my $expect_ok = $p{expect_ok} ) {
         is( $result->state, 'checked', 'state=checked' );
+        is( $result->error, undef,     'no error' );
         if ( $result->new_contents ) {
             is( $result->new_contents, $source, 'same contents' );
         }

@@ -7,12 +7,12 @@ sub test_main : Tests {
     my $source = 'if (  $foo) {\nmy   $bar =  $baz;\n}\n';
     $self->tidyall(
         source      => $source,
-        expect_tidy => 'if ($foo) {\n    my $bar = $baz;\n}'
+        expect_tidy => 'if ($foo) {\n    my $bar = $baz;\n}\n'
     );
     $self->tidyall(
         conf        => { argv => '-bl' },
         source      => $source,
-        expect_tidy => 'if ($foo)\n{\n    my $bar = $baz;\n}'
+        expect_tidy => 'if ($foo)\n{\n    my $bar = $baz;\n}\n'
     );
     $self->tidyall(
         source    => 'if ($foo) {\n    my $bar = $baz;\n}\n',
