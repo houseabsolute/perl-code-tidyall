@@ -7,7 +7,6 @@ use Guard;
 use Log::Any qw($log);
 use IPC::System::Simple qw(capturex run);
 use Moo;
-use SVN::Look;
 use Try::Tiny;
 
 # Public
