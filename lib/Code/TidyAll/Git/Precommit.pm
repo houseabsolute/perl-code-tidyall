@@ -50,7 +50,7 @@ sub check {
             mode       => 'commit',
             %{ $self->tidyall_options },
         );
-        my @results = $tidyall->process_files( map { "$root_dir/$_" } @files );
+        my @results = $tidyall->process_files( grep { ! -d $_ } map { "$root_dir/$_" } @files );
 
         if ( my @error_results = grep { $_->error } @results ) {
             my $error_count = scalar(@error_results);
