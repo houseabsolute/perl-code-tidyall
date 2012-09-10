@@ -2,7 +2,7 @@ Revision history for Code-TidyAll
 
 ** denotes an incompatible change
 
-0.08  Sep 5, 2012
+0.08  Sep 10, 2012
 
 * Improvements
   - Add js-beautify plugin (javascript tidier)
