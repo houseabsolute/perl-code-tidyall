@@ -320,7 +320,8 @@ sub find_conf_file {
     my $path1     = rel2abs($start_dir);
     my $path2     = realpath($start_dir);
     my $conf_file = $class->_find_conf_file_upward($path1)
-      || $class->_find_conf_file_upward($path2);
+      || $class->_find_conf_file_upward($path2)
+      || "$ENV{HOME}/.tidyall.ini";
     unless ( defined $conf_file ) {
         die sprintf( "could not find $ini_name upwards from %s",
             ( $path1 eq $path2 ) ? "'$path1'" : "'$path1' or '$path2'" );
