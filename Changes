@@ -12,6 +12,10 @@ Revision history for Code-TidyAll
   - Allow tidyall.el to work in narrowed regions
   - Make plugins into Moo classes, pass configuration as attributes
 
+* Fixes
+  - Remove unused SVN::Look - perl-code-tidyall/pull/1 (Pedro Melo)
+  - Filter just files from git status in Code::TidyAll::Git::Precommit (Pedro Melo)
+
 0.07  Sep 5, 2012
 
 * Improvements

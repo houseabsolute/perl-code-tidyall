@@ -40,7 +40,7 @@ sub check {
 
         # Gather file paths to be committed
         my $output = capturex( $self->git_path, "status", "--porcelain" );
-        my @files = ( $output =~ /^[MA]\s+(.*)/gm );
+        my @files = grep { -f } ( $output =~ /^[MA]\s+(.*)/gm );
 
         my $tidyall = $tidyall_class->new_from_conf_file(
             $conf_file,
