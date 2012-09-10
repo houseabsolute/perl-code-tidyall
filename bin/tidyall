@@ -164,23 +164,36 @@ changed since they were last processed.
 
 A I<tidier> transforms a file so as to improve its appearance without changing
 its semantics. Examples include L<perltidy>, L<podtidy> and
-L<htmltidy|HTML::Tidy>.
+L<js-beautify|https://npmjs.org/package/js-beautify>.
 
 A I<validator> analyzes a file for some definition of correctness. Examples
-include L<perlcritic>, L<podchecker> and
-L<xmllint|http://xmlsoft.org/xmllint.html>.
+include L<perlcritic>, L<podchecker> and L<jshint|http://www.jshint.com/>.
 
 Many tidiers are also validators, e.g. C<perltidy> will throw an error on badly
 formed Perl.
 
 To use a tidier or validator with C<tidyall> it must have a corresponding
 plugin class, usually under the prefix C<Code::TidyAll::Plugin::>.  This
-distribution comes with plugins for
-L<perltidy|Code::TidyAll::Plugin::PerlTidy>,
-L<perlcritic|Code::TidyAll::Plugin::PerlCritic> and
-L<podtidy|Code::TidyAll::Plugin::PodTidy>. See
-L<Code::TidyAll::Plugin|Code::TidyAll::Plugin> for information about creating
-your own plugin.
+distribution comes with plugins for:
+
+=over
+
+=item L<perlcritic|Code::TidyAll::Plugin::PerlCritic>
+
+=item L<perltidy|Code::TidyAll::Plugin::PerlTidy>
+
+=item L<podchecker|Code::TidyAll::Plugin::PodChecker>
+
+=item L<podtidy|Code::TidyAll::Plugin::PodTidy>
+
+=item L<jsbeautify|Code::TidyAll::Plugin::JSBeautify>
+
+=item L<jshint|Code::TidyAll::Plugin::JSHint>
+
+=back
+
+See L<Code::TidyAll::Plugin|Code::TidyAll::Plugin> for information about
+creating your own plugin.
 
 =head1 USING TIDYALL
 

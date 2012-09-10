@@ -24,9 +24,10 @@ sub test_filename { 'foo.txt' }
 sub tidyall {
     my ( $self, %p ) = @_;
 
-    my $source       = $p{source} || die "source required";
+    my $source = $p{source} || die "source required";
+    my $desc   = $p{desc}   || $source;
     my $plugin_class = $self->plugin_class;
-    my %plugin_conf  = ( $plugin_class => { select => '*', %{ $p{conf} || {} } } );
+    my %plugin_conf = ( $plugin_class => { select => '*', %{ $p{conf} || {} } } );
     my $ct =
       Code::TidyAll->new( quiet => 1, root_dir => $self->{root_dir}, plugins => \%plugin_conf );
 
@@ -37,20 +38,20 @@ sub tidyall {
 
     if ( my $expect_tidy = $p{expect_tidy} ) {
         $expect_tidy =~ s/\\n/\n/g;
-        is( $result->state,        'tidied',     'state=tidied' );
-        is( $result->new_contents, $expect_tidy, 'new contents' );
-        is( $result->error,        undef,        'no error' );
+        is( $result->state,        'tidied',     "state=tidied [$desc]" );
+        is( $result->new_contents, $expect_tidy, "new contents [$desc]" );
+        is( $result->error,        undef,        "no error [$desc]" );
     }
     elsif ( my $expect_ok = $p{expect_ok} ) {
-        is( $result->state, 'checked', 'state=checked' );
-        is( $result->error, undef,     'no error' );
+        is( $result->state, 'checked', "state=checked [$desc]" );
+        is( $result->error, undef,     "no error [$desc]" );
         if ( $result->new_contents ) {
-            is( $result->new_contents, $source, 'same contents' );
+            is( $result->new_contents, $source, "same contents [$desc]" );
         }
     }
     elsif ( my $expect_error = $p{expect_error} ) {
-        is( $result->state, 'error', 'state=error' );
-        like( $result->error, $expect_error, 'error message' );
+        is( $result->state, 'error', "state=error [$desc]" );
+        like( $result->error, $expect_error, "error message [$desc]" );
     }
 }
 

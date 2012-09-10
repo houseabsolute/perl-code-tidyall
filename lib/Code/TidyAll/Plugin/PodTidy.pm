@@ -33,18 +33,28 @@ Code::TidyAll::Plugin::PodTidy - use podtidy with tidyall
 
 =head1 SYNOPSIS
 
-   # In tidyall.ini:
+   In tidyall.ini:
 
    [PodTidy]
    select = lib/**/*.{pm,pod}
    columns = 90
 
-=head1 OPTIONS
+=head1 DESCRIPTION
+
+Runs L<podtidy|podtidy>, which will tidy the POD in your Perl or POD-only file.
+
+=head1 INSTALLATION
+
+Install podtidy from CPAN.
+
+    cpanm podtidy
+
+=head1 CONFIGURATION
 
 =over
 
 =item columns
 
-Number of columns to fill
+Number of columns per line
 
 =back

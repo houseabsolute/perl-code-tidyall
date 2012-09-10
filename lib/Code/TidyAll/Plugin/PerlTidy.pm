@@ -32,14 +32,35 @@ Code::TidyAll::Plugin::PerlTidy - use perltidy with tidyall
 
    # In tidyall.ini:
 
-   # Configure in-line
-   #
+   ; Configure in-line
+   ;
    [PerlTidy]
    argv = --noll
    select = lib/**/*.pm
 
-   # or refer to a .perltidyrc in the same directory
-   #
+   ; or refer to a .perltidyrc in the same directory
+   ;
    [PerlTidy]
    argv = --profile=$ROOT/.perltidyrc
    select = lib/**/*.pm
+
+=head1 DESCRIPTION
+
+Runs L<perltidy|perltidy>, a Perl tidier.
+
+=head1 INSTALLATION
+
+Install perltidy from CPAN.
+
+    cpanm perltidy
+
+=head1 CONFIGURATION
+
+=over
+
+=item argv
+
+Arguments to pass to perltidy
+
+=back
+

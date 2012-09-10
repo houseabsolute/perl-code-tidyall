@@ -23,7 +23,8 @@ configure which tidiers/validators are applied to which files. C<tidyall> will
 back up files beforehand, and for efficiency will only consider files that have
 changed since they were last processed.
 
-'
+',
+        desc => 'tidy - defaults',
     );
 
     $self->tidyall(
@@ -39,6 +40,7 @@ changed since they were last processed.
 
 ',
         expect_ok => 1,
+        desc      => 'ok - defaults',
     );
 
     $self->tidyall(
@@ -64,7 +66,8 @@ efficiency will only consider
 files that have changed since
 they were last processed.
 
-'
+',
+        desc => 'tidy - columns = 30',
     );
 }
 

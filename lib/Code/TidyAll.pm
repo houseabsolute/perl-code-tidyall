@@ -9,7 +9,6 @@ use Date::Format;
 use Digest::SHA1 qw(sha1_hex);
 use File::Find qw(find);
 use File::Zglob;
-use List::Pairwise qw(grepp mapp);
 use List::MoreUtils qw(uniq);
 use Moo;
 use Time::Duration::Parse qw(parse_duration);
@@ -71,7 +70,10 @@ sub _build_plugins_for_mode {
     my $self    = shift;
     my $plugins = $self->plugins;
     if ( my $mode = $self->mode ) {
-        $plugins = { grepp { $self->_plugin_conf_matches_mode( $b, $mode ) } %{ $self->plugins } };
+        $plugins = {
+            map { ( $_, $plugins->{$_} ) }
+            grep { $self->_plugin_conf_matches_mode( $plugins->{$_}, $mode ) } keys(%$plugins)
+        };
     }
     return $plugins;
 }

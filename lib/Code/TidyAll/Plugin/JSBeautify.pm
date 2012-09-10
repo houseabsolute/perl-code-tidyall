@@ -19,23 +19,34 @@ __END__
 
 =head1 NAME
 
-Code::TidyAll::Plugin::JSBeautify - use jsbeautify with tidyall
+Code::TidyAll::Plugin::JSBeautify - use js-beautify with tidyall
 
 =head1 SYNOPSIS
 
-   # In tidyall.ini:
+   In tidyall.ini:
 
    [JSBeautify]
    select = static/**/*.js
    argv = --indent-size 2 --brace-style expand
 
+=head1 DESCRIPTION
+
+Runs L<js-beautify|https://npmjs.org/package/js-beautify>, a Javascript tidier.
+
 =head1 INSTALLATION
 
-This plugin requires you to install the
-L<js-beautify|https://npmjs.org/package/js-beautify> npm package. Install
-L<npm|https://npmjs.org/>, then run
+Install L<npm|https://npmjs.org/>, then run
 
-    npm install js-beautfy -g
+    npm install js-beautify -g
 
 Do not confuse this with the C<jsbeautify> package (without the dash).
 
+=head1 CONFIGURATION
+
+=over
+
+=item argv
+
+Arguments to pass to js-beautfy
+
+=back
