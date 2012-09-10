@@ -3,7 +3,6 @@ use Code::TidyAll;
 use Code::TidyAll::Util qw(realpath tempdir_simple write_file);
 use IPC::System::Simple qw(capturex run);
 use Moo;
-use SVN::Look;
 use Try::Tiny;
 
 # Public
