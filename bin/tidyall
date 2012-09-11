@@ -4,7 +4,6 @@ use Getopt::Long;
 use Pod::Usage;
 use Code::TidyAll;
 use Code::TidyAll::Util qw(can_load dirname);
-use Hash::MoreUtils qw(slice_def);
 use strict;
 use warnings;
 
@@ -43,7 +42,7 @@ Pod::Usage::pod2usage( { verbose => 2 } ) if $help;
 
 unshift( @INC, split( /\s*,\s*/, $inc_dirs ) ) if defined($inc_dirs);
 
-%params = slice_def( \%params );
+%params = map { ( $_, $params{$_} ) } grep { defined( $params{$_} ) } keys(%params);
 
 $conf_file = "$params{root_dir}/tidyall.ini"
   if $params{root_dir} && !$conf_file && -f "$params{root_dir}/tidyall.ini";
