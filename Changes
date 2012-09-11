@@ -4,6 +4,9 @@ Revision history for Code-TidyAll
 
 0.09  Sep 10, 2012
 
+* Fixes
+  - Add IPC::System::Simple to deps (Jason Wieland)
+
 0.08  Sep 10, 2012
 
 * Improvements
