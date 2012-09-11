@@ -54,7 +54,7 @@ if ( ( $all_files || $svn_files || $git_files ) ) {
     die "cannot use filename(s) with -a/--all, -s/--svn, or -g/--git"
       if @ARGV;
     $conf_file ||= $tidyall_class->find_conf_file( cwd() );
-    $params{root_dir} = cwd() if $conf_file eq "$ENV{HOME}/.tidyall.ini"
+    $params{root_dir} = cwd() if $conf_file eq "$ENV{HOME}/.tidyall.ini";
     my $ct = $tidyall_class->new_from_conf_file( $conf_file, %params );
 
     my @files;
