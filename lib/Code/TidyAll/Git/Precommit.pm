@@ -30,7 +30,14 @@ sub check {
         my $root_dir = capturex( $self->git_path, "rev-parse", "--show-toplevel" );
         chomp($root_dir);
         my $conf_file = join( "/", $root_dir, $self->conf_file );
-        die "could not find conf file '$conf_file'" unless -f $conf_file;
+        my $global_conf_file = "$ENV{HOME}/.tidyall.ini";
+        unless (-f $conf_file) {
+            unless (-f $global_conf_file) {
+                die "could not find conf file '$conf_file', '$global_conf_file'"
+            } else {
+                $conf_file = $global_conf_file;
+            }
+        }
 
         # Store the stash, and restore it upon exiting this scope
         unless ( $self->no_stash ) {
