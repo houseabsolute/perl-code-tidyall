@@ -6,7 +6,7 @@ Revision history for Code-TidyAll
 
 * Fixes
   - Remove use of ex-dependency Hash::MoreUtils from bin/tidyall (Jason Wieland)
-  - Add IPC::System::Simple to deps (Jason Wieland)
+  - Add IPC::System::Simple and Pod::Usage to deps (Jason Wieland)
 
 0.08  Sep 10, 2012
 
