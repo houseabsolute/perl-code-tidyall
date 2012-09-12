@@ -47,6 +47,10 @@ Do not confuse this with the C<jsbeautify> package (without the dash).
 
 =item argv
 
-Arguments to pass to js-beautfy
+Arguments to pass to js-beautify
+
+=item cmd
+
+Full path to js-beautify
 
 =back

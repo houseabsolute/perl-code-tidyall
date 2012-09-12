@@ -87,9 +87,14 @@ easy method is to install L<npm|https://npmjs.org/>, then run
 
 Arguments to pass to jshint
 
+=item cmd
+
+Full path to jshint
+
 =item options
 
 A whitespace separated string of options, as documented
-L<here|http://www.jshint.com/docs/>
+L<here|http://www.jshint.com/docs/>. These will be written to a temporary
+config file and passed as --config to argv.
 
 =back
