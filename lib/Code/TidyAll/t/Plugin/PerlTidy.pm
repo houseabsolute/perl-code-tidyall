@@ -22,6 +22,11 @@ sub test_main : Tests {
         source       => 'if ($foo) {\n    my $bar = $baz;\n',
         expect_error => qr/Final nesting depth/
     );
+    $self->tidyall(
+        conf         => { argv => '--badoption' },
+        source       => $source,
+        expect_error => qr/Unknown option: badoption/
+    );
 }
 
 1;
