@@ -14,7 +14,7 @@ sub usage {
     Pod::Usage::pod2usage( { verbose => 1, output => \*STDERR } );
 }
 
-my ( %params, $all_files, $conf_file, $git_files, $help, $inc_dirs, $pipe, $svn_files );
+my ( %params, $all_files, $conf_file, $git_files, $help, $inc_dirs, $list, $pipe, $svn_files );
 
 GetOptions(
     'backup-ttl=i'    => \$params{backup_ttl},
@@ -30,6 +30,7 @@ GetOptions(
     'a|all'           => \$all_files,
     'g|git'           => \$git_files,
     'h|help'          => \$help,
+    'l|list'          => \$list,
     'm|mode=s'        => \$params{mode},
     'p|pipe=s'        => \$pipe,
     's|svn'           => \$svn_files,
@@ -49,14 +50,18 @@ $conf_file = "$params{root_dir}/tidyall.ini"
 
 my $tidyall_class = $params{tidyall_class} || 'Code::TidyAll';
 
-my (@results);
-if ( ( $all_files || $svn_files || $git_files ) ) {
+my ( $ct, @files );
+
+if ($pipe) {
+    my $status = handle_pipe($pipe);
+    exit($status);
+}
+elsif ( ( $all_files || $svn_files || $git_files ) ) {
     die "cannot use filename(s) with -a/--all, -s/--svn, or -g/--git"
       if @ARGV;
     $conf_file ||= $tidyall_class->find_conf_file( cwd() );
-    my $ct = $tidyall_class->new_from_conf_file( $conf_file, %params );
+    $ct = $tidyall_class->new_from_conf_file( $conf_file, %params );
 
-    my @files;
     if ($all_files) {
         @files = $ct->find_matched_files;
     }
@@ -68,22 +73,23 @@ if ( ( $all_files || $svn_files || $git_files ) ) {
         require Code::TidyAll::Git::Util;
         @files = Code::TidyAll::Git::Util::git_uncommitted_files( $ct->root_dir );
     }
-    @results = $ct->process_files(@files);
 }
-elsif ($pipe) {
-    handle_pipe($pipe);
-}
-elsif ( my @files = @ARGV ) {
+elsif ( @files = @ARGV ) {
     $conf_file ||= $tidyall_class->find_conf_file( dirname( $files[0] ) );
-    my $ct = $tidyall_class->new_from_conf_file( $conf_file, %params );
-    @results = $ct->process_files(@files);
+    $ct = $tidyall_class->new_from_conf_file( $conf_file, %params );
 }
 else {
     die "must pass -a/--all, -s/--svn, -g/--git, -p/--pipe, or filename(s)";
 }
 
-my $status = ( grep { $_->error } @results ) ? 1 : 0;
-exit($status);
+if ($list) {
+    $ct->list_files(@files);
+}
+else {
+    my @results = $ct->process_files(@files);
+    my $status = ( grep { $_->error } @results ) ? 1 : 0;
+    exit($status);
+}
 
 sub handle_pipe {
     my ($pipe_filename) = @_;
@@ -97,20 +103,19 @@ sub handle_pipe {
     my $source   = do { local $/; <STDIN> };
     my $result   = $ct->process_source( $source, $ct->_small_path($pipe_filename) );
     if ( my $error = $result->error ) {
-        print STDERR $error;
-        exit(1);
+        return 1;
     }
     elsif ( $result->state eq 'no_match' ) {
         print STDERR "No match for '$pipe'";
-        exit(1);
+        return 1;
     }
     elsif ( $result->state eq 'checked' ) {
         print $source;
-        exit(0);
+        return 0;
     }
     else {
         print $result->new_contents;
-        exit(0);
+        return 0;
     }
 }
 
@@ -350,6 +355,17 @@ Process all added or modified files in the current git working directory.
 =item -h, --help       
 
 Print help message
+
+=item -l, --list
+
+List each file along with the list of plugins it matches (files without any
+matches are skipped). Does not actually process any files and does not care
+whether files are cached. Generally used with -a, -g, or -s. e.g.
+
+    % tidyall -a -l
+    lib/CHI.pm (PerlCritic, PerlTidy, PodTidy)
+    lib/CHI/Benchmarks.pod (PodTidy)
+    lib/CHI/CacheObject.pm (PerlCritic, PerlTidy, PodTidy)
 
 =item -m, --mode       
 
