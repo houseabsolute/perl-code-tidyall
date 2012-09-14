@@ -1,6 +1,7 @@
 package Code::TidyAll::Plugin::JSBeautify;
 use IPC::System::Simple qw(run);
 use Moo;
+use Try::Tiny;
 extends 'Code::TidyAll::Plugin';
 
 sub _build_cmd { 'js-beautify' }
@@ -8,7 +9,12 @@ sub _build_cmd { 'js-beautify' }
 sub transform_file {
     my ( $self, $file ) = @_;
 
-    run( sprintf( "%s --replace %s %s", $self->cmd, $self->argv, $file ) );
+    try {
+        run( sprintf( "%s --replace %s %s", $self->cmd, $self->argv, $file ) );
+    }
+    catch {
+        die sprintf( "%s exited with error - possibly bad arg list '%s'", $self->cmd, $self->argv );
+    };
 }
 
 1;

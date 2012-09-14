@@ -49,6 +49,12 @@ sub test_main : Tests {
         expect_error => qr/not in camel case/,
         desc         => 'error - camelcase - conf file',
     );
+    $self->tidyall(
+        source       => 'var my_object = {};',
+        conf         => { argv => "--badoption" },
+        expect_error => qr/Unknown option/,
+        desc         => 'error - bad option'
+    );
 }
 
 1;

@@ -14,6 +14,11 @@ sub test_main : Tests {
         conf        => { argv => '--indent-size 2 --brace-style expand' },
         expect_tidy => 'sp.toggleResult = function(id)\n{\n  foo(id)\n}\n',
     );
+    $self->tidyall(
+        source       => $source,
+        conf         => { argv => '--badoption' },
+        expect_error => qr/exited with error/
+    );
 }
 
 1;
