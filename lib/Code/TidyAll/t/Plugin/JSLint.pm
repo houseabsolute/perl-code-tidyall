@@ -23,6 +23,12 @@ sub test_main : Tests {
         expect_ok => 1,
         desc      => 'ok - bad indentation, --white'
     );
+    $self->tidyall(
+        source       => 'var my_object = {};',
+        conf         => { argv => '--badoption' },
+        expect_error => qr/Usage/,
+        desc         => 'error - bad option'
+    );
 }
 
 1;
