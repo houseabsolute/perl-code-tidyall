@@ -1,5 +1,5 @@
 package Code::TidyAll::t::Plugin;
-use Capture::Tiny qw(capture_merged);
+use Capture::Tiny qw(capture);
 use Code::TidyAll::Util qw(tempdir_simple);
 use Code::TidyAll;
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
@@ -33,8 +33,10 @@ sub tidyall {
 
     $source =~ s/\\n/\n/g;
     my $result;
-    my $output = capture_merged { $result = $ct->process_source( $source, $self->test_filename ) };
-    $Test->diag($output) if $ENV{TEST_VERBOSE};
+    my ( $output, $error ) =
+      capture { $result = $ct->process_source( $source, $self->test_filename ) };
+    $Test->diag($output) if $output && $ENV{TEST_VERBOSE};
+    $Test->diag($error)  if $error  && $ENV{TEST_VERBOSE};
 
     if ( my $expect_tidy = $p{expect_tidy} ) {
         $expect_tidy =~ s/\\n/\n/g;
