@@ -4,6 +4,14 @@ Revision history for Code-TidyAll
 
 0.11  Sep 12, 2012
 
+* Improvements
+  - Add -l/--list flag to show which plugins match which files
+  - Redirect stdout to stderr with -p/--pipe, so that stdout is dedicated to the tidied content
+
+* Fixes
+  - Eliminate double-printed error with -p/--pipe
+  - Allow relative paths to -p/--pipe
+
 0.10  Sep 12, 2012
 
 * Improvements
