@@ -1,14 +1,23 @@
 package Code::TidyAll::Plugin::MasonTidy;
-use IPC::System::Simple qw(run);
+use Capture::Tiny qw(capture_merged);
+use Mason::Tidy;
 use Moo;
+use Text::ParseWords qw(shellwords);
 extends 'Code::TidyAll::Plugin';
 
 sub _build_cmd { 'masontidy' }
 
-sub transform_file {
-    my ( $self, $file ) = @_;
+sub transform_source {
+    my ( $self, $source ) = @_;
 
-    run( sprintf( "%s --replace %s %s", $self->cmd, $self->argv, $file ) );
+    my %params;
+    my $argv_list = [ shellwords( $self->argv ) ];
+    my $opts_good;
+    my $output = capture_merged { $opts_good = Mason::Tidy->get_options( $argv_list, \%params ) };
+    die $output if !$opts_good;
+    my $mt   = Mason::Tidy->new(%params);
+    my $dest = $mt->tidy($source);
+    return $dest;
 }
 
 1;
