@@ -24,6 +24,17 @@ sub test_main : Tests {
         conf      => { argv => "--profile $rc_file" },
         expect_ok => 1,
     );
+    $self->tidyall(
+        source       => 'my $foo = 5\n',
+        conf         => { argv => "--profile $rc_file --badoption" },
+        expect_error => qr/Unknown option: badoption/
+    );
+    write_file( $rc_file, "badconfig = 1\n" );
+    $self->tidyall(
+        source       => 'my $foo = 5\n',
+        conf         => { argv => "--profile $rc_file" },
+        expect_error => qr/"badconfig" is not a supported option/
+    );
 }
 
 1;

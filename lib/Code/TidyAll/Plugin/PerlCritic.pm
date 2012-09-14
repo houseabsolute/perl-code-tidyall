@@ -1,15 +1,15 @@
 package Code::TidyAll::Plugin::PerlCritic;
-use Perl::Critic::Command qw();
 use Capture::Tiny qw(capture_merged);
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
+sub _build_cmd { 'perlcritic' }
+
 sub validate_file {
     my ( $self, $file ) = @_;
 
-    my @argv = ( split( /\s/, $self->argv ), $file );
-    local @ARGV = @argv;
-    my $output = capture_merged { Perl::Critic::Command::run() };
+    my $cmd = sprintf( "%s %s %s", $self->cmd, $self->argv, $file );
+    my $output = capture_merged { system($cmd) };
     die "$output\n" if $output !~ /^.* source OK\n/;
 }
 
