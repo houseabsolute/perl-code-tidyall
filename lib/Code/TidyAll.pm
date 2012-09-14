@@ -1,6 +1,6 @@
 package Code::TidyAll;
 use Cwd qw(realpath);
-use Config::INI::Reader;
+use Code::TidyAll::Config::INI::Reader;
 use Code::TidyAll::Cache;
 use Code::TidyAll::Util
   qw(abs2rel basename can_load dirname dump_one_line mkpath read_file rel2abs tempdir_simple uniq write_file);
@@ -277,7 +277,7 @@ sub _read_conf_file {
     my $conf_string = read_file($conf_file);
     my $root_dir    = dirname($conf_file);
     $conf_string =~ s/\$ROOT/$root_dir/g;
-    my $conf_hash = Config::INI::Reader->read_string($conf_string);
+    my $conf_hash = Code::TidyAll::Config::INI::Reader->read_string($conf_string);
     die "'$conf_file' did not evaluate to a hash"
       unless ( ref($conf_hash) eq 'HASH' );
     return $conf_hash;

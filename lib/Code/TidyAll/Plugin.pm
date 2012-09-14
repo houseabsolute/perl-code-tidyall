@@ -43,6 +43,29 @@ sub _build_ignore_regex {
     return zglobs_to_regex( @{ $self->ignores } );
 }
 
+sub BUILD {
+    my ( $self, $params ) = @_;
+
+    # Strict constructor
+    #
+    $self->validate_params($params);
+}
+
+sub validate_params {
+    my ( $self, $params ) = @_;
+
+    delete( $params->{only_modes} );
+    delete( $params->{except_modes} );
+    if ( my @bad_params = grep { !$self->can($_) } keys(%$params) ) {
+        die sprintf(
+            "unknown option%s %s for plugin '%s'",
+            @bad_params > 1 ? "s" : "",
+            join( ", ", sort map { "'$_'" } @bad_params ),
+            $self->name
+        );
+    }
+}
+
 sub _parse_zglob_list {
     my ( $self, $zglob_list ) = @_;
     $zglob_list = '' if !defined($zglob_list);
