@@ -295,26 +295,28 @@ The header of each section refers to a tidyall I<plugin>. The name is
 automatically prefixed with C<Code::TidyAll::Plugin::> unless it begins with a
 '+', e.g.
 
-    # Uses plugin Code::TidyAll::Plugin::PerlTidy
-    #
+    ; Uses plugin Code::TidyAll::Plugin::PerlTidy
+    ;
     [PerlTidy]
 
-    # Uses plugin My::TidyAll::Plugin
-    #
+    ; Uses plugin My::TidyAll::Plugin
+    ;
     [+My::TidyAll::Plugin]
 
 =item select
 
-One or more L<File::Zglob|File::Zglob> patterns separated by whitespae,
-indicating which files to select. At least one is required. e.g.
+One or more L<File::Zglob|File::Zglob> patterns, separated by whitespae or on
+multiple lines, indicating which files to select. At least one is required.
+e.g.
 
-    # All .t and .pl somewhere under bin and t;
-    # plus all .pm files directly under lib/Foo and lib/Bar
-    #
-    select = {bin,t}/**/*.p[lm] lib/{Foo,Bar}/*.pm
+    ; All .t and .pl somewhere under bin and t;
+    ; plus all .pm files directly under lib/Foo and lib/Bar
+    ;
+    select = {bin,t}/**/*.p[lm]
+    select = lib/{Foo,Bar}/*.pm
 
-    # All .txt files anywhere in the project
-    #
+    ; All .txt files anywhere in the project
+    ;
     select = **/*.txt
 
 The pattern is relative to the root directory and should have no leading slash.
@@ -324,13 +326,15 @@ L<File::Zglob|File::Zglob> documentation for more details.
 
 =item ignore
 
-One or more L<File::Zglob|File::Zglob> patterns separated by whitespace, of the
-same format described above, indicating which files to ignore.  This is
-optional and overrides C<select>. e.g.
+One or more L<File::Zglob|File::Zglob> patterns, separated by whitespace or on
+multiple lines, indicating which files to ignore.  This is optional and
+overrides C<select>. e.g.
 
-    # All .pl files anywhere under bin, except under bin/tmp
+    ; All .pl files anywhere under bin, except bin/awful.pl or anywhere
+    ; under bin/tmp
+    ;
     select = bin/**/*.pl
-    ignore = bin/tmp/**/*.pl
+    ignore = bin/awful.pl bin/tmp/**/*.pl
 
 =item only_modes
 
