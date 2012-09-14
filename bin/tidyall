@@ -2,6 +2,7 @@
 use Cwd qw(cwd realpath);
 use Getopt::Long;
 use Pod::Usage;
+use Capture::Tiny qw(capture_merged);
 use Code::TidyAll;
 use Code::TidyAll::Util qw(can_load dirname);
 use strict;
@@ -101,7 +102,16 @@ sub handle_pipe {
     my $ct       = $tidyall_class->new_from_conf_file( $conf_file, %params );
     my $root_dir = $ct->root_dir;
     my $source   = do { local $/; <STDIN> };
-    my $result   = $ct->process_source( $source, $ct->_small_path($pipe_filename) );
+
+    # Merge stdout and stderr and output all to stderr, so that stdout is
+    # dedicated to the tidied content
+    #
+    my $result;
+    my $output = capture_merged {
+        $result = $ct->process_source( $source, $ct->_small_path( realpath($pipe_filename) ) );
+    };
+    print STDERR $output;
+
     if ( my $error = $result->error ) {
         return 1;
     }
