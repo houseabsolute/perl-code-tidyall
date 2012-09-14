@@ -6,12 +6,17 @@ use Exporter;
 use vars qw/@ISA @EXPORT_OK
   $strict_leading_dot $strict_wildcard_slash/;
 @ISA       = 'Exporter';
-@EXPORT_OK = qw( zglob_to_regex );
+@EXPORT_OK = qw( zglobs_to_regex zglob_to_regex );
 
 $strict_leading_dot    = 1;
 $strict_wildcard_slash = 1;
 
 use constant debug => 0;
+
+sub zglobs_to_regex {
+    my @globs = @_;
+    return @globs ? join( '|', map { "(?:" . zglob_to_regex($_) . ")" } @globs ) : qr/(?!)/;
+}
 
 sub zglob_to_regex {
     my $glob  = shift;
