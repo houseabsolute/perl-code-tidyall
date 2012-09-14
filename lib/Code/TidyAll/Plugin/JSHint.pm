@@ -25,8 +25,6 @@ sub validate_file {
 
     my $cmd = sprintf( "%s %s %s", $self->cmd, $self->argv, $file );
     my $output = capture_merged { system($cmd) };
-    use d;
-    dp $output;
     die "$output\n" if $output =~ /\S/;
 }
 
