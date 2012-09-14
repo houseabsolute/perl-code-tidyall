@@ -205,6 +205,25 @@ sub test_caching_and_backups : Tests {
     }
 }
 
+sub test_selects_and_ignores : Tests {
+    my $self = shift;
+
+    my @files = ( "a/foo.pl", "b/foo.pl", "a/foo.pm", "a/bar.pm", "b/bar.pm" );
+    my $root_dir = $self->create_dir( { map { $_ => 'hi' } @files } );
+    my $ct = Code::TidyAll->new(
+        root_dir => $root_dir,
+        plugins  => {
+            test_plugin('UpperText') => {
+                select => '**/*.pl **/*.pm b/bar.pm c/bar.pl',
+                ignore => 'a/foo.pl **/bar.pm c/baz.pl'
+            }
+        }
+    );
+    cmp_set( [ $ct->find_matched_files() ], [ "$root_dir/a/foo.pm", "$root_dir/b/foo.pl" ] );
+    cmp_deeply( [ map { $_->name } $ct->plugins_for_path("a/foo.pm") ],
+        [ test_plugin('UpperText') ] );
+}
+
 sub test_errors : Tests {
     my $self = shift;
 
