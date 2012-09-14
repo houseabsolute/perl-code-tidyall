@@ -5,10 +5,12 @@ Revision history for Code-TidyAll
 0.11  Sep 12, 2012
 
 * Improvements
+  - Add conf_name parameter to specify name other than tidyall.ini
   - Add -l/--list flag to show which plugins match which files
   - Redirect stdout to stderr with -p/--pipe, so that stdout is dedicated to the tidied content
 
 * Fixes
+  - Handle argv/config errors correctly in various plugins
   - Eliminate double-printed error with -p/--pipe
   - Allow relative paths to -p/--pipe
 
