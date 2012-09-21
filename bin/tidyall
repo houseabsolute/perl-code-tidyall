@@ -202,9 +202,13 @@ distribution comes with plugins for:
 
 =item L<podtidy|Code::TidyAll::Plugin::PodTidy>
 
+=item L<masontidy|Code::TidyAll::Plugin::MasonTidy>
+
 =item L<jsbeautify|Code::TidyAll::Plugin::JSBeautify>
 
 =item L<jshint|Code::TidyAll::Plugin::JSHint>
+
+=item L<jslint|Code::TidyAll::Plugin::JSLint>
 
 =back
 
