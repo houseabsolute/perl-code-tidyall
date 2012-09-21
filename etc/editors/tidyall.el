@@ -96,7 +96,9 @@
                                (save-buffer))
                              (message (concat "tidied " file)))
                             (t
-                             (message (concat "checked " file)))))
+                             (message (concat "checked " file))))
+                      (delete-windows-on tidyall-buffer))
+                        
                      (t
                       ;; Error. Display in other window
                       ;;
