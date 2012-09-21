@@ -2,7 +2,7 @@ Revision history for Code-TidyAll
 
 ** denotes an incompatible change
 
-0.11  Sep 12, 2012
+0.11  Sep 21, 2012
 
 * Improvements
   - Allow multiple select and ignore patterns, separated by whitespace or on separate lines
