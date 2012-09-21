@@ -31,22 +31,17 @@
 
 ;; To operate on just a region of the buffer, use narrow-to-region.
 
-;; To assign this command to ctrl-t in perl-mode and pod-mode:
+;; To assign this command to ctrl-t globally:
+;;
+;;   (global-set-key "\C-t" 'tidyall-buffer)
+;;
+;; Or to assign it locally in, e.g., perl-mode:
 ;;
 ;;   (setq perl-mode-hook
 ;;        '(lambda ()
 ;;           (local-set-key "\C-t" 'tidyall-buffer)
 ;;           ))
 ;;   
-;;   (setq pod-mode-hook
-;;        '(lambda ()
-;;           (local-set-key "\C-t" 'tidyall-buffer)
-;;           ))
-;;
-;; or to assign it globally:
-;;
-;;   (global-set-key "\C-t" 'tidyall-buffer)
-;;
 ;; (This replaces the default binding to transpose-chars, which I never use but ymmv.)
 
 ;; The variable `tidyall-cmd` contains the path to the tidyall command.
