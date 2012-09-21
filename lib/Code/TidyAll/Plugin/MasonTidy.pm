@@ -15,6 +15,7 @@ sub transform_source {
     my $opts_good;
     my $output = capture_merged { $opts_good = Mason::Tidy->get_options( $argv_list, \%params ) };
     die $output if !$opts_good;
+    die sprintf( "unrecognized arguments '%s'", join( " ", @$argv_list ) ) if @$argv_list;
     my $mt   = Mason::Tidy->new(%params);
     my $dest = $mt->tidy($source);
     return $dest;

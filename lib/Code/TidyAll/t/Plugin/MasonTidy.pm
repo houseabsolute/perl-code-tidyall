@@ -9,7 +9,7 @@ sub test_main : Tests {
     $source = '%if($foo) {\n%bar(1,2);\n%}';
     $self->tidyall(
         source      => $source,
-        expect_tidy => '% if ($foo) {\n%   bar( 1, 2 );\n% }'
+        expect_tidy => '% if ($foo) {\n%     bar( 1, 2 );\n% }'
     );
     $self->tidyall(
         source      => $source,

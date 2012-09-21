@@ -4,6 +4,13 @@ use Capture::Tiny qw(capture_merged);
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
+sub validate_params {
+    my ( $self, $params ) = @_;
+
+    delete( $params->{options} );
+    return $self->SUPER::validate_params($params);
+}
+
 sub _build_cmd { 'jshint' }
 
 sub BUILDARGS {
