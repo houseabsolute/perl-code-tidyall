@@ -9,6 +9,7 @@ Revision history for Code-TidyAll
   - Add -l/--list flag to show which plugins match which files
   - Add conf_name parameter to specify name other than tidyall.ini
   - Redirect stdout to stderr with -p/--pipe, so that stdout is dedicated to the tidied content
+  - In tidyall.el, hide error buffer on successful tidy
 
 * Fixes
   - Handle argv/config errors correctly in various plugins
