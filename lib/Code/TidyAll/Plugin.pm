@@ -184,7 +184,7 @@ as parameters. e.g. given
     argv = -severity 3
 
 then L<Code::TidyAll::Plugin::PerlCritic|Code::TidyAll::Plugin::PerlCritic>
-would be construted with parameters
+would be constructed with parameters
 
     select => 'lib/**/*.pm', 
     ignore = 'lib/UtterHack.pm',

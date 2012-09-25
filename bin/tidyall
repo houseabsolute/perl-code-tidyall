@@ -309,7 +309,7 @@ automatically prefixed with C<Code::TidyAll::Plugin::> unless it begins with a
 
 =item select
 
-One or more L<File::Zglob|File::Zglob> patterns, separated by whitespae or on
+One or more L<File::Zglob|File::Zglob> patterns, separated by whitespace or on
 multiple lines, indicating which files to select. At least one is required.
 e.g.
 
@@ -398,7 +398,7 @@ whether files are cached. Generally used with -a, -g, or -s. e.g.
 
 =item -m, --mode       
 
-Optional mode that can affect which plugins run. Defaults to 'cli'. See
+Optional mode that can affect which plugins run. Defaults to C<cli>. See
 L</MODES>.
 
 =item -p path, --pipe path
@@ -482,7 +482,7 @@ C<--refresh-cache>.
 =item --output-suffix I<suffix>
 
 Suffix to add to a filename before outputting the modified version, e.g.
-".tdy". Default is none, which means overwrite the file.
+C<.tdy>. Default is none, which means overwrite the file.
 
 =item --refresh-cache  
 
@@ -491,8 +491,8 @@ info. See also C<--no-cache>.
 
 =item --root-dir       
 
-Specify root dir explicitly. Usually this is inferred from the specified files
-or the current working directory.
+Specify root directory explicitly. Usually this is inferred from the specified
+files or the current working directory.
 
 =item --tidyall-class I<class>
 
@@ -603,13 +603,13 @@ You can turn off backups with C<--no-backups>.
 =item *
 
 C<etc/editors/tidyall.el> in this distribution is an Emacs function that runs
-C<tidyall> on the current buffer. You can assign this to ctrl-t or your
+C<tidyall> on the current buffer. You can assign this to C<ctrl-t> or your
 favorite key binding.
 
 =item *
 
 L<Code::TidyAll::SVN::Precommit|Code::TidyAll::SVN::Precommit> implements a
-subversion precommit hook that checks if all files are tidied and valid
+subversion pre-commit hook that checks if all files are tidied and valid
 according to C<tidyall>, and rejects the commit if not.
 
 =item *
@@ -636,7 +636,7 @@ Does not yet work on Windows
 
 =back
 
-=head1 ACKNOWLEDGEMENTS
+=head1 ACKNOWLEDGMENTS
 
 Thanks to Jeff Thalhammer for helping me refine this API. Thanks to Jeff for
 perlcritic, Steve Hancock for perltidy, and all the other authors of great open

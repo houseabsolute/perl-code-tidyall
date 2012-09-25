@@ -15,7 +15,7 @@ sub validate_file {
     my $output  = capture_merged { $checker->parse_from_file( $file, \*STDERR ) };
     die $output
       if $checker->num_errors
-          or ( $self->warnings && $checker->num_warnings );
+      or ( $self->warnings && $checker->num_warnings );
 }
 
 1;

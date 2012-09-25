@@ -33,7 +33,7 @@ Code::TidyAll::Plugin::JSLint - use jslint with tidyall
 
 =head1 DESCRIPTION
 
-Runs L<jslint|http://www.jslint.com/>, a Javascript validator, and dies if any
+Runs L<jslint|http://www.jslint.com/>, a JavaScript validator, and dies if any
 problems were found.
 
 =head1 INSTALLATION

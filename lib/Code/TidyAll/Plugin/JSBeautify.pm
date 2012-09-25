@@ -37,7 +37,7 @@ Code::TidyAll::Plugin::JSBeautify - use js-beautify with tidyall
 
 =head1 DESCRIPTION
 
-Runs L<js-beautify|https://npmjs.org/package/js-beautify>, a Javascript tidier.
+Runs L<js-beautify|https://npmjs.org/package/js-beautify>, a JavaScript tidier.
 
 =head1 INSTALLATION
 

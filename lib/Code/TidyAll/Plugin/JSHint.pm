@@ -76,7 +76,7 @@ Code::TidyAll::Plugin::JSHint - use jshint with tidyall
 
 =head1 DESCRIPTION
 
-Runs L<jshint|http://www.jshint.com/>, a Javascript validator, and dies if any
+Runs L<jshint|http://www.jshint.com/>, a JavaScript validator, and dies if any
 problems were found.
 
 =head1 INSTALLATION

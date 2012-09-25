@@ -161,7 +161,7 @@ __END__
 
 =head1 NAME
 
-Code::TidyAll::SVN::Precommit - Subversion precommit hook that requires files
+Code::TidyAll::SVN::Precommit - Subversion pre-commit hook that requires files
 to be tidyall'd
 
 =head1 SYNOPSIS
@@ -275,17 +275,17 @@ Commit transaction; defaults to C<< $ARGV[1] >>
 
 This module uses L<Log::Any|Log::Any> to log its activity, including all files
 that were checked, an inability to find C<tidyall.ini>, and any runtime errors
-that occur. You can create a simple datestamped log file with
+that occur. You can create a simple date-stamped log file with
 
     use Log::Any::Adapter (File => "/path/to/hooks/logs/tidyall.log");
 
 or do something fancier with one of the other L<Log::Any
 adapters|Log::Any::Adapter>.
 
-Having a log file is especially useful with precommit hooks since there is no
+Having a log file is especially useful with pre-commit hooks since there is no
 way for the hook to send back output on a successful commit.
 
-=head1 ACKNOWLEDGEMENTS
+=head1 ACKNOWLEDGMENTS
 
 Thanks to Alexander Simakov, author of
 L<perlcritic-checker|http://search.cpan.org/~xdr/perlcritic-checker-1.2.6/>,
