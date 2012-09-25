@@ -259,42 +259,45 @@ sub test_errors : Tests {
 }
 
 sub test_cli : Tests {
-    my $self      = shift;
-    my $root_dir  = $self->create_dir();
-    my $conf_file = "$root_dir/tidyall.ini";
-    write_file( $conf_file, $cli_conf );
+    my $self = shift;
 
-    write_file( "$root_dir/foo.txt", "hello" );
-    my $output = capture_stdout {
-        system( "$^X", "bin/tidyall", "$root_dir/foo.txt", "-v" );
-    };
+    foreach my $conf_name ( "tidyall.ini", ".tidyallrc" ) {
+        my $root_dir  = $self->create_dir();
+        my $conf_file = "$root_dir/$conf_name";
+        write_file( $conf_file, $cli_conf );
 
-    my ($params_msg) = ( $output =~ /constructing Code::TidyAll with these params:(.*)/ );
-    ok( defined($params_msg), "params msg" );
-    like( $params_msg, qr/backup_ttl => '15m'/,                              'backup_ttl' );
-    like( $params_msg, qr/verbose => '?1'?/,                                 'verbose' );
-    like( $params_msg, qr/\Qroot_dir => '$root_dir'\E/,                      'root_dir' );
-    like( $output,     qr/\[tidied\]  foo.txt \(.*RepeatFoo, .*UpperText\)/, 'foo.txt' );
-    is( read_file("$root_dir/foo.txt"), "HELLOHELLOHELLO", "tidied" );
+        write_file( "$root_dir/foo.txt", "hello" );
+        my $output = capture_stdout {
+            system( "$^X", "bin/tidyall", "$root_dir/foo.txt", "-v" );
+        };
 
-    mkpath( "$root_dir/subdir", 0, 0775 );
-    write_file( "$root_dir/subdir/foo.txt",  "bye" );
-    write_file( "$root_dir/subdir/foo2.txt", "bye" );
-    my $cwd = realpath();
-    capture_stdout {
-        system("cd $root_dir/subdir; $^X $cwd/bin/tidyall foo.txt");
-    };
-    is( read_file("$root_dir/subdir/foo.txt"),  "BYEBYEBYE", "foo.txt tidied" );
-    is( read_file("$root_dir/subdir/foo2.txt"), "bye",       "foo2.txt not tidied" );
+        my ($params_msg) = ( $output =~ /constructing Code::TidyAll with these params:(.*)/ );
+        ok( defined($params_msg), "params msg" );
+        like( $params_msg, qr/backup_ttl => '15m'/,                              'backup_ttl' );
+        like( $params_msg, qr/verbose => '?1'?/,                                 'verbose' );
+        like( $params_msg, qr/\Qroot_dir => '$root_dir'\E/,                      'root_dir' );
+        like( $output,     qr/\[tidied\]  foo.txt \(.*RepeatFoo, .*UpperText\)/, 'foo.txt' );
+        is( read_file("$root_dir/foo.txt"), "HELLOHELLOHELLO", "tidied" );
 
-    # Test -p / --pipe
-    #
-    my ( $stdout, $stderr ) = capture {
-        open( my $fh, "|-", "$^X", "bin/tidyall", "-p", "$root_dir/does_not_exist/foo.txt" );
-        print $fh "echo";
-    };
-    is( $stdout, "ECHOECHOECHO", "pipe: stdin tidied" );
-    unlike( $stderr, qr/\S/, "pipe: no stderr" );
+        mkpath( "$root_dir/subdir", 0, 0775 );
+        write_file( "$root_dir/subdir/foo.txt",  "bye" );
+        write_file( "$root_dir/subdir/foo2.txt", "bye" );
+        my $cwd = realpath();
+        capture_stdout {
+            system("cd $root_dir/subdir; $^X $cwd/bin/tidyall foo.txt");
+        };
+        is( read_file("$root_dir/subdir/foo.txt"),  "BYEBYEBYE", "foo.txt tidied" );
+        is( read_file("$root_dir/subdir/foo2.txt"), "bye",       "foo2.txt not tidied" );
+
+        # Test -p / --pipe
+        #
+        my ( $stdout, $stderr ) = capture {
+            open( my $fh, "|-", "$^X", "bin/tidyall", "-p", "$root_dir/does_not_exist/foo.txt" );
+            print $fh "echo";
+        };
+        is( $stdout, "ECHOECHOECHO", "pipe: stdin tidied" );
+        unlike( $stderr, qr/\S/, "pipe: no stderr" );
+    }
 }
 
 $cli_conf = '

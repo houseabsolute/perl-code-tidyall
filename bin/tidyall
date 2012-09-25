@@ -38,8 +38,11 @@ sub usage {
     exit;
 }
 
-my ( %params, $all_files, $conf_file, $git_files, $help, $inc_dirs, $list, $pipe, $svn_files );
-my $conf_name = 'tidyall.ini';
+my (
+    %params, $all_files, $conf_file, $conf_name, $git_files,
+    $help,   $inc_dirs,  $list,      $pipe,      $svn_files
+);
+my @conf_names = ( 'tidyall.ini', '.tidyallrc' );
 
 GetOptions(
     'backup-ttl=i'    => \$params{backup_ttl},
@@ -64,15 +67,15 @@ GetOptions(
     'v|verbose'       => \$params{verbose},
     'I'               => \$inc_dirs,
 ) or usage();
-
 usage() if $help;
+@conf_names = ($conf_name) if defined($conf_name);
 
 unshift( @INC, split( /\s*,\s*/, $inc_dirs ) ) if defined($inc_dirs);
 
 %params = map { ( $_, $params{$_} ) } grep { defined( $params{$_} ) } keys(%params);
 
-$conf_file = "$params{root_dir}/tidyall.ini"
-  if $params{root_dir} && !$conf_file && -f "$params{root_dir}/tidyall.ini";
+($conf_file) = ( grep { -f } map { "$params{root_dir}/$_" } @conf_names )
+  if $params{root_dir} && !$conf_file;
 
 my $tidyall_class = $params{tidyall_class} || 'Code::TidyAll';
 
@@ -85,7 +88,7 @@ if ($pipe) {
 elsif ( ( $all_files || $svn_files || $git_files ) ) {
     die "cannot use filename(s) with -a/--all, -s/--svn, or -g/--git"
       if @ARGV;
-    $conf_file ||= $tidyall_class->find_conf_file( $conf_name, cwd() );
+    $conf_file ||= $tidyall_class->find_conf_file( \@conf_names, cwd() );
     $ct = $tidyall_class->new_from_conf_file( $conf_file, %params );
 
     if ($all_files) {
@@ -101,7 +104,7 @@ elsif ( ( $all_files || $svn_files || $git_files ) ) {
     }
 }
 elsif ( @files = @ARGV ) {
-    $conf_file ||= $tidyall_class->find_conf_file( $conf_name, dirname( $files[0] ) );
+    $conf_file ||= $tidyall_class->find_conf_file( \@conf_names, dirname( $files[0] ) );
     $ct = $tidyall_class->new_from_conf_file( $conf_file, %params );
 }
 else {
@@ -124,7 +127,7 @@ sub handle_pipe {
     $params{$_} = 1 for ( 'no_backups', 'no_cache', 'quiet' );
     $params{$_} = 0 for ('verbose');
 
-    $conf_file ||= $tidyall_class->find_conf_file( $conf_name, dirname($pipe_filename) );
+    $conf_file ||= $tidyall_class->find_conf_file( \@conf_names, dirname($pipe_filename) );
     my $ct       = $tidyall_class->new_from_conf_file( $conf_file, %params );
     my $root_dir = $ct->root_dir;
     my $source   = do { local $/; <STDIN> };
@@ -165,7 +168,7 @@ tidyall - Your all-in-one code tidier and validator
 
 =head1 SYNOPSIS
 
-    # Create a tidyall.ini at the top of your project
+    # Create a tidyall.ini or .tidyallrc at the top of your project
     #
     [PerlTidy]
     select = **/*.{pl,pm,t}
@@ -177,7 +180,7 @@ tidyall - Your all-in-one code tidier and validator
     argv = -severity 3
 
     # Process all files in the current project,
-    # look upwards from cwd for tidyall.ini
+    # look upwards from cwd for conf file
     #
     % tidyall -a
 
@@ -186,7 +189,7 @@ tidyall - Your all-in-one code tidier and validator
     % tidyall -a --root-dir /home/joe/project
 
     # Process one or more specific files,
-    # look upwards from the first file for tidyall.ini
+    # look upwards from the first file for conf file
     #
     % tidyall file [file...]
 
@@ -248,8 +251,8 @@ hierarchy of files. svn or git working directories are typical examples of
 projects.
 
 The top of the project is called the I<root directory>. In the root directory
-you'll need a C<tidyall.ini> config file; it defines how various tidiers and
-validators will be applied to the files in your project.
+you'll need a config file named C<tidyall.ini> or C<.tidyallrc>; it defines how
+various tidiers and validators will be applied to the files in your project.
 
 C<tidyall> will find your root directory and config file automatically
 depending on how you call it:
@@ -258,20 +261,20 @@ depending on how you call it:
 
 =item C<< tidyall file [file...] >>
 
-C<tidyall> will search upwards from the first file for C<tidyall.ini>.
+C<tidyall> will search upwards from the first file for the conf file.
 
 =item C<< tidyall -p/--pipe file >>
 
-C<tidyall> will search upwards from the specified file for C<tidyall.ini>.
+C<tidyall> will search upwards from the specified file for the conf file.
 
 =item C<< tidyall -a/--all >> or C<< tidyall -s/--svn >> or C<< tidyall -g/--git >>
 
-C<tidyall> will search upwards from the current working directory for
-C<tidyall.ini>.
+C<tidyall> will search upwards from the current working directory for the conf
+file.
 
 =item C<< tidyall -a --root-dir dir >>
 
-C<tidyall> will expect to find C<tidyall.ini> in the specified root directory.
+C<tidyall> will expect to find the conf file in the specified root directory.
 
 =back
 
@@ -280,8 +283,8 @@ You can also pass --conf-name to change the name that is searched for, or
 
 =head1 CONFIGURATION
 
-The config file (C<tidyall.ini>) is in L<Config::INI|Config::INI> format.
-Here's a sample:
+The config file (C<tidyall.ini> or C<.tidyallrc>) is in
+L<Config::INI|Config::INI> format.  Here's a sample:
 
     [PerlTidy]
     select = **/*.{pl,pm,t}
@@ -490,7 +493,8 @@ the usual way.
 
 =item --conf-name I<name>
 
-Specify a conf file name to search for instead of C<tidyall.ini>.
+Specify a conf file name to search for instead of the defaults (C<tidyall.ini>
+/ C<.tidyallrc>).
 
 =item --data-dir I<path>
 

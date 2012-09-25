@@ -324,31 +324,34 @@ sub _purge_backups {
 }
 
 sub find_conf_file {
-    my ( $class, $conf_name, $start_dir ) = @_;
+    my ( $class, $conf_names, $start_dir ) = @_;
 
     my $path1     = rel2abs($start_dir);
     my $path2     = realpath($start_dir);
-    my $conf_file = $class->_find_conf_file_upward( $conf_name, $path1 )
-      || $class->_find_conf_file_upward( $conf_name, $path2 );
+    my $conf_file = $class->_find_conf_file_upward( $conf_names, $path1 )
+      || $class->_find_conf_file_upward( $conf_names, $path2 );
     unless ( defined $conf_file ) {
-        die sprintf( "could not find $conf_name upwards from %s",
-            ( $path1 eq $path2 ) ? "'$path1'" : "'$path1' or '$path2'" );
+        die sprintf(
+            "could not find %s upwards from %s",
+            join( " or ", @$conf_names ),
+            ( $path1 eq $path2 ) ? "'$path1'" : "'$path1' or '$path2'"
+        );
     }
     return $conf_file;
 }
 
 sub _find_conf_file_upward {
-    my ( $class, $conf_name, $search_dir ) = @_;
+    my ( $class, $conf_names, $search_dir ) = @_;
 
     $search_dir =~ s{/+$}{};
 
     my $cnt = 0;
     while (1) {
-        my $try_path = "$search_dir/$conf_name";
-        if ( -f $try_path ) {
-            return $try_path;
+        foreach my $conf_name (@$conf_names) {
+            my $try_path = "$search_dir/$conf_name";
+            return $try_path if ( -f $try_path );
         }
-        elsif ( $search_dir eq '/' ) {
+        if ( $search_dir eq '/' ) {
             return undef;
         }
         else {
@@ -509,7 +512,8 @@ constructed instead of C<Code::TidyAll>.
 =item plugins
 
 Specify a hash of plugins, each of which is itself a hash of options. This is
-equivalent to what would be parsed out of the sections in C<tidyall.ini>.
+equivalent to what would be parsed out of the sections in the configuration
+file.
 
 =item backup_ttl
 
@@ -578,23 +582,24 @@ Return a L<Code::TidyAll::Result|Code::TidyAll::Result> object
 
 =back
 
-=item process_source (source, path)
+=item process_source (I<source>, I<path>)
 
 Same as L</process_file>, but process the I<source> string instead of a file.
 You must still pass the relative I<path> from the root as the second argument,
 so that we know which plugins to apply. Return a
 L<Code::TidyAll::Result|Code::TidyAll::Result> object.
 
-=item plugins_for_path (path)
+=item plugins_for_path (I<path>)
 
 Given a relative I<path> from the root, return a list of
 L<Code::TidyAll::Plugin|Code::TidyAll::Plugin> objects that apply to it, or an
 empty list if no plugins apply.
 
-=item find_conf_file (start_dir)
+=item find_conf_file (I<conf_names>, I<start_dir>)
 
-Class method. Start in the I<start_dir> and work upwards, looking for a
-C<tidyall.ini>.  Return the pathname if found or throw an error if not found.
+Class method. Start in the I<start_dir> and work upwards, looking for one of
+the I<conf_names>.  Return the pathname if found or throw an error if not
+found.
 
 =back
 
