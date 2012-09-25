@@ -1,18 +1,41 @@
 #!/usr/bin/perl
 use Cwd qw(cwd realpath);
 use Getopt::Long;
-use Pod::Usage;
 use Capture::Tiny qw(capture_merged);
 use Code::TidyAll;
 use Code::TidyAll::Util qw(can_load dirname rel2abs);
 use strict;
 use warnings;
 
+my $usage = '
+Usage: tidyall [options] [file] ...
+
+   -a, --all                Process all files in project
+   -g, --git                Process all added/modified files according to git
+   -h, --help               Print help message
+   -l, --list               List each file along with the plugins it matches
+   -m, --mode               Mode (e.g. "editor", "commit") - affects which plugins run
+   -p path, --pipe path     Read from STDIN, output to STDOUT/STDERR
+   -s, --svn                Process all added/modified files according to svn
+   -q, --quiet              Suppress output except for errors
+   -v, --verbose            Show extra output
+   -I I<path1,path2,...>    Add one or more paths to @INC
+   --backup-ttl <duration>  Amount of time before backup files can be purged
+   --check-only             Just check each file, don\'t modify
+   --conf-file <path>       Relative or absolute path to conf file
+   --conf-name <name>       Conf file name to search for
+   --data-dir <path>        Contains metadata, defaults to root/.tidyall.d
+   --no-backups             Don\'t backup files before processing
+   --no-cache               Don\'t cache last processed times
+   --output-suffix <suffix> Suffix to add to tidied file
+   --refresh-cache          Erase any existing cache info before processing each file
+   --root-dir               Specify root directory explicitly
+   --tidyall-class <class>  Subclass to use instead of Code::TidyAll
+';
+
 sub usage {
-    my $msg = shift;
-    print STDERR "$msg\n" if $msg;
-    require Pod::Usage;
-    Pod::Usage::pod2usage( { verbose => 1, output => \*STDERR } );
+    print $usage;
+    exit;
 }
 
 my ( %params, $all_files, $conf_file, $git_files, $help, $inc_dirs, $list, $pipe, $svn_files );
@@ -42,7 +65,7 @@ GetOptions(
     'I'               => \$inc_dirs,
 ) or usage();
 
-Pod::Usage::pod2usage( { verbose => 2 } ) if $help;
+usage() if $help;
 
 unshift( @INC, split( /\s*,\s*/, $inc_dirs ) ) if defined($inc_dirs);
 
@@ -82,7 +105,8 @@ elsif ( @files = @ARGV ) {
     $ct = $tidyall_class->new_from_conf_file( $conf_file, %params );
 }
 else {
-    die "must pass -a/--all, -s/--svn, -g/--git, -p/--pipe, or filename(s)";
+    print "must pass -a/--all, -s/--svn, -g/--git, -p/--pipe, or filename(s)\n";
+    usage();
 }
 
 if ($list) {
@@ -200,11 +224,13 @@ distribution comes with plugins for:
 
 =item L<podchecker|Code::TidyAll::Plugin::PodChecker>
 
+=item L<podspell|Code::TidyAll::Plugin::PodSpell>
+
 =item L<podtidy|Code::TidyAll::Plugin::PodTidy>
 
 =item L<masontidy|Code::TidyAll::Plugin::MasonTidy>
 
-=item L<jsbeautify|Code::TidyAll::Plugin::JSBeautify>
+=item L<js-beautify|Code::TidyAll::Plugin::JSBeautify>
 
 =item L<jshint|Code::TidyAll::Plugin::JSHint>
 
@@ -371,7 +397,7 @@ arguments to pass to the underlying command-line utility.
 
 =over
 
-=item -a, --all        
+=item -a, --all
 
 Process all files. Does a recursive search for all files in the project
 hierarchy, starting at the root, and processes any file that matches at least
@@ -381,7 +407,7 @@ one plugin in the configuration.
 
 Process all added or modified files in the current git working directory.
 
-=item -h, --help       
+=item -h, --help
 
 Print help message
 
@@ -396,7 +422,7 @@ whether files are cached. Generally used with -a, -g, or -s. e.g.
     lib/CHI/Benchmarks.pod (PodTidy)
     lib/CHI/CacheObject.pm (PerlCritic, PerlTidy, PodTidy)
 
-=item -m, --mode       
+=item -m, --mode
 
 Optional mode that can affect which plugins run. Defaults to C<cli>. See
 L</MODES>.
@@ -405,7 +431,7 @@ L</MODES>.
 
 Read content from STDIN instead of from a file. This option takes a filename
 argument, relative or absolute, which will be used to determine which plugins
-to apply and also where to start looking upwards for the configuration file. 
+to apply and also where to start looking upwards for the configuration file.
 The file will not actually be read and does need even need to exist.
 
 If an error occurs, it will be output to STDERR and tidyall will exit with
@@ -430,11 +456,11 @@ result).
 
 Process all added or modified files in the current svn working directory.
 
-=item -q, --quiet      
+=item -q, --quiet
 
 Suppress output except for errors.
 
-=item -v, --verbose    
+=item -v, --verbose
 
 Show extra output.
 
@@ -449,7 +475,7 @@ Amount of time before backup files can be purged. Can be a number of seconds or
 any string recognized by L<Time::Duration::Parse|Time::Duration::Parse>, e.g.
 "4h" or "1day". Defaults to "1h".
 
-=item --check-only     
+=item --check-only
 
 Instead of actually tidying files, check if each file is tidied (i.e. if its
 tidied version is equal to its current version) and consider it an error if
@@ -470,11 +496,11 @@ Specify a conf file name to search for instead of C<tidyall.ini>.
 
 Contains data like backups and cache. Defaults to root_dir/.tidyall.d
 
-=item --no-backups     
+=item --no-backups
 
 Don't backup files before processing.
 
-=item --no-cache       
+=item --no-cache
 
 Don't cache last processed times; process all files every time. See also
 C<--refresh-cache>.
@@ -484,12 +510,12 @@ C<--refresh-cache>.
 Suffix to add to a filename before outputting the modified version, e.g.
 C<.tdy>. Default is none, which means overwrite the file.
 
-=item --refresh-cache  
+=item --refresh-cache
 
 Erase any existing cache info before processing each file, then write new cache
 info. See also C<--no-cache>.
 
-=item --root-dir       
+=item --root-dir
 
 Specify root directory explicitly. Usually this is inferred from the specified
 files or the current working directory.
