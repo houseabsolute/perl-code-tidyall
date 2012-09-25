@@ -82,7 +82,7 @@ the configuration:
 
 =back
 
-The dictionary file contains one word per line.
+The dictionary file should contain one word per line.
 
 =head1 INSTALLATION
 
