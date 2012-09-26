@@ -65,7 +65,7 @@ sub test_svn : Tests {
         run( sprintf( 'svn -q commit -m "changed" %s/foo.txt %s/bar', $work_dir, $work_dir ) );
     };
     unlike( $stderr, qr/\S/ );
-    $log_contains->(qr|could not find 'tidyall.ini' upwards from 'myapp/trunk/foo.txt'|);
+    $log_contains->(qr|could not find.*upwards from 'myapp/trunk/foo.txt'|);
     $clear_log->();
     $committed->();
     cmp_deeply( [ svn_uncommitted_files($work_dir) ], [], "no uncommitted files" );
