@@ -42,7 +42,7 @@ my (
     %params, $all_files, $conf_file, $conf_name, $git_files,
     $help,   $inc_dirs,  $list,      $pipe,      $svn_files
 );
-my @conf_names = ( 'tidyall.ini', '.tidyallrc' );
+my @conf_names = Code::TidyAll->default_conf_names;
 
 GetOptions(
     'backup-ttl=i'    => \$params{backup_ttl},
