@@ -16,6 +16,8 @@ use Try::Tiny;
 use strict;
 use warnings;
 
+sub default_conf_names { ( 'tidyall.ini', '.tidyallrc' ) }
+
 # External
 has 'backup_ttl'    => ( is => 'ro', default => sub { '1 hour' } );
 has 'check_only'    => ( is => 'ro' );
