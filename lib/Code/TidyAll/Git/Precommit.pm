@@ -10,7 +10,7 @@ use Moo;
 use Try::Tiny;
 
 # Public
-has 'conf_file'       => ( is => 'ro', default => sub { "tidyall.ini" } );
+has 'conf_name'       => ( is => 'ro' );
 has 'git_path'        => ( is => 'ro', default => sub { 'git' } );
 has 'no_stash'        => ( is => 'ro' );
 has 'reject_on_error' => ( is => 'ro' );
@@ -29,8 +29,10 @@ sub check {
         # Find conf file at git root
         my $root_dir = capturex( $self->git_path, "rev-parse", "--show-toplevel" );
         chomp($root_dir);
-        my $conf_file = join( "/", $root_dir, $self->conf_file );
-        die "could not find conf file '$conf_file'" unless -f $conf_file;
+        my @conf_names =
+          $self->conf_name ? ( $self->conf_name ) : Code::TidyAll->default_conf_names;
+        my ($conf_file) = grep { -f } map { join( "/", $root_dir, $_ ) } @conf_names
+          or die sprintf( "could not find conf file %s", join( " or ", @conf_names ) );
 
         # Store the stash, and restore it upon exiting this scope
         unless ( $self->no_stash ) {
@@ -119,8 +121,8 @@ In an emergency the hook can be bypassed by passing --no-verify to commit:
 
 or you can just move C<.git/hooks/pre-commit> out of the way temporarily.
 
-The configuration file C<tidyall.ini> must be checked into git in the repo root
-directory i.e. next to the .git directory.
+The configuration file (C<tidyall.ini> or C<.tidyallrc>) must be checked into
+git in the repo root directory i.e. next to the .git directory.
 
 The hook will stash any changes not in the index beforehand, and restore them
 afterwards, via
@@ -129,14 +131,18 @@ afterwards, via
     ....
     git stash pop -q
 
-This means that if C<tidyall.ini> has uncommitted changes that are not in the
-index, they will not affect the tidyall run.
+This means that if the configuration file has uncommitted changes that are not
+in the index, they will not affect the tidyall run.
 
 Passes mode = "commit" by default; see L<modes|tidyall/MODES>.
 
 Key/value parameters:
 
 =over
+
+=item conf_name
+
+Conf file name to search for instead of the defaults.
 
 =item git_path
 

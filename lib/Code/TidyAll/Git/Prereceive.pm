@@ -1,12 +1,13 @@
 package Code::TidyAll::Git::Prereceive;
 use Code::TidyAll;
 use Code::TidyAll::Util qw(realpath tempdir_simple write_file);
+use Capture::Tiny qw(capture);
 use IPC::System::Simple qw(capturex run);
 use Moo;
 use Try::Tiny;
 
 # Public
-has 'conf_file'        => ( is => 'ro', default => sub { "tidyall.ini" } );
+has 'conf_name'        => ( is => 'ro' );
 has 'extra_conf_files' => ( is => 'ro', default => sub { [] } );
 has 'git_path'         => ( is => 'ro', default => sub { 'git' } );
 has 'reject_on_error'  => ( is => 'ro' );
@@ -24,7 +25,7 @@ sub check {
         my $root_dir = realpath();
         local $ENV{GIT_DIR} = $root_dir;
 
-        my ( @results, $conf_file, $tidyall );
+        my ( @results, $tidyall );
         while ( my $line = <> ) {
             chomp($line);
             my ( $base, $commit, $ref ) = split( /\s+/, $line );
@@ -63,13 +64,16 @@ sub create_tidyall {
     my ( $self, $commit ) = @_;
 
     my $temp_dir = tempdir_simple();
-    foreach my $rel_file ( $self->conf_file, @{ $self->extra_conf_files } ) {
+    my @conf_names = $self->conf_name ? ( $self->conf_name ) : Code::TidyAll->default_conf_names;
+    my ($conf_file) = grep { $self->get_file_contents( $_, $commit ) } @conf_names
+      or die sprintf( "could not find conf file %s", join( " or ", @conf_names ) );
+    foreach my $rel_file ( $conf_file, @{ $self->extra_conf_files } ) {
         my $contents = $self->get_file_contents( $rel_file, $commit )
           or die sprintf( "could not find file '%s' in repo root", $rel_file );
         write_file( "$temp_dir/$rel_file", $contents );
     }
     my $tidyall = $self->tidyall_class->new_from_conf_file(
-        "$temp_dir/" . $self->conf_file,
+        "$temp_dir/" . $conf_file,
         mode  => 'commit',
         quiet => 1,
         %{ $self->tidyall_options },
@@ -89,7 +93,7 @@ sub get_changed_files {
 
 sub get_file_contents {
     my ( $self, $file, $commit ) = @_;
-    my $contents = capturex( $self->git_path, "show", "$commit:$file" );
+    my ( $contents, $error ) = capture { system( $self->git_path, "show", "$commit:$file" ) };
     return $contents;
 }
 
@@ -148,8 +152,8 @@ is rejected and the reason(s) are output to the client. e.g.
     To ...
      ! [remote rejected] master -> master (pre-receive hook declined)
 
-The configuration file C<tidyall.ini> must be checked into git in the repo root
-directory, i.e. next to the .git directory.
+The configuration file (C<tidyall.ini> or C<.tidyallrc>) must be checked into
+git in the repo root directory, i.e. next to the .git directory.
 
 Unfortunately there is no easy way to bypass the pre-receive hook in an
 emergency.  It must be disabled in the repo being pushed to, e.g. by renaming
