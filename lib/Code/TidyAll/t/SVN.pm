@@ -13,6 +13,8 @@ sub test_svn : Tests {
     my ($self) = @_;
 
     my $temp_dir = tempdir_simple;
+    use d;
+    dp $temp_dir;
     my $repo_dir = "$temp_dir/repo";
     my $src_dir  = "$temp_dir/src";
     my $work_dir = "$temp_dir/work";

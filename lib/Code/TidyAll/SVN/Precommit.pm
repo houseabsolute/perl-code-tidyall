@@ -1,14 +1,14 @@
 package Code::TidyAll::SVN::Precommit;
 use Capture::Tiny qw(capture_stdout capture_stderr);
 use Code::TidyAll;
-use Code::TidyAll::Util qw(dirname mkpath realpath tempdir_simple write_file);
+use Code::TidyAll::Util qw(basename dirname mkpath realpath tempdir_simple write_file);
 use Log::Any qw($log);
 use Moo;
 use SVN::Look;
 use Try::Tiny;
 
 # Public
-has 'conf_file'                => ( is => 'ro', default => sub { "tidyall.ini" } );
+has 'conf_name'                => ( is => 'ro' );
 has 'emergency_comment_prefix' => ( is => 'ro', default => sub { "NO TIDYALL" } );
 has 'extra_conf_files'         => ( is => 'ro', default => sub { [] } );
 has 'reject_on_error'          => ( is => 'ro' );
@@ -52,25 +52,28 @@ sub check {
         );
         $log->infof( "looking at files: %s", join( ", ", @files ) );
 
-        my %root_files;
+        my %conf_files;
         foreach my $file (@files) {
-            if ( my $root = $self->find_root_for_file($file) ) {
+            if ( my $conf_file = $self->find_conf_for_file($file) ) {
+                my $root = dirname($conf_file);
                 my $rel_file = substr( $file, length($root) + 1 );
-                $root_files{$root}->{$rel_file}++;
+                $conf_files{$conf_file}->{$rel_file}++;
             }
             else {
-                my $msg =
-                  sprintf( "** could not find '%s' upwards from '%s'", $self->conf_file, $file );
+                my $msg = sprintf( "** could not find conf file upwards from '%s'", $file );
                 $log->error($msg);
                 die $msg if $self->reject_on_error;
             }
         }
 
         my @results;
-        while ( my ( $root, $file_map ) = each(%root_files) ) {
+        while ( my ( $conf_file, $file_map ) = each(%conf_files) ) {
+            my $root      = dirname($conf_file);
+            my $conf_name = basename($conf_file);
+            $log->error("$root, $conf_file");
             my $tempdir = tempdir_simple();
             my @files   = keys(%$file_map);
-            foreach my $rel_file ( $self->conf_file, @{ $self->extra_conf_files }, @files ) {
+            foreach my $rel_file ( $conf_name, @{ $self->extra_conf_files }, @files ) {
 
                 # TODO: what if cat fails
                 my $contents  = $self->cat_file("$root/$rel_file");
@@ -79,7 +82,7 @@ sub check {
                 write_file( $full_path, $contents );
             }
             my $tidyall = $self->tidyall_class->new_from_conf_file(
-                join( "/", $tempdir, $self->conf_file ),
+                join( "/", $tempdir, $conf_name ),
                 no_cache   => 1,
                 check_only => 1,
                 mode       => 'commit',
@@ -114,18 +117,19 @@ sub check {
     die $fail_msg if $fail_msg;
 }
 
-sub find_root_for_file {
+sub find_conf_for_file {
     my ( $self, $file ) = @_;
 
-    my $conf_file  = $self->conf_file;
+    my @conf_names = $self->conf_name ? ( $self->conf_name ) : Code::TidyAll->default_conf_names;
     my $search_dir = dirname($file);
     $search_dir =~ s{/+$}{};
     my $cnt = 0;
     while (1) {
-        if ( $self->cat_file("$search_dir/$conf_file") ) {
-            return $search_dir;
+        foreach my $conf_name (@conf_names) {
+            my $conf_file = "$search_dir/$conf_name";
+            return $conf_file if ( $self->cat_file($conf_file) );
         }
-        elsif ( $search_dir eq '/' || $search_dir eq '' || $search_dir eq '.' ) {
+        if ( $search_dir eq '/' || $search_dir eq '' || $search_dir eq '.' ) {
             return undef;
         }
         else {
@@ -213,13 +217,13 @@ TIDYALL", e.g.
     Transmitting file data .                                                              
     Committed revision 7562.  
 
-The configuration file (C<tidyall.ini> by default) must be checked into svn.
-For each file, the hook will look upwards from the file's repo location and use
-the first configuration file it finds.
+The configuration file (C<tidyall.ini> or C<.tidyallrc>) must be checked into
+svn. For each file, the hook will look upwards from the file's repo location
+and use the first configuration file it finds.
 
-By default, if C<tidyall.ini> cannot be found, or if a runtime error occurs, a
-warning is logged (see L</LOGGING> below) but the commit is allowed to proceed.
-This is so that unexpected problems do not prevent valid commits.
+By default, if the configuration file cannot be found, or if a runtime error
+occurs, a warning is logged (see L</LOGGING> below) but the commit is allowed
+to proceed. This is so that unexpected problems do not prevent valid commits.
 
 Passes mode = "commit" by default; see L<modes|tidyall/MODES>.
 
@@ -227,9 +231,10 @@ Key/value parameters:
 
 =over
 
-=item conf_file
+=item conf_name
 
-Name of configuration file, defaults to C<tidyall.ini>
+Name of configuration file to look for in the repo, instead of the usual
+C<tidyall.ini> or C<.tidyallrc>.
 
 =item emergency_comment_prefix
 
@@ -242,14 +247,15 @@ Set to a false value (e.g. blank or undefined) to disable bypassing.
 
 =item extra_conf_files
 
-A listref of configuration files referred to from C<tidyall.ini>, e.g.
+A listref of other configuration files referred to from the main configuration
+file, e.g.
 
     extra_conf_files => ['perlcriticrc', 'perltidyrc']
 
 =item reject_on_error
 
-If C<tidyall.ini> cannot be found for some/all the files, or if a runtime error
-occurs, reject the commit.
+If the configuration file cannot be found for some/all the files, or if a
+runtime error occurs, reject the commit.
 
 =item repos
 
@@ -274,8 +280,8 @@ Commit transaction; defaults to C<< $ARGV[1] >>
 =head1 LOGGING
 
 This module uses L<Log::Any|Log::Any> to log its activity, including all files
-that were checked, an inability to find C<tidyall.ini>, and any runtime errors
-that occur. You can create a simple date-stamped log file with
+that were checked, an inability to find the configuration file, and any runtime
+errors that occur. You can create a simple date-stamped log file with
 
     use Log::Any::Adapter (File => "/path/to/hooks/logs/tidyall.log");
 
