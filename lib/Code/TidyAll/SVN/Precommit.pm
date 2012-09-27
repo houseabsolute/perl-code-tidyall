@@ -233,8 +233,7 @@ Key/value parameters:
 
 =item conf_name
 
-Name of configuration file to look for in the repo, instead of the usual
-C<tidyall.ini> or C<.tidyallrc>.
+Conf file name to search for instead of the defaults.
 
 =item emergency_comment_prefix
 
@@ -251,6 +250,9 @@ A listref of other configuration files referred to from the main configuration
 file, e.g.
 
     extra_conf_files => ['perlcriticrc', 'perltidyrc']
+
+If you don't list them here then you'll get errors like 'cannot find
+perlcriticrc' when the hook runs.
 
 =item reject_on_error
 

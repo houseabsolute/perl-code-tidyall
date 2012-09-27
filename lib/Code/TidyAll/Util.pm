@@ -41,7 +41,7 @@ sub can_load {
 
 sub tempdir_simple {
     my $template = shift || 'Code-TidyAll-XXXX';
-    return realpath( tempdir( $template, TMPDIR => 1, CLEANUP => 0 ) );
+    return realpath( tempdir( $template, TMPDIR => 1, CLEANUP => 1 ) );
 }
 
 sub dump_one_line {

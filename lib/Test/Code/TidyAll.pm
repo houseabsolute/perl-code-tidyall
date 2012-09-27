@@ -52,9 +52,9 @@ Uses L<tidyall --check-only|tidyall> to check that all the files in your
 project are in a tidied and valid state, i.e. that no plugins throw errors or
 would change the contents of the file. Does not actually modify any files.
 
-By default, looks for config file C<tidyall.ini> in the current directory and
-parent directories, which is generally the right place if you are running
-L<prove|prove>.
+By default, looks for config file C<tidyall.ini> or C<.tidyallrc> in the
+current directory and parent directories, which is generally the right place if
+you are running L<prove|prove>.
 
 Passes mode = "test" by default; see L<modes|tidyall/MODES>.
 

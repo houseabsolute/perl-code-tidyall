@@ -29,7 +29,7 @@ Code::TidyAll::Plugin::JSBeautify - use js-beautify with tidyall
 
 =head1 SYNOPSIS
 
-   In tidyall.ini:
+   In configuration:
 
    [JSBeautify]
    select = static/**/*.js

@@ -165,19 +165,20 @@ Key/value parameters:
 
 =over
 
-=item conf_file
+=item conf_name
 
-Name of conf file; default is C<tidyall.ini>.
+Conf file name to search for instead of the defaults.
 
 =item extra_conf_files
 
-A listref of configuration files referred to from C<tidyall.ini>, e.g.
+A listref of extra configuration files referred to from the main configuration
+file, e.g.
 
     extra_conf_files => ['perlcriticrc', 'perltidyrc']
 
-These files will be pulled out of the repo along with C<tidyall.ini>. If you
-don't list them here then you'll get errors like 'cannot find perlcriticrc'
-when the hook runs.
+These files will be pulled out of the repo alongside the main configuration
+file. If you don't list them here then you'll get errors like 'cannot find
+perlcriticrc' when the hook runs.
 
 =item git_path
 
