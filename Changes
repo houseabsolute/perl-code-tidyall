@@ -9,6 +9,8 @@ Revision history for Code-TidyAll
 
 * Improvements
   - Allow .tidyallrc as alternative to tidyall.ini
+  - Allow git prereceive hook to be bypassed by pushing an identical set of commits
+    several consecutive times (allow_repeated_push)
   - Add handcrafted usage w/summary of options, instead of Pod::Usage
 
 0.11  Sep 21, 2012
