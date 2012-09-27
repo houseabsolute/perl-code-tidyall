@@ -1,18 +1,20 @@
 package Code::TidyAll::Git::Prereceive;
 use Code::TidyAll;
-use Code::TidyAll::Util qw(realpath tempdir_simple write_file);
+use Code::TidyAll::Util qw(dirname realpath tempdir_simple read_file write_file);
 use Capture::Tiny qw(capture);
+use Digest::SHA1 qw(sha1_hex);
 use IPC::System::Simple qw(capturex run);
 use Moo;
 use Try::Tiny;
 
 # Public
-has 'conf_name'        => ( is => 'ro' );
-has 'extra_conf_files' => ( is => 'ro', default => sub { [] } );
-has 'git_path'         => ( is => 'ro', default => sub { 'git' } );
-has 'reject_on_error'  => ( is => 'ro' );
-has 'tidyall_class'    => ( is => 'ro', default => sub { "Code::TidyAll" } );
-has 'tidyall_options'  => ( is => 'ro', default => sub { {} } );
+has 'allow_repeated_push' => ( is => 'ro', default => sub { 3 } );
+has 'conf_name'           => ( is => 'ro' );
+has 'extra_conf_files'    => ( is => 'ro', default => sub { [] } );
+has 'git_path'            => ( is => 'ro', default => sub { 'git' } );
+has 'reject_on_error'     => ( is => 'ro' );
+has 'tidyall_class'       => ( is => 'ro', default => sub { "Code::TidyAll" } );
+has 'tidyall_options'     => ( is => 'ro', default => sub { {} } );
 
 sub check {
     my ( $class, %params ) = @_;
@@ -45,9 +47,11 @@ sub check {
         }
 
         if ( my @error_results = grep { $_->error } @results ) {
-            my $error_count = scalar(@error_results);
-            $fail_msg = sprintf( "%d file%s did not pass tidyall check",
-                $error_count, $error_count > 1 ? "s" : "" );
+            unless ( $self->check_repeated_push($input) ) {
+                my $error_count = scalar(@error_results);
+                $fail_msg = sprintf( "%d file%s did not pass tidyall check",
+                    $error_count, $error_count > 1 ? "s" : "" );
+            }
         }
     }
     catch {
@@ -97,6 +101,33 @@ sub get_file_contents {
     my ( $self, $file, $commit ) = @_;
     my ( $contents, $error ) = capture { system( $self->git_path, "show", "$commit:$file" ) };
     return $contents;
+}
+
+sub check_repeated_push {
+    my ( $self, $input ) = @_;
+    if ( defined( my $allow = $self->allow_repeated_push ) ) {
+        my $cwd            = dirname( realpath($0) );
+        my $last_push_file = "$cwd/.prereceive_lastpush";
+        if ( -w $cwd || -w $last_push_file ) {
+            my $push_sig = sha1_hex($input);
+            if ( -f $last_push_file ) {
+                my ( $last_push_sig, $count ) = split( /\s+/, read_file($last_push_file) );
+                if ( $last_push_sig eq $push_sig ) {
+                    ++$count;
+                    print STDERR "*** Identical push seen $count times\n";
+                    if ( $count >= $allow ) {
+                        print STDERR "*** Allowing push to proceed despite errors\n";
+                        return 1;
+                    }
+                }
+                write_file( $last_push_file, join( " ", $push_sig, $count ) );
+            }
+            else {
+                write_file( $last_push_file, join( " ", $push_sig, 1 ) );
+            }
+        }
+    }
+    return 0;
 }
 
 1;
@@ -157,8 +188,24 @@ is rejected and the reason(s) are output to the client. e.g.
 The configuration file (C<tidyall.ini> or C<.tidyallrc>) must be checked into
 git in the repo root directory, i.e. next to the .git directory.
 
-Unfortunately there is no easy way to bypass the pre-receive hook in an
-emergency.  It must be disabled in the repo being pushed to, e.g. by renaming
+In an emergency the hook can be bypassed by pushing the exact same set of
+commits 3 consecutive times (configurable via L</allow_repeated_push>):
+
+    % git push
+    ...
+    remote: 1 file did not pass tidyall check        
+
+    % git push
+    ...
+    *** Identical push seen 2 times
+    remote: 1 file did not pass tidyall check        
+
+    % git push
+    ...
+    *** Identical push seen 3 times
+    *** Allowing push to proceed despite errors
+
+Or you can disable the hook in the repo being pushed to, e.g. by renaming
 .git/hooks/pre-receive.
 
 Passes mode = "commit" by default; see L<modes|tidyall/MODES>.
@@ -166,6 +213,12 @@ Passes mode = "commit" by default; see L<modes|tidyall/MODES>.
 Key/value parameters:
 
 =over
+
+=item allow_repeated_push
+
+Number of times a push must be repeated exactly after which it will be let
+through regardless of errors. Defaults to 3. Set to 0 or undef to disable this
+feature.
 
 =item conf_name
 
