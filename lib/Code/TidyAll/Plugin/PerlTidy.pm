@@ -38,7 +38,7 @@ Code::TidyAll::Plugin::PerlTidy - use perltidy with tidyall
 
 =head1 SYNOPSIS
 
-   # In tidyall.ini:
+   # In configuration:
 
    ; Configure in-line
    ;

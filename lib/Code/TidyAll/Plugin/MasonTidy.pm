@@ -33,7 +33,7 @@ Code::TidyAll::Plugin::MasonTidy - use masontidy with tidyall
 
 =head1 SYNOPSIS
 
-   In tidyall.ini:
+   In configuration:
 
    [MasonTidy]
    select = comps/**/*.{mc,mi}

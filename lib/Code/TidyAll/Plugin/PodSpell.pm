@@ -52,7 +52,7 @@ Code::TidyAll::Plugin::PodSpell - use Pod::Spell + ispell with tidyall
 
 =head1 SYNOPSIS
 
-   In tidyall.ini:
+   In configuration:
 
    [PodSpell]
    select = lib/**/*.{pm,pod}

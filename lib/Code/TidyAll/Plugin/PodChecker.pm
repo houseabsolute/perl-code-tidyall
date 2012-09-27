@@ -30,7 +30,7 @@ Code::TidyAll::Plugin::PodChecker - use podchecker with tidyall
 
 =head1 SYNOPSIS
 
-   In tidyall.ini:
+   In configuration:
 
    ; Check for errors, but ignore warnings
    ;

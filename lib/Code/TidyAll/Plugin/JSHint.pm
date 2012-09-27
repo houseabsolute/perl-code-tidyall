@@ -50,7 +50,7 @@ Code::TidyAll::Plugin::JSHint - use jshint with tidyall
 
 =head1 SYNOPSIS
 
-   In tidyall.ini:
+   In configuration:
 
    ; With default settings
    ;

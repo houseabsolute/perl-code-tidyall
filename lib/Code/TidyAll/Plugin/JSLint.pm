@@ -25,7 +25,7 @@ Code::TidyAll::Plugin::JSLint - use jslint with tidyall
 
 =head1 SYNOPSIS
 
-   In tidyall.ini:
+   In configuration:
 
    [JSLint]
    select = static/**/*.js

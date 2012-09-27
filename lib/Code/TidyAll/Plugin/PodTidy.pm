@@ -33,7 +33,7 @@ Code::TidyAll::Plugin::PodTidy - use podtidy with tidyall
 
 =head1 SYNOPSIS
 
-   In tidyall.ini:
+   In configuration:
 
    [PodTidy]
    select = lib/**/*.{pm,pod}
