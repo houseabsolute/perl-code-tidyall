@@ -22,6 +22,7 @@ sub default_conf_names { ( 'tidyall.ini', '.tidyallrc' ) }
 has 'backup_ttl'    => ( is => 'ro', default => sub { '1 hour' } );
 has 'check_only'    => ( is => 'ro' );
 has 'data_dir'      => ( is => 'lazy' );
+has 'iterations'    => ( is => 'ro', default => sub { 1 } );
 has 'mode'          => ( is => 'ro', default => sub { 'cli' } );
 has 'no_backups'    => ( is => 'ro' );
 has 'no_cache'      => ( is => 'ro' );
@@ -526,6 +527,8 @@ file.
 =item check_only
 
 =item data_dir
+
+=item iterations
 
 =item mode
 

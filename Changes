@@ -8,6 +8,7 @@ Revision history for Code-TidyAll
   - Add podspell plugin (POD spell checker)
 
 * Improvements
+  - Add --iterations flag to run tidier transforms multiple times
   - Allow .tidyallrc as alternative to tidyall.ini
   - Allow git prereceive hook to be bypassed by pushing an identical set of commits
     several consecutive times (allow_repeated_push)

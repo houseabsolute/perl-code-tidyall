@@ -136,6 +136,19 @@ sub test_quiet_and_verbose : Tests {
     }
 }
 
+sub test_iterations : Tests {
+    my $self     = shift;
+    my $root_dir = $self->create_dir( { "foo.txt" => "abc" } );
+    my $ct       = Code::TidyAll->new(
+        plugins    => { test_plugin('RepeatFoo') => { select => '**/foo*', times => 3 } },
+        root_dir   => $root_dir,
+        iterations => 2
+    );
+    my $file = "$root_dir/foo.txt";
+    $ct->process_files($file);
+    is( read_file($file), scalar( "abc" x 9 ), "3^2 = 9" );
+}
+
 sub test_caching_and_backups : Tests {
     my $self = shift;
 

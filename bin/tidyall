@@ -25,6 +25,7 @@ Usage: tidyall [options] [file] ...
    --conf-file <path>       Relative or absolute path to conf file
    --conf-name <name>       Conf file name to search for
    --data-dir <path>        Contains metadata, defaults to root/.tidyall.d
+   --iterations <count>     Number of times to repeat each transform - default is 1
    --no-backups             Don\'t backup files before processing
    --no-cache               Don\'t cache last processed times
    --output-suffix <suffix> Suffix to add to tidied file
@@ -500,6 +501,21 @@ Specify a conf file name to search for instead of the defaults (C<tidyall.ini>
 
 Contains data like backups and cache. Defaults to root_dir/.tidyall.d
 
+=item --iterations I<count>
+
+Run each tidier transform I<count> times. Default is 1.
+
+In some cases (hopefully rare) the output from a tidier can be different if it
+is applied multiple times. You may want to perform multiple iterations to make
+sure the content "settles" into its final tidied form -- especially if the
+tidiness is being enforced with a version-control hook or a test. Of course,
+performance will suffer a little. You should rarely need to set this higher
+than 2.
+
+This only affects tidiers, not validators; e.g.
+L<perlcritic|Code::TidyAll::Plugin::PerlCritic> and
+L<jshint|Code::TidyAll::Plugin::JSHint> would still only be run once.
+
 =item --no-backups
 
 Don't backup files before processing.
@@ -536,6 +552,7 @@ Almost any command-line option can be specified at the top of the config file,
 above the plugin sections. Replace dashes with underscores. e.g.
 
     backup_ttl = 4h
+    iterations = 2
     tidyall_class = My::Code::TidyAll
 
     [PerlTidy]

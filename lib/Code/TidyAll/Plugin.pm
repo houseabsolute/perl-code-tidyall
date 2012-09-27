@@ -89,11 +89,15 @@ sub process_source_or_file {
     my ( $self, $source, $basename ) = @_;
 
     if ( $self->can('transform_source') ) {
-        $source = $self->transform_source($source);
+        foreach my $iter ( 1 .. $self->tidyall->iterations ) {
+            $source = $self->transform_source($source);
+        }
     }
     if ( $self->can('transform_file') ) {
         my $tempfile = $self->_write_temp_file( $basename, $source );
-        $self->transform_file($tempfile);
+        foreach my $iter ( 1 .. $self->tidyall->iterations ) {
+            $self->transform_file($tempfile);
+        }
         $source = read_file($tempfile);
     }
     if ( $self->can('validate_source') ) {
@@ -233,14 +237,16 @@ error. This runs on all plugins I<before> any of the other methods.
 =item transform_source ($source)
 
 Receives source code as a string; returns the transformed string, or dies with
-error.
+error. This is repeated multiple times if --iterations was passed or specified
+in the configuration file.
 
 =item transform_file ($file)
 
 Receives filename; transforms the file in place, or dies with error. Note that
 the file will be a temporary copy of the user's file with the same basename;
 your changes will only propagate back if there was no error reported from any
-plugin.
+plugin. This is repeated multiple times if --iterations was passed or specified
+in the configuration file.
 
 =item validate_source ($source)
 
