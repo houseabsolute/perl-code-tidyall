@@ -239,7 +239,7 @@ sub test_errors : Tests {
             worse_param => 2
         );
     }
-    qr/unknown constructor param\(s\) 'bad_param', 'worse_param'/;
+    qr/unknown constructor params 'bad_param', 'worse_param'/;
 
     throws_ok {
         Code::TidyAll->new(
@@ -248,6 +248,16 @@ sub test_errors : Tests {
         )->plugin_objects;
     }
     qr/could not load plugin class/;
+
+    throws_ok {
+        Code::TidyAll->new(
+            root_dir => $root_dir,
+            plugins  => {
+                test_plugin('UpperText') => { select => '**/*', bad_option => 1, worse_option => 2 }
+            }
+        )->plugin_objects;
+    }
+    qr/unknown options/;
 
     my $ct = Code::TidyAll->new( plugins => {%UpperText}, root_dir => $root_dir );
     my $output = capture_stdout { $ct->process_files("$root_dir/foo/bar.txt") };

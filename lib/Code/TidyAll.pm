@@ -92,8 +92,12 @@ sub BUILD {
     # Strict constructor
     #
     if ( my @bad_params = grep { !$self->can($_) } keys(%$params) ) {
-        die sprintf( "unknown constructor param(s) %s",
-            join( ", ", sort map { "'$_'" } @bad_params ) );
+        die sprintf(
+            "unknown constructor param%s %s for %s",
+            @bad_params > 1 ? "s" : "",
+            join( ", ", sort map { "'$_'" } @bad_params ),
+            ref($self)
+        );
     }
 
     $self->{root_dir}         = realpath( $self->{root_dir} );
