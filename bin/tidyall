@@ -222,23 +222,26 @@ distribution comes with plugins for:
 
 =over
 
-=item L<perlcritic|Code::TidyAll::Plugin::PerlCritic>
+=item *
 
-=item L<perltidy|Code::TidyAll::Plugin::PerlTidy>
+Perl: L<perlcritic|Code::TidyAll::Plugin::PerlCritic>,
+L<perltidy|Code::TidyAll::Plugin::PerlTidy>
 
-=item L<podchecker|Code::TidyAll::Plugin::PodChecker>
+=item *
 
-=item L<podspell|Code::TidyAll::Plugin::PodSpell>
+Pod: L<podchecker|Code::TidyAll::Plugin::PodChecker>,
+L<podspell|Code::TidyAll::Plugin::PodSpell>,
+L<podtidy|Code::TidyAll::Plugin::PodTidy>
 
-=item L<podtidy|Code::TidyAll::Plugin::PodTidy>
+=item *
 
-=item L<masontidy|Code::TidyAll::Plugin::MasonTidy>
+Mason: L<masontidy|Code::TidyAll::Plugin::MasonTidy>
 
-=item L<js-beautify|Code::TidyAll::Plugin::JSBeautify>
+=item *
 
-=item L<jshint|Code::TidyAll::Plugin::JSHint>
-
-=item L<jslint|Code::TidyAll::Plugin::JSLint>
+JavaScript: L<js-beautify|Code::TidyAll::Plugin::JSBeautify>,
+L<jshint|Code::TidyAll::Plugin::JSHint>,
+L<jslint|Code::TidyAll::Plugin::JSLint>
 
 =back
 
@@ -649,9 +652,9 @@ You can turn off backups with C<--no-backups>.
 
 =item *
 
-C<etc/editors/tidyall.el> in this distribution is an Emacs function that runs
-C<tidyall> on the current buffer. You can assign this to C<ctrl-t> or your
-favorite key binding.
+L<etc/editors/tidyall.el|https://raw.github.com/jonswar/perl-code-tidyall/master/etc/editors/tidyall.el>
+in this distribution is an Emacs function that runs C<tidyall> on the current
+buffer. You can assign this to C<ctrl-t> or your favorite key binding.
 
 =item *
 
