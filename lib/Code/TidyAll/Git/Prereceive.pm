@@ -26,7 +26,9 @@ sub check {
         local $ENV{GIT_DIR} = $root_dir;
 
         my ( @results, $tidyall );
-        while ( my $line = <> ) {
+        my $input = do { local $/; <STDIN> };
+        my @lines = split( "\n", $input );
+        foreach my $line (@lines) {
             chomp($line);
             my ( $base, $commit, $ref ) = split( /\s+/, $line );
             next unless $ref eq 'refs/heads/master';
