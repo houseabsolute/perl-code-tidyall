@@ -9,21 +9,22 @@ sub test_main : Tests {
     $source = '%if($foo) {\n%bar(1,2);\n%}';
     $self->tidyall(
         source      => $source,
-        expect_tidy => '% if ($foo) {\n%     bar( 1, 2 );\n% }'
+        conf        => { argv => '-m 1' },
+        expect_tidy => '% if ($foo) {\n%     bar( 1, 2 );\n% }\n'
     );
     $self->tidyall(
         source      => $source,
-        conf        => { argv => '--perltidy-argv="-pt=2 -i=3"' },
-        expect_tidy => '% if ($foo) {\n%    bar(1, 2);\n% }'
+        conf        => { argv => '-m 1 --perltidy-argv="-pt=2 -i=3"' },
+        expect_tidy => '% if ($foo) {\n%    bar(1, 2);\n% }\n'
     );
     $self->tidyall(
         source      => $source,
-        conf        => { argv => '--perltidy-line-argv=" "' },
-        expect_tidy => '% if ($foo) {\n%     bar( 1, 2 );\n% }'
+        conf        => { argv => '-m 2 --perltidy-line-argv=" "' },
+        expect_tidy => '% if ($foo) {\n%     bar( 1, 2 );\n% }\n'
     );
     $self->tidyall(
         source       => $source,
-        conf         => { argv => '--badoption' },
+        conf         => { argv => '-m 1 --badoption' },
         expect_error => qr/Unknown option: badoption/
     );
 }
