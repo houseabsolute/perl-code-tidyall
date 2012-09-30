@@ -12,8 +12,7 @@ sub transform_source {
 
     local @ARGV = shellwords( $self->argv );
     local $ENV{MASONTIDY_OPT};
-    my $mt   = Mason::Tidy::App->run($source);
-    my $dest = $mt->tidy($source);
+    my $dest = Mason::Tidy::App->run($source);
     return $dest;
 }
 

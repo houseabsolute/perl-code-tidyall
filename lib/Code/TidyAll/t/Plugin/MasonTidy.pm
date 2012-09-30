@@ -25,7 +25,7 @@ sub test_main : Tests {
     $self->tidyall(
         source       => $source,
         conf         => { argv => '-m 1 --badoption' },
-        expect_error => qr/Unknown option: badoption/
+        expect_error => qr/Usage/
     );
 }
 

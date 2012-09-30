@@ -4,8 +4,6 @@ use IPC::System::Simple qw(capturex);
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 
 sub test_tempdir_simple : Tests {
-    return "author testing only" unless ( $ENV{AUTHOR_TESTING} );
-
     my $dir = capturex(
         "$^X", "-I",
         "lib", "-MCode::TidyAll::Util",
