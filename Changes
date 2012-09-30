@@ -2,7 +2,11 @@ Revision history for Code-TidyAll
 
 ** denotes an incompatible change
 
-0.13  Sep 27, 2012
+0.13  Sep 30, 2012
+
+* Fixes
+  - Adjust MasonTidy plugin for new API
+  - Remove Util.t containing only author-only tests
 
 0.12  Sep 27, 2012
 
