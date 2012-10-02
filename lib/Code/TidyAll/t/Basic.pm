@@ -237,6 +237,34 @@ sub test_selects_and_ignores : Tests {
         [ test_plugin('UpperText') ] );
 }
 
+sub test_dirs : Tests {
+    my $self = shift;
+
+    my @files = ( "a/foo.txt", "a/bar.txt", "a/bar.pl", "b/foo.txt" );
+    my $root_dir = $self->create_dir( { map { $_ => 'hi' } @files } );
+
+    foreach my $recursive ( 0 .. 1 ) {
+        my $output = capture_stdout {
+            my $ct = Code::TidyAll->new(
+                plugins  => { %UpperText, %ReverseFoo },
+                root_dir => $root_dir,
+                ( $recursive ? ( recursive => 1 ) : () )
+            );
+            $ct->process_file("$root_dir/a");
+        };
+        if ($recursive) {
+            is( $output,                          "[tidied]  a/bar.txt\n[tidied]  a/foo.txt\n" );
+            is( read_file("$root_dir/a/foo.txt"), "IH" );
+            is( read_file("$root_dir/a/bar.txt"), "HI" );
+            is( read_file("$root_dir/a/bar.pl"),  "hi" );
+            is( read_file("$root_dir/b/foo.txt"), "hi" );
+        }
+        else {
+            like( $output, qr/is a directory/ );
+        }
+    }
+}
+
 sub test_errors : Tests {
     my $self = shift;
 
@@ -273,7 +301,10 @@ sub test_errors : Tests {
     qr/unknown options/;
 
     my $ct = Code::TidyAll->new( plugins => {%UpperText}, root_dir => $root_dir );
-    my $output = capture_stdout { $ct->process_files("$root_dir/foo/bar.txt") };
+    my $output = capture_stdout { $ct->process_files("$root_dir/baz/blargh.txt") };
+    like( $output, qr/baz\/blargh.txt: not a file or directory/, "file not found" );
+
+    $output = capture_stdout { $ct->process_files("$root_dir/foo/bar.txt") };
     is( $output, "[tidied]  foo/bar.txt\n", "filename output" );
     is( read_file("$root_dir/foo/bar.txt"), "ABC", "tidied" );
     my $other_dir = realpath( tempdir_simple() );

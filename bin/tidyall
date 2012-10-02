@@ -16,6 +16,7 @@ Usage: tidyall [options] [file] ...
    -l, --list               List each file along with the plugins it matches
    -m, --mode               Mode (e.g. "editor", "commit") - affects which plugins run
    -p path, --pipe path     Read from STDIN, output to STDOUT/STDERR
+   -r, --recursive          Descend recursively into directories listed on command line
    -s, --svn                Process all added/modified files according to svn
    -q, --quiet              Suppress output except for errors
    -v, --verbose            Show extra output
@@ -63,6 +64,7 @@ GetOptions(
     'l|list'          => \$list,
     'm|mode=s'        => \$params{mode},
     'p|pipe=s'        => \$pipe,
+    'r|recursive'     => \$params{recursive},
     's|svn'           => \$svn_files,
     'q|quiet'         => \$params{quiet},
     'v|verbose'       => \$params{verbose},
@@ -185,14 +187,14 @@ tidyall - Your all-in-one code tidier and validator
     #
     % tidyall -a
 
-    # Process all files in a particular project
-    #
-    % tidyall -a --root-dir /home/joe/project
-
     # Process one or more specific files,
     # look upwards from the first file for conf file
     #
     % tidyall file [file...]
+
+    # Process a directory recursively
+    #
+    % tidyall -r dir
 
 =head1 DESCRIPTION
 
@@ -458,6 +460,12 @@ result).
     # for some/path.pl (which need not exist)
     #
     % tidyall --pipe some/path.pl
+
+=item -r, --recursive
+
+Recursively enter any directories listed on the command-line and process all
+the files within. By default, directories encountered on the command-line will
+generate a warning.
 
 =item -s, --svn
 

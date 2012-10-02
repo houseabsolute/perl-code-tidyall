@@ -3,7 +3,7 @@ use Cwd qw(realpath);
 use Code::TidyAll::Config::INI::Reader;
 use Code::TidyAll::Cache;
 use Code::TidyAll::Util
-  qw(abs2rel basename can_load dirname dump_one_line mkpath read_file rel2abs tempdir_simple uniq write_file);
+  qw(abs2rel basename can_load dirname dump_one_line mkpath read_dir read_file rel2abs tempdir_simple uniq write_file);
 use Code::TidyAll::Result;
 use Date::Format;
 use Digest::SHA1 qw(sha1_hex);
@@ -29,6 +29,7 @@ has 'no_cache'      => ( is => 'ro' );
 has 'output_suffix' => ( is => 'ro', default => sub { '' } );
 has 'plugins'       => ( is => 'ro', required => 1 );
 has 'quiet'         => ( is => 'ro' );
+has 'recursive'     => ( is => 'ro' );
 has 'refresh_cache' => ( is => 'ro' );
 has 'root_dir'      => ( is => 'ro', required => 1 );
 has 'verbose'       => ( is => 'ro' );
@@ -177,7 +178,7 @@ sub process_all {
 sub process_files {
     my ( $self, @files ) = @_;
 
-    return map { $self->process_file( realpath($_) ) } @files;
+    return map { $self->process_file( realpath($_) || rel2abs($_) ) } @files;
 }
 
 sub list_files {
@@ -193,8 +194,22 @@ sub list_files {
 
 sub process_file {
     my ( $self, $file ) = @_;
+    my $path = $self->_small_path($file);
 
-    my $path      = $self->_small_path($file);
+    if ( -d $file ) {
+        if ( $self->recursive ) {
+            return $self->process_dir($file);
+        }
+        else {
+            print "$path: is a directory (try -r/--recursive)";
+            return;
+        }
+    }
+    elsif ( !-f $file ) {
+        print "$path: not a file or directory\n";
+        return;
+    }
+
     my $cache     = $self->no_cache ? undef : $self->cache;
     my $cache_key = "sig/$path";
     my $contents  = my $orig_contents = read_file($file);
@@ -218,6 +233,14 @@ sub process_file {
     $cache->set( $cache_key, $self->_file_sig( $file, $contents ) ) if $cache && $result->ok;
 
     return $result;
+}
+
+sub process_dir {
+    my ( $self, $dir ) = @_;
+
+    foreach my $subfile ( read_dir($dir) ) {
+        $self->process_file("$dir/$subfile");
+    }
 }
 
 sub process_source {
