@@ -20,39 +20,14 @@ sub check {
     my ( $class, %params ) = @_;
 
     my $fail_msg;
-
     try {
         my $self = $class->new(%params);
 
         my $root_dir = realpath();
         local $ENV{GIT_DIR} = $root_dir;
 
-        my ( @results, $tidyall );
         my $input = do { local $/; <STDIN> };
-        my @lines = split( "\n", $input );
-        foreach my $line (@lines) {
-            chomp($line);
-            my ( $base, $commit, $ref ) = split( /\s+/, $line );
-            next unless $ref eq 'refs/heads/master';
-
-            # Create tidyall using configuration found in first commit
-            #
-            $tidyall ||= $self->create_tidyall($commit);
-
-            my @files = $self->get_changed_files( $base, $commit );
-            foreach my $file (@files) {
-                my $contents = $self->get_file_contents( $file, $commit );
-                push( @results, $tidyall->process_source( $contents, $file ) );
-            }
-        }
-
-        if ( my @error_results = grep { $_->error } @results ) {
-            unless ( $self->check_repeated_push($input) ) {
-                my $error_count = scalar(@error_results);
-                $fail_msg = sprintf( "%d file%s did not pass tidyall check",
-                    $error_count, $error_count > 1 ? "s" : "" );
-            }
-        }
+        $fail_msg = $self->check_input($input);
     }
     catch {
         my $error = $_;
@@ -64,6 +39,38 @@ sub check {
         }
     };
     die "$fail_msg\n" if $fail_msg;
+}
+
+sub check_input {
+    my ( $self, $input ) = @_;
+
+    my @lines = split( "\n", $input );
+    my ( @results, $tidyall );
+    foreach my $line (@lines) {
+        chomp($line);
+        my ( $base, $commit, $ref ) = split( /\s+/, $line );
+        next unless $ref eq 'refs/heads/master';
+
+        # Create tidyall using configuration found in first commit
+        #
+        $tidyall ||= $self->create_tidyall($commit);
+
+        my @files = $self->get_changed_files( $base, $commit );
+        foreach my $file (@files) {
+            my $contents = $self->get_file_contents( $file, $commit );
+            push( @results, $tidyall->process_source( $contents, $file ) );
+        }
+    }
+
+    my $fail_msg;
+    if ( my @error_results = grep { $_->error } @results ) {
+        unless ( $self->check_repeated_push($input) ) {
+            my $error_count = scalar(@error_results);
+            $fail_msg = sprintf( "%d file%s did not pass tidyall check",
+                $error_count, $error_count > 1 ? "s" : "" );
+        }
+    }
+    return $fail_msg;
 }
 
 sub create_tidyall {
@@ -152,6 +159,19 @@ tidyall'd
     
     Code::TidyAll::Git::Prereceive->check();
 
+
+    # or
+
+    my $input = do { local $/; <STDIN> };
+
+    # Do other things with $input here
+
+    my $prereceive = Code::TidyAll::Git::Prereceive->new();
+    if (my $error = $prereceive->check_input($input)) {
+        die $error;
+    }
+
+
 =head1 DESCRIPTION
 
 This module implements a L<Git pre-receive
@@ -171,9 +191,10 @@ operates locally.
 
 =item check (key/value params...)
 
-Class method. Check that all files being added or modified in this push are
-tidied and valid according to L<tidyall|tidyall>. If not, then the entire push
-is rejected and the reason(s) are output to the client. e.g.
+An all-in-one class method. Reads commit info from standard input, then checks
+that all files being added or modified in this push are tidied and valid
+according to L<tidyall|tidyall>. If not, then the entire push is rejected and
+the reason(s) are output to the client. e.g.
 
     % git push
     Counting objects: 9, done.
@@ -208,6 +229,9 @@ commits 3 consecutive times (configurable via L</allow_repeated_push>):
 Or you can disable the hook in the repo being pushed to, e.g. by renaming
 .git/hooks/pre-receive.
 
+If an unexpected runtime error occurs, it is reported but by default the commit
+will be allowed through (see L</reject_on_error>).
+
 Passes mode = "commit" by default; see L<modes|tidyall/MODES>.
 
 Key/value parameters:
@@ -240,6 +264,11 @@ perlcriticrc' when the hook runs.
 Path to git to use in commands, e.g. '/usr/bin/git' or '/usr/local/bin/git'. By
 default, just uses 'git', which will search the user's PATH.
 
+=item reject_on_error
+
+Whether C<check()> should reject the commit when an unexpected runtime error
+occurs. By default, the error will be reported but the commit will be allowed.
+
 =item tidyall_class
 
 Subclass to use instead of L<Code::TidyAll|Code::TidyAll>
@@ -255,6 +284,17 @@ You can use this to override the default options
 or pass additional options.
 
 =back
+
+=item new (key/value params...)
+
+Constructor. Takes the same parameters documented in check(), above, and
+returns a new object which you can then call L</check_input> on.
+
+=item check_input (input)
+
+Run a check on I<input>, the text block of lines that came from standard input.
+You can call this manually before or after you do other processing on the
+input. Returns an error string if there was a problem, undef if no problems.
 
 =back
 
