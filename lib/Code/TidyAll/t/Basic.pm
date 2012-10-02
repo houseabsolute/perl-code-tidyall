@@ -314,6 +314,16 @@ sub test_errors : Tests {
 
 sub test_cli : Tests {
     my $self = shift;
+    my $output;
+
+    $output = capture_stdout {
+        system( "$^X", "bin/tidyall", "--version" );
+    };
+    like( $output, qr/tidyall .* on perl/ );
+    $output = capture_stdout {
+        system( "$^X", "bin/tidyall", "--help" );
+    };
+    like( $output, qr/Usage.*Options:/s );
 
     foreach my $conf_name ( "tidyall.ini", ".tidyallrc" ) {
         my $root_dir  = $self->create_dir();

@@ -6,6 +6,7 @@ Revision history for Code-TidyAll
 
 * Improvements
   - Add -r/--recursive flag to process directories recursively
+  - Add --version
 
 0.13  Sep 30, 2012
 

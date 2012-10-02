@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+use Config;
 use Cwd qw(cwd realpath);
 use Getopt::Long;
 use Capture::Tiny qw(capture_merged);
@@ -35,7 +36,14 @@ Options:
    --refresh-cache          Erase any existing cache info before processing each file
    --root-dir               Specify root directory explicitly
    --tidyall-class <class>  Subclass to use instead of Code::TidyAll
+   --version                Show version
 ';
+
+sub version {
+    my $version = $Code::TidyAll::VERSION || 'unknown';
+    print "tidyall $version on perl $] built for $Config{archname}\n";
+    exit;
+}
 
 sub usage {
     print $usage;
@@ -43,8 +51,8 @@ sub usage {
 }
 
 my (
-    %params, $all_files, $conf_file, $conf_name, $git_files,
-    $help,   $inc_dirs,  $list,      $pipe,      $svn_files
+    %params,   $all_files, $conf_file, $conf_name, $git_files, $help,
+    $inc_dirs, $list,      $pipe,      $svn_files, $version
 );
 my @conf_names = Code::TidyAll->default_conf_names;
 
@@ -60,6 +68,7 @@ GetOptions(
     'refresh-cache'   => \$params{refresh_cache},
     'root-dir=s'      => \$params{root_dir},
     'tidyall-class=s' => \$params{tidyall_class},
+    'version'         => \$version,
     'a|all'           => \$all_files,
     'g|git'           => \$git_files,
     'h|help'          => \$help,
@@ -72,7 +81,8 @@ GetOptions(
     'v|verbose'       => \$params{verbose},
     'I'               => \$inc_dirs,
 ) or usage();
-usage() if $help;
+version() if $version;
+usage()   if $help;
 @conf_names = ($conf_name) if defined($conf_name);
 
 unshift( @INC, split( /\s*,\s*/, $inc_dirs ) ) if defined($inc_dirs);
