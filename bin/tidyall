@@ -11,6 +11,7 @@ my $usage = '
 Usage: tidyall [options] [file] ...
 See https://metacpan.org/module/tidyall for full documentation.
 
+Options:
    -a, --all                Process all files in project
    -g, --git                Process all added/modified files according to git
    -h, --help               Print help message
