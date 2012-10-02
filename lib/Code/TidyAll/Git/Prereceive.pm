@@ -49,7 +49,6 @@ sub check_input {
     foreach my $line (@lines) {
         chomp($line);
         my ( $base, $commit, $ref ) = split( /\s+/, $line );
-        next unless $ref eq 'refs/heads/master';
 
         # Create tidyall using configuration found in first commit
         #
