@@ -84,6 +84,7 @@ sub create_tidyall {
     foreach my $rel_file ( $conf_file, @{ $self->extra_conf_files } ) {
         my $contents = $self->get_file_contents( $rel_file, $commit )
           or die sprintf( "could not find file '%s' in repo root", $rel_file );
+        write_file( "$temp_dir/$rel_file", $contents );
     }
     my $tidyall = $self->tidyall_class->new_from_conf_file(
         "$temp_dir/" . $conf_file,
@@ -297,5 +298,10 @@ You can call this manually before or after you do other processing on the
 input. Returns an error string if there was a problem, undef if no problems.
 
 =back
+
+=head1 KNOWN BUGS
+
+This hook will ignore any files with only a single line of content (no
+newlines), as an imperfect way of filtering out symlinks.
 
 =cut
