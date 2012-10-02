@@ -166,8 +166,8 @@ tidyall'd
 
     # Do other things with $input here
 
-    my $prereceive = Code::TidyAll::Git::Prereceive->new();
-    if (my $error = $prereceive->check_input($input)) {
+    my $hook = Code::TidyAll::Git::Prereceive->new();
+    if (my $error = $hook->check_input($input)) {
         die $error;
     }
 
