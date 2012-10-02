@@ -82,7 +82,9 @@ sub create_tidyall {
     foreach my $rel_file ( $conf_file, @{ $self->extra_conf_files } ) {
         my $contents = $self->get_file_contents( $rel_file, $commit )
           or die sprintf( "could not find file '%s' in repo root", $rel_file );
-        write_file( "$temp_dir/$rel_file", $contents );
+        if ( $contents =~ /\S/ && $contents =~ /\n/ ) {
+            write_file( "$temp_dir/$rel_file", $contents );
+        }
     }
     my $tidyall = $self->tidyall_class->new_from_conf_file(
         "$temp_dir/" . $conf_file,
