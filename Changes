@@ -6,7 +6,8 @@ Revision history for Code-TidyAll
 
 * Improvements
   - Add -r/--recursive flag to process directories recursively
-  - Add --version
+  - In -p/--pipe mode, mirror input to output in case of error (Justin Devuyst)
+  - Add --version option
   - Make git prereceive hook more modular, so it can be combined with other checks
 
 0.13  Sep 30, 2012

@@ -353,7 +353,7 @@ sub test_cli : Tests {
         is( read_file("$root_dir/subdir/foo.txt"),  "BYEBYEBYE", "foo.txt tidied" );
         is( read_file("$root_dir/subdir/foo2.txt"), "bye",       "foo2.txt not tidied" );
 
-        # Test -p / --pipe
+        # -p / --pipe success
         #
         my ( $stdout, $stderr ) = capture {
             open( my $fh, "|-", "$^X", "bin/tidyall", "-p", "$root_dir/does_not_exist/foo.txt" );
@@ -361,6 +361,15 @@ sub test_cli : Tests {
         };
         is( $stdout, "ECHOECHOECHO", "pipe: stdin tidied" );
         unlike( $stderr, qr/\S/, "pipe: no stderr" );
+
+        # -p / --pipe error
+        #
+        ( $stdout, $stderr ) = capture {
+            open( my $fh, "|-", "$^X", "bin/tidyall", "--pipe", "$root_dir/foo.txt" );
+            print $fh "abc1";
+        };
+        is( $stdout, "abc1", "pipe: stdin mirrored to stdout" );
+        like( $stderr, qr/non-alpha content found/ );
     }
 }
 

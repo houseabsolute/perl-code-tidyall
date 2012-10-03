@@ -157,9 +157,11 @@ sub handle_pipe {
     print STDERR $output;
 
     if ( my $error = $result->error ) {
+        print $source;    # Error already printed above
         return 1;
     }
     elsif ( $result->state eq 'no_match' ) {
+        print $source;
         print STDERR "No plugins apply for '$pipe' in config";
         return 1;
     }
@@ -450,14 +452,11 @@ L</MODES>.
 
 =item -p path, --pipe path
 
-Read content from STDIN instead of from a file. This option takes a filename
-argument, relative or absolute, which will be used to determine which plugins
-to apply and also where to start looking upwards for the configuration file.
-The file will not actually be read and does need even need to exist.
-
-If an error occurs, it will be output to STDERR and tidyall will exit with
-status 1. Otherwise, the tidied content will be output to STDOUT and tidyall
-will exit with status 0.
+Read content from STDIN and write the resulting content to STDOUT.  If
+successful, tidyall exits with status 0. If an error occurs, tidyall outputs
+the error message to STDERR, I<mirrors the input content> to STDOUT with no
+changes, and exits with status 1. The mirroring means that you can safely pipe
+to your destination regardless of whether an error occurs.
 
 When specifying this option you must specify exactly one filename, relative or
 absolute, which will be used to determine which plugins to apply and also where
