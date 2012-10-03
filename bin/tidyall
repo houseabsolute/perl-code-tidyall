@@ -373,6 +373,9 @@ time.  For example, two different C<PerlCritic> configurations:
     select = bin/**/*.pl
     argv = --gentle
 
+Warning: If you simply list the same plugin twice with no description (or the
+same description), one of them will be silently ignored.
+
 =item select
 
 One or more L<File::Zglob|File::Zglob> patterns, separated by whitespace or on
