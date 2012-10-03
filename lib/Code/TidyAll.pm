@@ -138,10 +138,15 @@ sub new_from_conf_file {
 
 sub _load_plugin {
     my ( $self, $plugin_name, $plugin_conf ) = @_;
+
+    # Extract first name in case there is a description
+    #
+    my ($plugin_fname) = ( $plugin_name =~ /^(\S+)/ );
+
     my $class_name = (
-        $plugin_name =~ /^\+/
-        ? substr( $plugin_name, 1 )
-        : "Code::TidyAll::Plugin::$plugin_name"
+        $plugin_fname =~ /^\+/
+        ? substr( $plugin_fname, 1 )
+        : "Code::TidyAll::Plugin::$plugin_fname"
     );
     try {
         can_load($class_name) || die "not found";

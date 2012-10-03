@@ -27,6 +27,9 @@ sub create_dir {
 sub tidy {
     my ( $self, %params ) = @_;
     my $desc = $params{desc};
+    if ( !defined($desc) ) {
+        ($desc) = ( ( caller(1) )[3] =~ /([^:]+$)/ );
+    }
 
     my $root_dir = $self->create_dir( $params{source} );
 
@@ -101,6 +104,23 @@ sub test_basic : Tests {
         dest    => { "foo.txt" => "abc1" },
         desc    => 'one file UpperText errors',
         errors  => qr/non-alpha content/
+    );
+}
+
+sub test_multiple_plugin_instances : Tests {
+    my $self = shift;
+    $self->tidy(
+        plugins => {
+            test_plugin('RepeatFoo for txt') => { select => '**/*.txt', times => 2 },
+            test_plugin('RepeatFoo for foo') => { select => '**/foo.*', times => 3 },
+            %UpperText
+        },
+        source => { "foo.txt" => "abc", "foo.dat" => "def", "bar.txt" => "ghi" },
+        dest   => {
+            "foo.txt" => scalar( "ABC" x 6 ),
+            "foo.dat" => scalar( "def" x 3 ),
+            "bar.txt" => scalar( "GHI" x 2 )
+        }
     );
 }
 

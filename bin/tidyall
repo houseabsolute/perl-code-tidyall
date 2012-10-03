@@ -342,7 +342,7 @@ Apply C<PodTidy> with default settings to all *.pm and *.pod files underneath
 
 =over
 
-=item [class]
+=item [class] or [class description]
 
 The header of each section refers to a tidyall I<plugin>. The name is
 automatically prefixed with C<Code::TidyAll::Plugin::> unless it begins with a
@@ -355,6 +355,23 @@ automatically prefixed with C<Code::TidyAll::Plugin::> unless it begins with a
     ; Uses plugin My::TidyAll::Plugin
     ;
     [+My::TidyAll::Plugin]
+
+You can also include an optional description after the class. The description
+will be ignored and only the first word will be used for the plugin. This
+allows you to a list a plugin more than once, with different configuration each
+time.  For example, two different C<PerlCritic> configurations:
+
+    ; Be brtual on libraries
+    ;
+    [PerlCritic strict]
+    select = lib/**/*.pm
+    argv = --brutal
+
+    ; but gentle on scripts
+    ;
+    [PerlCritic lenient]
+    select = bin/**/*.pl
+    argv = --gentle
 
 =item select
 

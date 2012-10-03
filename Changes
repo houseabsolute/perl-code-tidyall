@@ -5,6 +5,7 @@ Revision history for Code-TidyAll
 0.14  Sep 30, 2012
 
 * Improvements
+  - Allow a plugin to be listed multiple times in config with different configuration
   - Add -r/--recursive flag to process directories recursively
   - In -p/--pipe mode, mirror input to output in case of error (Justin Devuyst)
   - Add --version option
