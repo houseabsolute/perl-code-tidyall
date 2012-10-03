@@ -160,7 +160,7 @@ sub handle_pipe {
         return 1;
     }
     elsif ( $result->state eq 'no_match' ) {
-        print STDERR "No match for '$pipe'";
+        print STDERR "No plugins apply for '$pipe' in config";
         return 1;
     }
     elsif ( $result->state eq 'checked' ) {
