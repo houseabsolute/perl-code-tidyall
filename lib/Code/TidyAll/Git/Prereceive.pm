@@ -120,6 +120,7 @@ sub check_repeated_push {
             my $push_sig = sha1_hex($input);
             if ( -f $last_push_file ) {
                 my ( $last_push_sig, $count ) = split( /\s+/, read_file($last_push_file) );
+                print STDERR "*** last_push_sig = $last_push_sig\n";
                 if ( $last_push_sig eq $push_sig ) {
                     ++$count;
                     print STDERR "*** Identical push seen $count times\n";
