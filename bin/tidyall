@@ -18,7 +18,7 @@ Options:
    -h, --help               Print help message
    -l, --list               List each file along with the plugins it matches
    -m, --mode               Mode (e.g. "editor", "commit") - affects which plugins run
-   -p path, --pipe path     Read from STDIN, output to STDOUT/STDERR
+   -p <path>, --pipe <path> Read from STDIN, output to STDOUT/STDERR
    -r, --recursive          Descend recursively into directories listed on command line
    -s, --svn                Process all added/modified files according to svn
    -q, --quiet              Suppress output except for errors
