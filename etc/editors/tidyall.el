@@ -61,17 +61,21 @@
            (message "buffer has no filename"))
           (t
            (let* ((command (concat tidyall-cmd " -m editor --pipe " file))
-                  (tidyall-buffer (get-buffer-create "*tidyall-output*"))
+                  (output-buffer (get-buffer-create "*tidyall-output*"))
+                  (error-buffer (get-buffer-create "*tidyall-error*"))
+                  (error-file (make-temp-file "tidyall_error"))
                   (start (point-min))
                   (end (point-max))
                   (orig-window-start (window-start (selected-window)))
                   (orig-point (point)))
-             (with-current-buffer tidyall-buffer (erase-buffer))
+             (with-current-buffer output-buffer (erase-buffer))
+             (with-current-buffer error-buffer (erase-buffer))
              (let* ((result
                      (call-process-region
                       start end shell-file-name nil
-                      (list tidyall-buffer t) nil shell-command-switch command))
-                    (output (with-current-buffer tidyall-buffer (buffer-string))))
+                      (list output-buffer error-file) nil shell-command-switch command))
+                    (output (with-current-buffer output-buffer (buffer-string))))
+               (kill-buffer output-buffer)
                (cond ((zerop result)
 
                       ;; Success. Replace content if it changed
@@ -87,16 +91,19 @@
                              (set-window-start (selected-window) orig-window-start)
                              (goto-char orig-point)
                              (beginning-of-line)
-                             (when tidyall-autosave
-                               (save-buffer))
                              (message (concat "tidied " file)))
                             (t
                              (message (concat "checked " file))))
-                      (delete-windows-on tidyall-buffer))
+                      (when tidyall-autosave
+                        (save-buffer))
+                      (delete-windows-on error-buffer)
+                      (kill-buffer error-buffer))
                         
                      (t
                       ;; Error. Display in other window
                       ;;
+                      (with-current-buffer error-buffer
+                        (insert-file-contents error-file))
                       (when (< (length (window-list)) 2)
                         (split-window-vertically))
-                      (set-window-buffer (next-window) tidyall-buffer)))))))))
+                      (set-window-buffer (next-window) error-buffer)))))))))
