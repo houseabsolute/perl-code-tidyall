@@ -5,12 +5,15 @@ use Scalar::Util qw(weaken);
 use Moo;
 
 # External
-has 'argv'    => ( is => 'ro', default => sub { '' } );
-has 'cmd'     => ( is => 'lazy' );
-has 'ignore'  => ( is => 'ro' );
-has 'name'    => ( is => 'ro', required => 1 );
-has 'select'  => ( is => 'ro' );
-has 'tidyall' => ( is => 'ro', required => 1, weak_ref => 1 );
+has 'argv'         => ( is => 'ro', default => sub { '' } );
+has 'class'        => ( is => 'ro' );
+has 'cmd'          => ( is => 'lazy' );
+has 'ignore'       => ( is => 'ro' );
+has 'is_tidier'    => ( is => 'lazy' );
+has 'is_validator' => ( is => 'lazy' );
+has 'name'         => ( is => 'ro', required => 1 );
+has 'select'       => ( is => 'ro' );
+has 'tidyall'      => ( is => 'ro', required => 1, weak_ref => 1 );
 
 # Internal
 has 'ignore_regex' => ( is => 'lazy' );
@@ -41,6 +44,16 @@ sub _build_ignores {
 sub _build_ignore_regex {
     my ($self) = @_;
     return zglobs_to_regex( @{ $self->ignores } );
+}
+
+sub _build_is_tidier {
+    my ($self) = @_;
+    return ( $self->can('transform_source') || $self->can('transform_file') ) ? 1 : 0;
+}
+
+sub _build_is_validator {
+    my ($self) = @_;
+    return ( $self->can('validate_source') || $self->can('validate_file') ) ? 1 : 0;
 }
 
 sub BUILD {

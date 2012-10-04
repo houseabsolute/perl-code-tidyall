@@ -10,6 +10,9 @@ sub test_plugin { "+Code::TidyAll::Test::Plugin::$_[0]" }
 my %UpperText  = ( test_plugin('UpperText')  => { select => '**/*.txt' } );
 my %ReverseFoo = ( test_plugin('ReverseFoo') => { select => '**/foo*' } );
 my %RepeatFoo  = ( test_plugin('RepeatFoo')  => { select => '**/foo*' } );
+my %CheckUpper = ( test_plugin('CheckUpper') => { select => '**/*.txt' } );
+my %AToZ       = ( test_plugin('AToZ')       => { select => '**/*.txt' } );
+
 my $cli_conf;
 
 sub create_dir {
@@ -53,6 +56,9 @@ sub tidy {
     while ( my ( $path, $content ) = each( %{ $params{dest} } ) ) {
         is( read_file("$root_dir/$path"), $content, "$desc - $path content" );
     }
+    if ( my $like_output = $params{like_output} ) {
+        like( $output, $like_output, "$desc - output" );
+    }
 }
 
 sub test_basic : Tests {
@@ -80,8 +86,6 @@ sub test_basic : Tests {
         desc    => 'one file reversals mode',
         options => { mode      => 'reversals' },
     );
-    return;
-
     $self->tidy(
         plugins => { %UpperText, %ReverseFoo },
         source  => {
@@ -122,6 +126,37 @@ sub test_multiple_plugin_instances : Tests {
             "bar.txt" => scalar( "GHI" x 2 )
         }
     );
+}
+
+sub test_plugin_order_and_atomicity : Tests {
+    my $self    = shift;
+    my @plugins = map {
+        (
+            %ReverseFoo,
+            test_plugin("UpperText $_")  => { select => '**/*.txt' },
+            test_plugin("CheckUpper $_") => { select => '**/*.txt' }
+          )
+    } ( 1 .. 3 );
+    my $output = capture_stdout {
+        $self->tidy(
+            plugins => {@plugins},
+            options => { verbose => 1 },
+            source  => { "foo.txt" => "abc" },
+            dest    => { "foo.txt" => "CBA" },
+            like_output =>
+              qr/.*ReverseFoo, .*UpperText 1, .*UpperText 2, .*UpperText 3, .*CheckUpper 1, .*CheckUpper 2, .*CheckUpper 3/
+        );
+    };
+
+    $self->tidy(
+        plugins => { %AToZ, %ReverseFoo, %CheckUpper },
+        options     => { verbose   => 1 },
+        source      => { "foo.txt" => "abc" },
+        dest        => { "foo.txt" => "abc" },
+        errors      => qr/lowercase found/,
+        like_output => qr/foo.txt (.*ReverseFoo, .*CheckUpper)/
+    );
+
 }
 
 sub test_quiet_and_verbose : Tests {

@@ -436,6 +436,15 @@ arguments to pass to the underlying command-line utility.
 
 =back
 
+=head1 PLUGIN ORDER AND ATOMICITY
+
+If multiple plugins match a file, tidiers are applied before validators so that
+validators are checking the final result. Within those two groups, the plugins
+are applied in alphabetical order by plugin name/description.
+
+The application of multiple plugins is all-or-nothing. If an error occurs
+during the application of any plugin, the file is not modified at all.
+
 =head1 COMMAND-LINE OPTIONS
 
 =over

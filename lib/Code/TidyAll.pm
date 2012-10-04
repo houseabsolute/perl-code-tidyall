@@ -82,10 +82,13 @@ sub _build_plugins_for_mode {
 
 sub _build_plugin_objects {
     my $self = shift;
-    return [
-        map { $self->_load_plugin( $_, $self->plugins->{$_} ) }
-        sort keys( %{ $self->plugins_for_mode } )
-    ];
+    my @plugin_objects =
+      map { $self->_load_plugin( $_, $self->plugins->{$_} ) } keys( %{ $self->plugins_for_mode } );
+
+    # Sort tidiers before validators, then alphabetical
+    #
+    return [ sort { ( $a->is_validator <=> $b->is_validator ) || ( $a->name cmp $b->name ) }
+          @plugin_objects ];
 }
 
 sub BUILD {
@@ -143,19 +146,20 @@ sub _load_plugin {
     #
     my ($plugin_fname) = ( $plugin_name =~ /^(\S+)/ );
 
-    my $class_name = (
+    my $plugin_class = (
         $plugin_fname =~ /^\+/
         ? substr( $plugin_fname, 1 )
         : "Code::TidyAll::Plugin::$plugin_fname"
     );
     try {
-        can_load($class_name) || die "not found";
+        can_load($plugin_class) || die "not found";
     }
     catch {
-        die "could not load plugin class '$class_name': $_";
+        die "could not load plugin class '$plugin_class': $_";
     };
 
-    return $class_name->new(
+    return $plugin_class->new(
+        class   => $plugin_class,
         name    => $plugin_name,
         tidyall => $self,
         %$plugin_conf
