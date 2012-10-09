@@ -10,6 +10,7 @@ Revision history for Code-TidyAll
     that they are applied atomically
   - Add -r/--recursive flag to process directories recursively
   - In -p/--pipe mode, mirror input to output in case of error (Justin Devuyst)
+  - Fix -l/--list handling of local files
   - Add --version option
   - Make git prereceive hook more modular, so it can be combined with other checks
 
