@@ -194,6 +194,7 @@ sub list_files {
     my ( $self, @files ) = @_;
 
     foreach my $file (@files) {
+        $file = realpath($file) || rel2abs($file);
         my $path = $self->_small_path($file);
         if ( my @plugins = $self->plugins_for_path($path) ) {
             printf( "%s (%s)\n", $path, join( ", ", map { $_->name } @plugins ) );
