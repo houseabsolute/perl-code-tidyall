@@ -2,7 +2,7 @@ Revision history for Code-TidyAll
 
 ** denotes an incompatible change
 
-0.14  Sep 30, 2012
+0.14  Oct 10, 2012
 
 * Improvements
   - Allow a plugin to be listed multiple times in config with different configuration
