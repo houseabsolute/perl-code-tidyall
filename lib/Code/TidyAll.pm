@@ -626,10 +626,10 @@ Return a L<Code::TidyAll::Result|Code::TidyAll::Result> object
 
 =item process_source (I<source>, I<path>)
 
-Same as L</process_file>, but process the I<source> string instead of a file.
-You must still pass the relative I<path> from the root as the second argument,
-so that we know which plugins to apply. Return a
-L<Code::TidyAll::Result|Code::TidyAll::Result> object.
+Like L</process_file>, but process the I<source> string instead of a file, and
+do not read from or write to the cache. You must still pass the relative
+I<path> from the root as the second argument, so that we know which plugins to
+apply. Return a L<Code::TidyAll::Result|Code::TidyAll::Result> object.
 
 =item plugins_for_path (I<path>)
 
