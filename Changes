@@ -66,9 +66,9 @@ Revision history for Code-TidyAll
 * Plugins
   - Add js-beautify plugin (javascript tidier)
   - Add jshint plugin (javascript validator)
+  - Add podchecker plugin
 
 * Improvements
-  - Add podchecker plugin
   - Add -p/--pipe flag to read from STDIN and write to STDOUT
   - Allow tidyall.el to work in narrowed regions
   - Make plugins into Moo classes, pass configuration as attributes
