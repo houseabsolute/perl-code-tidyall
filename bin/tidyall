@@ -700,9 +700,11 @@ You can turn off backups with C<--no-backups>.
 
 =item *
 
-L<etc/editors|https://raw.github.com/jonswar/perl-code-tidyall/master/etc/editors>
+L<etc/editors/tidyall.el|https://raw.github.com/jonswar/perl-code-tidyall/master/etc/editors/tidyall.el>
+and
+L<etc/editors/tidyall.vim|https://raw.github.com/jonswar/perl-code-tidyall/master/etc/editors/tidyall.vim>
 in this distribution contains Emacs and Vim commands for running C<tidyall> on
-the current buffer. You can assign this to the keystroke of your choice (e.g.
+the current buffer. You can assign this to the keystroke of your choice (e.g. 
 ctrl-t or ,t).
 
 =item *
