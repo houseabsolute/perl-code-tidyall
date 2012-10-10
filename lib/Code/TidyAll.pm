@@ -256,6 +256,7 @@ sub process_dir {
 sub process_source {
     my ( $self, $contents, $path ) = @_;
 
+    die "contents and path required" unless defined($contents) && defined($path);
     my @plugins = $self->plugins_for_path($path);
     if ( !@plugins ) {
         $self->msg( "[no plugins apply%s] %s",
