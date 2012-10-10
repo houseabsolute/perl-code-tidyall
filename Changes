@@ -8,6 +8,7 @@ Revision history for Code-TidyAll
   - Allow a plugin to be listed multiple times in config with different configuration
   - Specify order that plugins run (tidiers before validators, then alpha) and document
     that they are applied atomically
+  - Add etc/editors/tidyall.vim for Vim
   - Add -r/--recursive flag to process directories recursively
   - In -p/--pipe mode, mirror input to output in case of error (Justin Devuyst)
   - Fix -l/--list handling of local files
