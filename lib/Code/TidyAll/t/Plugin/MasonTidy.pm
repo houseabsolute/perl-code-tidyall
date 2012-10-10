@@ -10,17 +10,17 @@ sub test_main : Tests {
     $self->tidyall(
         source      => $source,
         conf        => { argv => '-m 1' },
-        expect_tidy => '% if ($foo) {\n%     bar( 1, 2 );\n% }\n'
+        expect_tidy => '% if ($foo) {\n%     bar( 1, 2 );\n% }'
     );
     $self->tidyall(
         source      => $source,
         conf        => { argv => '-m 1 --perltidy-argv="-pt=2 -i=3"' },
-        expect_tidy => '% if ($foo) {\n%    bar(1, 2);\n% }\n'
+        expect_tidy => '% if ($foo) {\n%    bar(1, 2);\n% }'
     );
     $self->tidyall(
         source      => $source,
         conf        => { argv => '-m 2 --perltidy-line-argv=" "' },
-        expect_tidy => '% if ($foo) {\n%     bar( 1, 2 );\n% }\n'
+        expect_tidy => '% if ($foo) {\n%     bar( 1, 2 );\n% }'
     );
     $self->tidyall(
         source       => $source,
