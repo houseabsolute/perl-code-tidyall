@@ -4,6 +4,9 @@ Revision history for Code-TidyAll
 
 0.15  Oct 10, 2012
 
+* Fixes
+  - Fix test_dirs test to not rely on file ordering
+
 0.14  Oct 10, 2012
 
 * Improvements

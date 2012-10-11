@@ -308,7 +308,8 @@ sub test_dirs : Tests {
             $ct->process_file("$root_dir/a");
         };
         if ($recursive) {
-            is( $output,                          "[tidied]  a/bar.txt\n[tidied]  a/foo.txt\n" );
+            like( $output, qr/\[tidied\]  a\/foo.txt/ );
+            like( $output, qr/\[tidied\]  a\/bar.txt/ );
             is( read_file("$root_dir/a/foo.txt"), "IH" );
             is( read_file("$root_dir/a/bar.txt"), "HI" );
             is( read_file("$root_dir/a/bar.pl"),  "hi" );
