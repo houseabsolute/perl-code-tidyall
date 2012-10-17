@@ -1,6 +1,6 @@
 package Code::TidyAll::Plugin::PHPCodeSniffer;
 use IPC::System::Simple qw(runx EXIT_ANY);
-use Capture::Tiny qw(capture_stdout);
+use Capture::Tiny qw(capture_merged);
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
@@ -11,7 +11,7 @@ sub validate_file {
 
     my $exit;
     my @cmd = ( $self->cmd, $self->argv, $file );
-    my $output = capture_stdout { $exit = runx( EXIT_ANY, @cmd ) };
+    my $output = capture_merged { $exit = runx( EXIT_ANY, @cmd ) };
     if ( $exit > 0 ) {
         $output ||= "problem running " . $self->cmd;
         die "$output\n";
