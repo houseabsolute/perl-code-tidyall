@@ -30,14 +30,14 @@ Code::TidyAll::Plugin::PerlCritic - use perlcritic with tidyall
    ; Configure in-line
    ;
    [PerlCritic]
-   argv = --severity 5 --exclude=nowarnings
    select = lib/**/*.pm
+   argv = --severity 5 --exclude=nowarnings
 
    ; or refer to a .perlcriticrc in the same directory
    ;
    [PerlCritic]
-   argv = --profile $ROOT/.perlcriticrc
    select = lib/**/*.pm
+   argv = --profile $ROOT/.perlcriticrc
 
 =head1 DESCRIPTION
 

@@ -43,14 +43,14 @@ Code::TidyAll::Plugin::PerlTidy - use perltidy with tidyall
    ; Configure in-line
    ;
    [PerlTidy]
-   argv = --noll
    select = lib/**/*.pm
+   argv = --noll
 
    ; or refer to a .perltidyrc in the same directory
    ;
    [PerlTidy]
-   argv = --profile=$ROOT/.perltidyrc
    select = lib/**/*.pm
+   argv = --profile=$ROOT/.perltidyrc
 
 =head1 DESCRIPTION
 
