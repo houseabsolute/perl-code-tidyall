@@ -259,6 +259,14 @@ JavaScript: L<js-beautify|Code::TidyAll::Plugin::JSBeautify>,
 L<jshint|Code::TidyAll::Plugin::JSHint>,
 L<jslint|Code::TidyAll::Plugin::JSLint>
 
+=item *
+
+CSS: L<cssunminifier|Code::TidyAll::Plugin::CSUnminifier>
+
+=item *
+
+PHP: L<phpcs|Code::TidyAll::Plugin::CSUnminifier>
+
 =back
 
 See L<Code::TidyAll::Plugin|Code::TidyAll::Plugin> for information about

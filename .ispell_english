@@ -45,5 +45,6 @@ svn
 tidiers
 tidyall
 txn
+cssunminifier
 validator
 validators

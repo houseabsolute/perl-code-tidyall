@@ -61,4 +61,8 @@ Install L<PEAR|http://pear.php.net/>, then install C<phpcs> from PEAR:
 
 Arguments to pass to C<phpcs>
 
+=item cmd
+
+Full path to C<phpcs>
+
 =back
