@@ -1,5 +1,6 @@
 package Code::TidyAll::Plugin::PHPCodeSniffer;
-use Capture::Tiny qw(capture_merged);
+use IPC::System::Simple qw(runx EXIT_ANY);
+use Capture::Tiny qw(capture_stdout);
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
@@ -8,9 +9,13 @@ sub _build_cmd { 'phpcs' }
 sub validate_file {
     my ( $self, $file ) = @_;
 
-    my $cmd = sprintf( "%s %s %s", $self->cmd, $self->argv, $file );
-    my $output = capture_merged { system($cmd) };
-    die "$output\n" if $output !~ /^.* source OK\n/;
+    my $exit;
+    my @cmd = ( $self->cmd, $self->argv, $file );
+    my $output = capture_stdout { $exit = runx( EXIT_ANY, @cmd ) };
+    if ( $exit > 0 ) {
+        $output ||= "problem running " . $self->cmd;
+        die "$output\n";
+    }
 }
 
 1;
@@ -31,21 +36,20 @@ version 0.15
 
    In configuration:
 
-   ; Configure in-line
-   ;
    [PHPCodeSniffer]
-   select = /my/project/**/*.php
-   argv = --standard=/my/project/phpcs.xml --ignore=*/tests/*,*/data/*
+   select = htdocs/**/*.{php,js,css}
+   cmd = /usr/local/pear/bin/phpcs
+   argv = --severity 4
 
 =head1 DESCRIPTION
 
-Runs L<phpcs|http://pear.php.net/package/PHP_CodeSniffer> which tokenises PHP,
+Runs L<phpcs|http://pear.php.net/package/PHP_CodeSniffer> which analyzes PHP,
 JavaScript and CSS files and detects violations of a defined set of coding
 standards.
 
 =head1 INSTALLATION
 
-Install phpcs from PEAR.
+Install L<PEAR|http://pear.php.net/>, then install C<phpcs> from PEAR:
 
     pear install PHP_CodeSniffer
 
@@ -55,6 +59,6 @@ Install phpcs from PEAR.
 
 =item argv
 
-Arguments to pass to phpcs
+Arguments to pass to C<phpcs>
 
 =back

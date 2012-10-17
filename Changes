@@ -4,6 +4,9 @@ Revision history for Code-TidyAll
 
 0.16  Oct 11, 2012
 
+* Plugins
+  - Add PHPCodeSniffer plugin (Joseph Crotty)
+
 0.15  Oct 11, 2012
 
 * Fixes

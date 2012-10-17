@@ -1,8 +1,8 @@
-Raggett
-sourceforge
 API
 CPAN
 JavaScript
+PHP
+Raggett
 STDERR
 STDIN
 STDOUT
@@ -33,12 +33,14 @@ params
 perlcritic
 perlcriticrc
 perltidy
+phpcs
 plugins
 podspell
 podtidy
 pre
 repo
 repos
+sourceforge
 svn
 tidiers
 tidyall
