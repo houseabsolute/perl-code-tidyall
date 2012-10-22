@@ -7,6 +7,7 @@ Revision history for Code-TidyAll
 * Plugins
   - Add phpcs plugin (Joseph Crotty)
   - Add cssunminifier plugin
+  - Add SortLines plugin, for one-entry-per-line files like .gitignore
 
 0.15  Oct 11, 2012
 
