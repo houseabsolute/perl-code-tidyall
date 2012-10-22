@@ -26,6 +26,7 @@ sub tidyall {
 
     my $source = $p{source} || die "source required";
     my $desc   = $p{desc}   || $source;
+    $desc =~ s/\n/\\n/g;
     my $plugin_class = $self->plugin_class;
     my %plugin_conf = ( $plugin_class => { select => '*', %{ $p{conf} || {} } } );
     my $ct =

@@ -1,6 +1,7 @@
 API
 CPAN
 JavaScript
+Misc
 PHP
 Raggett
 STDERR
@@ -15,6 +16,7 @@ atomicity
 cmd
 conf
 config
+cssunminifier
 ctrl
 dir
 iff
@@ -45,6 +47,5 @@ svn
 tidiers
 tidyall
 txn
-cssunminifier
 validator
 validators
