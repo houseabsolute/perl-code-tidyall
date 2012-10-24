@@ -31,7 +31,7 @@ Code::TidyAll::Result - Result returned from processing a file/source
 Represents the result of
 L<Code::TidyAll::process_file|Code::TidyAll/process_file> and
 L<Code::TidyAll::process_file|Code::TidyAll/process_source>. A list of these is
-returned from L<Code::TidyAll::process_files|Code::TidyAll/process_files>.
+returned from L<Code::TidyAll::process_paths|Code::TidyAll/process_paths>.
 
 =head1 METHODS
 

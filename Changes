@@ -4,6 +4,12 @@ Revision history for Code-TidyAll
 
 0.17  Oct 22, 2012
 
+* Improvements
+  - ** Rename API method process_files to more accurate process_paths
+
+* Fixes
+  - Fix recursive processing of directories (Mark Risman)
+
 0.16  Oct 22, 2012
 
 * Plugins

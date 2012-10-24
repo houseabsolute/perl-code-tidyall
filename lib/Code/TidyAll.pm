@@ -23,6 +23,7 @@ has 'backup_ttl'    => ( is => 'ro', default => sub { '1 hour' } );
 has 'check_only'    => ( is => 'ro' );
 has 'data_dir'      => ( is => 'lazy' );
 has 'iterations'    => ( is => 'ro', default => sub { 1 } );
+has 'list_only'     => ( is => 'ro' );
 has 'mode'          => ( is => 'ro', default => sub { 'cli' } );
 has 'no_backups'    => ( is => 'ro' );
 has 'no_cache'      => ( is => 'ro' );
@@ -181,43 +182,45 @@ sub _plugin_conf_matches_mode {
 sub process_all {
     my $self = shift;
 
-    return $self->process_files( $self->find_matched_files );
+    return $self->process_paths( $self->find_matched_files );
 }
 
-sub process_files {
-    my ( $self, @files ) = @_;
+sub process_paths {
+    my ( $self, @paths ) = @_;
 
-    return map { $self->process_file( realpath($_) || rel2abs($_) ) } @files;
+    return map { $self->process_path( realpath($_) || rel2abs($_) ) } @paths;
 }
 
-sub list_files {
-    my ( $self, @files ) = @_;
+sub process_path {
+    my ( $self, $path ) = @_;
 
-    foreach my $file (@files) {
-        $file = realpath($file) || rel2abs($file);
-        my $path = $self->_small_path($file);
-        if ( my @plugins = $self->plugins_for_path($path) ) {
-            printf( "%s (%s)\n", $path, join( ", ", map { $_->name } @plugins ) );
+    if ( -d $path ) {
+        if ( $self->recursive ) {
+            return $self->process_paths( map { "$path/$_" } read_dir($path) );
         }
+        else {
+            return ( $self->_error_result( "$path: is a directory (try -r/--recursive)", $path ) );
+        }
+    }
+    elsif ( -f $path ) {
+        return ( $self->process_file($path) );
+    }
+    else {
+        return ( $self->_error_result( "$path: not a file or directory", $path ) );
     }
 }
 
 sub process_file {
     my ( $self, $file ) = @_;
+    die "$file is not a file" unless -f $file;
+
     my $path = $self->_small_path($file);
 
-    if ( -d $file ) {
-        if ( $self->recursive ) {
-            return $self->process_dir($file);
+    if ( $self->list_only ) {
+        if ( my @plugins = $self->plugins_for_path($path) ) {
+            printf( "%s (%s)\n", $path, join( ", ", map { $_->name } @plugins ) );
         }
-        else {
-            print "$path: is a directory (try -r/--recursive)";
-            return;
-        }
-    }
-    elsif ( !-f $file ) {
-        print "$path: not a file or directory\n";
-        return;
+        return Code::TidyAll::Result->new( path => $path, state => 'checked' );
     }
 
     my $cache     = $self->no_cache ? undef : $self->cache;
@@ -243,14 +246,6 @@ sub process_file {
     $cache->set( $cache_key, $self->_file_sig( $file, $contents ) ) if $cache && $result->ok;
 
     return $result;
-}
-
-sub process_dir {
-    my ( $self, $dir ) = @_;
-
-    foreach my $subfile ( read_dir($dir) ) {
-        $self->process_file("$dir/$subfile");
-    }
 }
 
 sub process_source {
@@ -298,8 +293,7 @@ sub process_source {
     }
 
     if ($error) {
-        $self->msg( "%s", $error );
-        return Code::TidyAll::Result->new( path => $path, state => 'error', error => $error );
+        return $self->_error_result( $error, $path );
     }
     elsif ($was_tidied) {
         return Code::TidyAll::Result->new(
@@ -478,6 +472,12 @@ sub msg {
     printf "$format\n", @params;
 }
 
+sub _error_result {
+    my ( $self, $msg, $path ) = @_;
+    $self->msg( "%s", $msg );
+    return Code::TidyAll::Result->new( path => $path, state => 'error', error => $msg );
+}
+
 1;
 
 __END__
@@ -512,7 +512,7 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
     # then...
 
-    $ct->process_files($file1, $file2);
+    $ct->process_paths($file1, $file2);
 
     # or
 
@@ -592,9 +592,10 @@ C<backup_ttl> here).
 
 Process all files; this implements the C<tidyall -a> option.
 
-=item process_files (file, ...)
+=item process_paths (path, ...)
 
-Call L</process_file> on each file. Return a list of
+Call L</process_file> on each file; descend recursively into each directory if
+the C<recursive> flag is on. Return a list of
 L<Code::TidyAll::Result|Code::TidyAll::Result> objects, one for each file.
 
 =item process_file (file)

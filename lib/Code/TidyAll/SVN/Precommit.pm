@@ -89,7 +89,7 @@ sub check {
                 %{ $self->tidyall_options },
             );
             my $stdout = capture_stdout {
-                push( @results, $tidyall->process_files( map { "$tempdir/$_" } @files ) );
+                push( @results, $tidyall->process_paths( map { "$tempdir/$_" } @files ) );
             };
             if ($stdout) {
                 chomp($stdout);

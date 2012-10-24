@@ -2,7 +2,7 @@ package Code::TidyAll::t::Basic;
 use Cwd qw(realpath);
 use Code::TidyAll::Util qw(dirname mkpath pushd read_file tempdir_simple write_file);
 use Code::TidyAll;
-use Capture::Tiny qw(capture capture_stdout);
+use Capture::Tiny qw(capture capture_stdout capture_merged);
 use File::Find qw(find);
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 
@@ -171,7 +171,7 @@ sub test_quiet_and_verbose : Tests {
                     root_dir => $root_dir,
                     ( $state eq 'normal' ? () : ( $state => 1 ) )
                 );
-                $ct->process_files("$root_dir/foo.txt");
+                $ct->process_paths("$root_dir/foo.txt");
             };
             if ($error) {
                 like( $output, qr/non-alpha content found/, "non-alpha content found ($state)" );
@@ -200,7 +200,7 @@ sub test_iterations : Tests {
         iterations => 2
     );
     my $file = "$root_dir/foo.txt";
-    $ct->process_files($file);
+    $ct->process_paths($file);
     is( read_file($file), scalar( "abc" x 9 ), "3^2 = 9" );
 }
 
@@ -220,7 +220,7 @@ sub test_caching_and_backups : Tests {
             my $output;
             my $file = "$root_dir/foo.txt";
             my $go   = sub {
-                $output = capture_stdout { $ct->process_files($file) };
+                $output = capture_stdout { $ct->process_paths($file) };
             };
 
             $go->();
@@ -299,15 +299,18 @@ sub test_dirs : Tests {
     my $root_dir = $self->create_dir( { map { $_ => 'hi' } @files } );
 
     foreach my $recursive ( 0 .. 1 ) {
-        my $output = capture_stdout {
+        my @results;
+        my $output = capture_merged {
             my $ct = Code::TidyAll->new(
                 plugins  => { %UpperText, %ReverseFoo },
                 root_dir => $root_dir,
                 ( $recursive ? ( recursive => 1 ) : () )
             );
-            $ct->process_file("$root_dir/a");
+            @results = $ct->process_paths("$root_dir/a");
         };
         if ($recursive) {
+            is( @results, 3, "3 results" );
+            is( scalar( grep { $_->state eq 'tidied' } @results ), 2, "2 tidied" );
             like( $output, qr/\[tidied\]  a\/foo.txt/ );
             like( $output, qr/\[tidied\]  a\/bar.txt/ );
             is( read_file("$root_dir/a/foo.txt"), "IH" );
@@ -316,6 +319,8 @@ sub test_dirs : Tests {
             is( read_file("$root_dir/b/foo.txt"), "hi" );
         }
         else {
+            is( @results,           1,       "1 result" );
+            is( $results[0]->state, "error", "error" );
             like( $output, qr/is a directory/ );
         }
     }
@@ -357,27 +362,30 @@ sub test_errors : Tests {
     qr/unknown options/;
 
     my $ct = Code::TidyAll->new( plugins => {%UpperText}, root_dir => $root_dir );
-    my $output = capture_stdout { $ct->process_files("$root_dir/baz/blargh.txt") };
+    my $output = capture_stdout { $ct->process_paths("$root_dir/baz/blargh.txt") };
     like( $output, qr/baz\/blargh.txt: not a file or directory/, "file not found" );
 
-    $output = capture_stdout { $ct->process_files("$root_dir/foo/bar.txt") };
+    $output = capture_stdout { $ct->process_paths("$root_dir/foo/bar.txt") };
     is( $output, "[tidied]  foo/bar.txt\n", "filename output" );
     is( read_file("$root_dir/foo/bar.txt"), "ABC", "tidied" );
     my $other_dir = realpath( tempdir_simple() );
     write_file( "$other_dir/foo.txt", "ABC" );
-    throws_ok { $ct->process_files("$other_dir/foo.txt") } qr/not underneath root dir/;
+    throws_ok { $ct->process_paths("$other_dir/foo.txt") } qr/not underneath root dir/;
 }
 
 sub test_cli : Tests {
     my $self = shift;
     my $output;
 
+    my @cmd = ( "$^X", "-Ilib", "bin/tidyall" );
+    my $run = sub { system( @cmd, @_ ) };
+
     $output = capture_stdout {
-        system( "$^X", "bin/tidyall", "--version" );
+        $run->("--version");
     };
     like( $output, qr/tidyall .* on perl/ );
     $output = capture_stdout {
-        system( "$^X", "bin/tidyall", "--help" );
+        $run->("--help");
     };
     like( $output, qr/Usage.*Options:/s );
 
@@ -388,7 +396,7 @@ sub test_cli : Tests {
 
         write_file( "$root_dir/foo.txt", "hello" );
         my $output = capture_stdout {
-            system( "$^X", "bin/tidyall", "$root_dir/foo.txt", "-v" );
+            $run->( "$root_dir/foo.txt", "-v" );
         };
 
         my ($params_msg) = ( $output =~ /constructing Code::TidyAll with these params:(.*)/ );
@@ -404,7 +412,7 @@ sub test_cli : Tests {
         write_file( "$root_dir/subdir/foo2.txt", "bye" );
         my $cwd = realpath();
         capture_stdout {
-            system("cd $root_dir/subdir; $^X $cwd/bin/tidyall foo.txt");
+            system("cd $root_dir/subdir; $^X -I$cwd/lib $cwd/bin/tidyall foo.txt");
         };
         is( read_file("$root_dir/subdir/foo.txt"),  "BYEBYEBYE", "foo.txt tidied" );
         is( read_file("$root_dir/subdir/foo2.txt"), "bye",       "foo2.txt not tidied" );
@@ -412,7 +420,7 @@ sub test_cli : Tests {
         # -p / --pipe success
         #
         my ( $stdout, $stderr ) = capture {
-            open( my $fh, "|-", "$^X", "bin/tidyall", "-p", "$root_dir/does_not_exist/foo.txt" );
+            open( my $fh, "|-", @cmd, "-p", "$root_dir/does_not_exist/foo.txt" );
             print $fh "echo";
         };
         is( $stdout, "ECHOECHOECHO", "pipe: stdin tidied" );
@@ -421,7 +429,7 @@ sub test_cli : Tests {
         # -p / --pipe error
         #
         ( $stdout, $stderr ) = capture {
-            open( my $fh, "|-", "$^X", "bin/tidyall", "--pipe", "$root_dir/foo.txt" );
+            open( my $fh, "|-", @cmd, "--pipe", "$root_dir/foo.txt" );
             print $fh "abc1";
         };
         is( $stdout, "abc1", "pipe: stdin mirrored to stdout" );

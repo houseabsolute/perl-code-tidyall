@@ -51,8 +51,8 @@ sub usage {
 }
 
 my (
-    %params,   $all_files, $conf_file, $conf_name, $git_files, $help,
-    $inc_dirs, $list,      $pipe,      $svn_files, $version
+    %params, $all_files, $conf_file, $conf_name, $git_files,
+    $help,   $inc_dirs,  $pipe,      $svn_files, $version
 );
 my @conf_names = Code::TidyAll->default_conf_names;
 
@@ -72,7 +72,7 @@ GetOptions(
     'a|all'           => \$all_files,
     'g|git'           => \$git_files,
     'h|help'          => \$help,
-    'l|list'          => \$list,
+    'l|list'          => \$params{list_only},
     'm|mode=s'        => \$params{mode},
     'p|pipe=s'        => \$pipe,
     'r|recursive'     => \$params{recursive},
@@ -94,7 +94,7 @@ unshift( @INC, split( /\s*,\s*/, $inc_dirs ) ) if defined($inc_dirs);
 
 my $tidyall_class = $params{tidyall_class} || 'Code::TidyAll';
 
-my ( $ct, @files );
+my ( $ct, @paths );
 
 if ($pipe) {
     my $status = handle_pipe($pipe);
@@ -107,19 +107,19 @@ elsif ( ( $all_files || $svn_files || $git_files ) ) {
     $ct = $tidyall_class->new_from_conf_file( $conf_file, %params );
 
     if ($all_files) {
-        @files = $ct->find_matched_files;
+        @paths = $ct->find_matched_files;
     }
     elsif ($svn_files) {
         require Code::TidyAll::SVN::Util;
-        @files = Code::TidyAll::SVN::Util::svn_uncommitted_files( $ct->root_dir );
+        @paths = Code::TidyAll::SVN::Util::svn_uncommitted_files( $ct->root_dir );
     }
     elsif ($git_files) {
         require Code::TidyAll::Git::Util;
-        @files = Code::TidyAll::Git::Util::git_uncommitted_files( $ct->root_dir );
+        @paths = Code::TidyAll::Git::Util::git_uncommitted_files( $ct->root_dir );
     }
 }
-elsif ( @files = @ARGV ) {
-    $conf_file ||= $tidyall_class->find_conf_file( \@conf_names, dirname( $files[0] ) );
+elsif ( @paths = @ARGV ) {
+    $conf_file ||= $tidyall_class->find_conf_file( \@conf_names, dirname( $paths[0] ) );
     $ct = $tidyall_class->new_from_conf_file( $conf_file, %params );
 }
 else {
@@ -127,14 +127,9 @@ else {
     usage();
 }
 
-if ($list) {
-    $ct->list_files(@files);
-}
-else {
-    my @results = $ct->process_files(@files);
-    my $status = ( grep { $_->error } @results ) ? 1 : 0;
-    exit($status);
-}
+my @results = $ct->process_paths(@paths);
+my $status = ( grep { $_->error } @results ) ? 1 : 0;
+exit($status);
 
 sub handle_pipe {
     my ($pipe_filename) = @_;
