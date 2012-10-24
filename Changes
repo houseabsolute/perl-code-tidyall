@@ -2,7 +2,7 @@ Revision history for Code-TidyAll
 
 ** denotes an incompatible change
 
-0.17  Oct 22, 2012
+0.17  Oct 24, 2012
 
 * Improvements
   - ** Rename API method process_files to more accurate process_paths
