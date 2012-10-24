@@ -1,3 +1,4 @@
+.tidyall.d
 NOTES
 TODO
 bench
@@ -7,4 +8,3 @@ htdocs
 release
 tmp
 z-backup
-.tidyall.d
