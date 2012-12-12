@@ -368,7 +368,7 @@ will be ignored and only the first word will be used for the plugin. This
 allows you to a list a plugin more than once, with different configuration each
 time.  For example, two different C<PerlCritic> configurations:
 
-    ; Be brtual on libraries
+    ; Be brutal on libraries
     ;
     [PerlCritic strict]
     select = lib/**/*.pm
