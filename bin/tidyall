@@ -716,8 +716,6 @@ ctrl-t or ,t).
 
 =item *
 
-=item *
-
 L<Code::TidyAll::SVN::Precommit|Code::TidyAll::SVN::Precommit> implements a
 subversion pre-commit hook that checks if all files are tidied and valid
 according to C<tidyall>, and rejects the commit if not.
