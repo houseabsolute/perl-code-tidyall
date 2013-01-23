@@ -81,7 +81,7 @@ tidyall'd
 
   In .git/hooks/pre-commit:
 
-    #!/usr/bin/perl
+    #!/usr/bin/env perl
     use strict;
     use warnings;
 
