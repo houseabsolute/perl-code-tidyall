@@ -82,10 +82,10 @@ tidyall'd
   In .git/hooks/pre-commit:
 
     #!/usr/bin/perl
-    use Code::TidyAll::Git::Precommit;
     use strict;
     use warnings;
-    
+
+    use Code::TidyAll::Git::Precommit;
     Code::TidyAll::Git::Precommit->check();
 
 =head1 DESCRIPTION
