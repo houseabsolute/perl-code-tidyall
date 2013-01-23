@@ -184,7 +184,7 @@ Commit your pre-commit script in C<git/hooks/pre-commit>
 
 =item *
 
-Add a setup script in C<git/setup.pl> containing
+Add a setup script in C<git/setup.sh> containing
 
     #!/bin/bash
     ln -s git/hooks/pre-commit .git/hooks/pre-commit
