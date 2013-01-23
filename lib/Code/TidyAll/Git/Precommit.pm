@@ -81,11 +81,11 @@ tidyall'd
 
   In .git/hooks/pre-commit:
 
-    #!/usr/bin/perl
-    use Code::TidyAll::Git::Precommit;
+    #!/usr/bin/env perl
     use strict;
     use warnings;
-    
+
+    use Code::TidyAll::Git::Precommit;
     Code::TidyAll::Git::Precommit->check();
 
 =head1 DESCRIPTION
@@ -184,10 +184,12 @@ Commit your pre-commit script in C<git/hooks/pre-commit>
 
 =item *
 
-Add a setup script in C<git/setup.pl> containing
+Add a setup script in C<git/setup.sh> containing
 
     #!/bin/bash
-    ln -s git/hooks/pre-commit .git/hooks/pre-commit
+    chmod +x git/hooks/pre-commit
+    cd .git/hooks
+    ln -s ../../git/hooks/pre-commit
 
 =item *
 
