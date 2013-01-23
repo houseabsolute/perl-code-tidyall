@@ -187,6 +187,7 @@ Commit your pre-commit script in C<git/hooks/pre-commit>
 Add a setup script in C<git/setup.sh> containing
 
     #!/bin/bash
+    chmod +x git/hooks/pre-commit
     cd .git/hooks
     ln -s ../../git/hooks/pre-commit
 
