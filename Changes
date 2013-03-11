@@ -9,6 +9,7 @@ Revision history for Code-TidyAll
 
 * Fixes
   - Fix recursive processing of directories (Mark Risman)
+  - Improve git precommit setup script - https://github.com/jonswar/perl-code-tidyall/pull/10 (Olaf Anders)
 
 0.16  Oct 22, 2012
 
