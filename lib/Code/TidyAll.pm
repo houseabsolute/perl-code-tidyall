@@ -452,7 +452,6 @@ sub _small_path {
 sub _file_sig {
     my ( $self, $file, $contents ) = @_;
     my $last_mod = ( stat($file) )[9];
-    $contents = read_file($file) if !defined($contents);
     return $self->_sig( [ $self->base_sig, $last_mod, $contents ] );
 }
 
@@ -513,10 +512,6 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
     # then...
 
     $ct->process_paths($file1, $file2);
-
-    # or
-
-    $ct->process_all();
 
 =head1 DESCRIPTION
 
@@ -588,10 +583,6 @@ C<backup_ttl> here).
 
 =over
 
-=item process_all
-
-Process all files; this implements the C<tidyall -a> option.
-
 =item process_paths (path, ...)
 
 Call L</process_file> on each file; descend recursively into each directory if
@@ -644,6 +635,10 @@ empty list if no plugins apply.
 Class method. Start in the I<start_dir> and work upwards, looking for one of
 the I<conf_names>.  Return the pathname if found or throw an error if not
 found.
+
+=item find_matched_files
+
+Returns a list of sorted files that match at least one plugin in configuration.
 
 =back
 
