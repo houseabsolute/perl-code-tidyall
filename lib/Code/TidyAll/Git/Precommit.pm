@@ -176,11 +176,21 @@ yourself or your developers as follows:
 
 =item *
 
-Create a directory called C<git> at the top of your repo (note no dot prefix)
+Create a directory called C<git/hooks> at the top of your repo (note no dot prefix).
+
+    mkdir -p git/hooks
 
 =item *
 
-Commit your pre-commit script in C<git/hooks/pre-commit>
+Commit your pre-commit script in C<git/hooks/pre-commit> containing:
+
+    #!/usr/bin/env perl
+
+    use strict;
+    use warnings;
+
+    use Code::TidyAll::Git::Precommit;
+    Code::TidyAll::Git::Precommit->check();
 
 =item *
 
@@ -193,7 +203,7 @@ Add a setup script in C<git/setup.sh> containing
 
 =item *
 
-Run C<git/setup.pl> (or tell your developers to run it) once for each new clone
+Run C<git/setup.sh> (or tell your developers to run it) once for each new clone
 of the repo
 
 =back
