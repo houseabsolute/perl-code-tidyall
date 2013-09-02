@@ -176,7 +176,8 @@ yourself or your developers as follows:
 
 =item *
 
-Create a directory called C<git/hooks> at the top of your repo (note no dot prefix).
+Create a directory called C<git/hooks> at the top of your repo (note no dot
+prefix).
 
     mkdir -p git/hooks
 
