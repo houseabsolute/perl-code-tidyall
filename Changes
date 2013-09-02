@@ -4,6 +4,9 @@ Revision history for Code-TidyAll
 
 0.18  Mar 11, 2013
 
+* Fixes
+  - Fix Test::Code::TidyAll::tidyall_ok - https://github.com/jonswar/perl-code-tidyall/issues/12 (Adam Taylor)
+
 0.17  Mar 11, 2013
 
 * Improvements
