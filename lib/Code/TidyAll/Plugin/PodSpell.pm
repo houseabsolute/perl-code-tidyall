@@ -20,8 +20,9 @@ sub validate_file {
 
     my ($output);
     my @cmd = ( $self->ispell_cmd, shellwords( $self->ispell_argv ), "-a" );
-    run3( \@cmd, \$text, \$output, \$error );
-    die $error if $error;
+    eval { run3( \@cmd, \$text, \$output, \$error ) };
+    $error = $@ if $@;
+    die "error running '" . join( " ", @cmd ) . "': " . $error if $error;
 
     my ( @errors, %seen );
     foreach my $line ( split( "\n", $output ) ) {
