@@ -5,6 +5,8 @@ bench
 data
 docs
 htdocs
+perltidy.LOG
 release
 tmp
 z-backup
+Perl
