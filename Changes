@@ -2,7 +2,7 @@ Revision history for Code-TidyAll
 
 ** denotes an incompatible change
 
-0.18  Sep 2, 2013
+0.18  Sep 21, 2013
 
 * Fixes
   - Fix Test::Code::TidyAll::tidyall_ok - https://github.com/jonswar/perl-code-tidyall/issues/12 (Adam Taylor)
