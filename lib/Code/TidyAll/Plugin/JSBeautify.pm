@@ -1,5 +1,6 @@
 package Code::TidyAll::Plugin::JSBeautify;
-use IPC::System::Simple qw(run);
+use Capture::Tiny qw(capture_merged);
+use Code::TidyAll::Util qw(write_file);
 use Moo;
 use Try::Tiny;
 extends 'Code::TidyAll::Plugin';
@@ -10,7 +11,9 @@ sub transform_file {
     my ( $self, $file ) = @_;
 
     try {
-        run( sprintf( "%s --replace %s %s", $self->cmd, $self->argv, $file ) );
+        my $cmd = join( " ", $self->cmd, $self->argv, $file );
+        my $output = capture_merged { system($cmd) };
+        write_file( $file, $output );
     }
     catch {
         die sprintf( "%s exited with error - possibly bad arg list '%s'", $self->cmd, $self->argv );
