@@ -1,5 +1,6 @@
 .tidyall.d
 NOTES
+Perl
 TODO
 bench
 data
@@ -9,4 +10,3 @@ perltidy.LOG
 release
 tmp
 z-backup
-Perl
