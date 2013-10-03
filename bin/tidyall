@@ -256,11 +256,11 @@ L<jslint|Code::TidyAll::Plugin::JSLint>
 
 =item *
 
-CSS: L<cssunminifier|Code::TidyAll::Plugin::CSUnminifier>
+CSS: L<cssunminifier|Code::TidyAll::Plugin::CSSUnminifier>
 
 =item *
 
-PHP: L<phpcs|Code::TidyAll::Plugin::CSUnminifier>
+PHP: L<phpcs|Code::TidyAll::Plugin::PHPCodeSniffer>
 
 =item *
 
