@@ -256,6 +256,10 @@ L<jslint|Code::TidyAll::Plugin::JSLint>
 
 =item *
 
+JSON: L<JSON|Code::TidyAll::Plugin::JSON>
+
+=item *
+
 CSS: L<cssunminifier|Code::TidyAll::Plugin::CSUnminifier>
 
 =item *
@@ -711,7 +715,7 @@ L<etc/editors/tidyall.el|https://raw.github.com/jonswar/perl-code-tidyall/master
 and
 L<etc/editors/tidyall.vim|https://raw.github.com/jonswar/perl-code-tidyall/master/etc/editors/tidyall.vim>
 in this distribution contains Emacs and Vim commands for running C<tidyall> on
-the current buffer. You can assign this to the keystroke of your choice (e.g. 
+the current buffer. You can assign this to the keystroke of your choice (e.g.
 ctrl-t or ,t).
 
 =item *
