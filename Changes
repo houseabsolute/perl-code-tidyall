@@ -4,6 +4,9 @@ Revision history for Code-TidyAll
 
 0.19  Sep 21, 2013
 
+* Plugins
+  - Add JSON plugin (Gregory Oschwald)
+
 0.18  Sep 21, 2013
 
 * Fixes
