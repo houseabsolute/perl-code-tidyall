@@ -1,5 +1,6 @@
 API
 CPAN
+JSON
 JavaScript
 Misc
 PHP
@@ -12,6 +13,7 @@ TIDYALL
 Thalhammer
 Vim
 argv
+ascii
 atomicity
 cmd
 conf
