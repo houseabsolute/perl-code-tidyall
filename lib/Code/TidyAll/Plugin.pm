@@ -153,7 +153,7 @@ Code::TidyAll::Plugin - Create plugins for tidying or validating code
     extends 'Code::TidyAll::Plugin';
     
     sub transform_source {
-        my ( $self, source ) = @_;
+        my ( $self, $source ) = @_;
         ...
         return $source;
     }
