@@ -1,4 +1,5 @@
 package Code::TidyAll::Util;
+
 use Cwd qw(realpath);
 use Data::Dumper;
 use File::Basename;

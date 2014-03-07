@@ -1,4 +1,5 @@
 package Code::TidyAll::t::SVN;
+
 use Capture::Tiny qw(capture_stdout capture_stderr capture);
 use Code::TidyAll::SVN::Precommit;
 use Code::TidyAll::SVN::Util qw(svn_uncommitted_files);

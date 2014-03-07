@@ -1,4 +1,5 @@
 package Code::TidyAll::t::Plugin::JSBeautify;
+
 use Test::Class::Most parent => 'Code::TidyAll::t::Plugin';
 
 sub test_main : Tests {

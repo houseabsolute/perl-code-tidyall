@@ -1,4 +1,5 @@
 package Code::TidyAll::t::Conf;
+
 use Code::TidyAll;
 use Code::TidyAll::Util qw(dirname tempdir_simple write_file);
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';

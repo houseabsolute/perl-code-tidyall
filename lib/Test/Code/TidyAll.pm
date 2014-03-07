@@ -1,4 +1,5 @@
 package Test::Code::TidyAll;
+
 use IPC::System::Simple qw(run);
 use Code::TidyAll;
 use Test::Builder;

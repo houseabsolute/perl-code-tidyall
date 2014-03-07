@@ -1,4 +1,5 @@
 package Code::TidyAll::t::Git;
+
 use Capture::Tiny qw(capture_stdout capture_stderr capture);
 use Code::TidyAll::Git::Util qw(git_uncommitted_files);
 use Code::TidyAll::Util qw(dirname mkpath pushd read_file realpath tempdir_simple write_file);

@@ -1,4 +1,5 @@
 package Code::TidyAll::Test::Plugin::ReverseFoo;
+
 use Code::TidyAll::Util qw(read_file write_file);
 use Moo;
 extends 'Code::TidyAll::Plugin';

@@ -1,4 +1,5 @@
 package Code::TidyAll::Test::Plugin::AToZ;
+
 use Moo;
 extends 'Code::TidyAll::Plugin';
 

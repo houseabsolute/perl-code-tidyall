@@ -1,4 +1,5 @@
 package Code::TidyAll::Plugin::MasonTidy;
+
 use Mason::Tidy;
 use Mason::Tidy::App;
 use Moo;

@@ -1,4 +1,5 @@
 package Code::TidyAll::Git::Util;
+
 use Cwd qw(realpath);
 use Code::TidyAll::Util qw(pushd uniq);
 use IPC::System::Simple qw(capturex);

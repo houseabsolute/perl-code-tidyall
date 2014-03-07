@@ -1,4 +1,5 @@
 package Code::TidyAll::Plugin::JSHint;
+
 use Code::TidyAll::Util qw(tempdir_simple write_file);
 use Capture::Tiny qw(capture_merged);
 use Moo;

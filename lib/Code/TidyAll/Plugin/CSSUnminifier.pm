@@ -1,4 +1,5 @@
 package Code::TidyAll::Plugin::CSSUnminifier;
+
 use IPC::System::Simple qw(run);
 use Moo;
 extends 'Code::TidyAll::Plugin';

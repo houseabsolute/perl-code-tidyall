@@ -1,4 +1,5 @@
 package Code::TidyAll::Plugin::PodChecker;
+
 use Capture::Tiny qw(capture_merged);
 use Pod::Checker;
 use Moo;

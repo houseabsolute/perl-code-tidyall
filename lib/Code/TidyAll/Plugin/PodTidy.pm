@@ -1,4 +1,5 @@
 package Code::TidyAll::Plugin::PodTidy;
+
 use Capture::Tiny qw(capture_merged);
 use Pod::Tidy;
 use Moo;

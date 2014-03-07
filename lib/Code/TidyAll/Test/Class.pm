@@ -1,4 +1,5 @@
 package Code::TidyAll::Test::Class;
+
 use Test::Class::Most;
 use strict;
 use warnings;

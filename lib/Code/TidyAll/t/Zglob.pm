@@ -1,4 +1,5 @@
 package Code::TidyAll::t::Zglob;
+
 use File::Zglob;
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 use Code::TidyAll::Util::Zglob qw(zglob_to_regex);

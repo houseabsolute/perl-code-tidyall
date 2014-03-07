@@ -1,4 +1,5 @@
 package Code::TidyAll;
+
 use Cwd qw(realpath);
 use Code::TidyAll::Config::INI::Reader;
 use Code::TidyAll::Cache;

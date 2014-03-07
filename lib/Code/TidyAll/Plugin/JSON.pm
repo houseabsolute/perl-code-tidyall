@@ -41,8 +41,8 @@ Code::TidyAll::Plugin::JSON - use the JSON module with tidyall
 
 =head1 DESCRIPTION
 
-Uses L<JSON> to format JSON files. Files are put into a canonical format
-with the keys of objects sorted.
+Uses L<JSON> to format JSON files. Files are put into a canonical format with
+the keys of objects sorted.
 
 =head1 CONFIGURATION
 

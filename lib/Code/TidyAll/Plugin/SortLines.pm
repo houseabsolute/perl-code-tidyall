@@ -1,4 +1,5 @@
 package Code::TidyAll::Plugin::SortLines;
+
 use Moo;
 extends 'Code::TidyAll::Plugin';
 

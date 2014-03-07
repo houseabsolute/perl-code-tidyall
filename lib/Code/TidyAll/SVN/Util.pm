@@ -1,4 +1,5 @@
 package Code::TidyAll::SVN::Util;
+
 use Cwd qw(realpath);
 use IPC::System::Simple qw(capturex);
 use strict;

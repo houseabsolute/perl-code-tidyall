@@ -1,4 +1,5 @@
 package Code::TidyAll::Plugin::PHPCodeSniffer;
+
 use IPC::System::Simple qw(runx EXIT_ANY);
 use Capture::Tiny qw(capture_merged);
 use Moo;

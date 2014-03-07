@@ -1,4 +1,5 @@
 package Code::TidyAll::Plugin::PerlCritic;
+
 use Capture::Tiny qw(capture_merged);
 use Moo;
 extends 'Code::TidyAll::Plugin';

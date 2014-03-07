@@ -1,4 +1,5 @@
 package Code::TidyAll::Plugin::PodSpell;
+
 use Code::TidyAll::Util qw(basename uniq);
 use Capture::Tiny qw();
 use IPC::System::Simple qw();

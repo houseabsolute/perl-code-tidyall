@@ -1,4 +1,5 @@
 package Code::TidyAll::Git::Prereceive;
+
 use Code::TidyAll;
 use Code::TidyAll::Util qw(dirname realpath tempdir_simple read_file write_file);
 use Capture::Tiny qw(capture);

@@ -1,4 +1,5 @@
 package Code::TidyAll::Result;
+
 use Moo;
 
 has 'error'        => ( is => 'ro' );

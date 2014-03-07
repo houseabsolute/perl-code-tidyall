@@ -1,4 +1,5 @@
 package Code::TidyAll::Test::Plugin::CheckUpper;
+
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
