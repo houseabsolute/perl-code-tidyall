@@ -108,3 +108,5 @@
                         (split-window-vertically))
                       (set-window-buffer (next-window) error-buffer))))
              (delete-file error-file))))))
+
+(provide 'tidyall)
