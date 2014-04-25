@@ -14,7 +14,7 @@ sub transform_source {
     my $self   = shift;
     my $source = shift;
 
-    my $json = JSON->new->relaxed->pretty->canonical;
+    my $json = JSON->new->utf8->relaxed->pretty->canonical;
 
     $json = $json->ascii if $self->ascii;
 
