@@ -2,7 +2,7 @@ Revision history for Code-TidyAll
 
 ** denotes an incompatible change
 
-0.20  Mar 6, 2014
+0.20  May 18, 2014
 
 * Fixes
   - Fix option handling implentation and documentation for Test::Code::TidyAll::tidyall_ok - https://github.com/jonswar/perl-code-tidyall/issues/18 (Olad Alders)
