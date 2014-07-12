@@ -424,7 +424,7 @@ overrides C<select>. e.g.
 
 A list of modes, separated by whitespace. e.g.
 
-    only_modes = tests cli
+    only_modes = test cli
 
 The plugin will I<only> run if one of these modes is passed to C<tidyall> via
 C<-m> or C<--mode>.
@@ -670,7 +670,7 @@ command-line invocation:
 
     [PerlCritic]
     select = lib/**/*.pm
-    only_modes = tests cli
+    only_modes = test cli
     ...
 
 Or you could specify that it be run in all modes I<except> the editor:
