@@ -30,8 +30,8 @@ sub tidyall_ok {
             $test->ok( 1, $desc );
         }
         else {
-            $test->diag( $result->error );
             $test->ok( 0, $desc );
+            $test->diag( $result->error );
         }
     }
 }
