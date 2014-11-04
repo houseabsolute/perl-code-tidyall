@@ -106,7 +106,7 @@ Class method. Check that all files being added or modified in this commit are
 tidied and valid according to L<tidyall|tidyall>. If not, then the entire
 commit is rejected and the reason(s) are output to the client. e.g.
 
-    % git commit -m "fixups" CHI.pm CHI/Driver.pm 
+    % git commit -m "fixups" CHI.pm CHI/Driver.pm
     2 files did not pass tidyall check
     lib/CHI.pm: *** 'PerlTidy': needs tidying
     lib/CHI/Driver.pm: *** 'PerlCritic': Code before strictures are enabled

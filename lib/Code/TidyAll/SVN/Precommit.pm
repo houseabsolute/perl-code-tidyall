@@ -175,7 +175,7 @@ __END__
     use Log::Any::Adapter (File => "/path/to/hooks/logs/tidyall.log");
     use strict;
     use warnings;
-    
+
     Code::TidyAll::SVN::Precommit->check();
 
 =head1 DESCRIPTION
@@ -195,7 +195,7 @@ Class method. Check that all files being added or modified in this commit are
 tidied and valid according to L<tidyall|tidyall>. If not, then the entire
 commit is rejected and the reason(s) are output to the client. e.g.
 
-    % svn commit -m "fixups" CHI.pm CHI/Driver.pm 
+    % svn commit -m "fixups" CHI.pm CHI/Driver.pm
     Sending        CHI/Driver.pm
     Sending        CHI.pm
     Transmitting file data ..svn: Commit failed (details follow):
@@ -209,11 +209,11 @@ commit is rejected and the reason(s) are output to the client. e.g.
 In an emergency the hook can be bypassed by prefixing the comment with "NO
 TIDYALL", e.g.
 
-    % svn commit -m "NO TIDYALL - this is an emergency!" CHI.pm CHI/Driver.pm 
+    % svn commit -m "NO TIDYALL - this is an emergency!" CHI.pm CHI/Driver.pm
     Sending        CHI/Driver.pm
     Sending        CHI.pm
-    Transmitting file data .                                                              
-    Committed revision 7562.  
+    Transmitting file data .
+    Committed revision 7562.
 
 The configuration file (C<tidyall.ini> or C<.tidyallrc>) must be checked into
 svn. For each file, the hook will look upwards from the file's repo location

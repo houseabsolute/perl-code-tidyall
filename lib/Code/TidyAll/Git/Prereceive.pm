@@ -155,7 +155,7 @@ __END__
     use Code::TidyAll::Git::Prereceive;
     use strict;
     use warnings;
-    
+
     Code::TidyAll::Git::Prereceive->check();
 
 
@@ -198,10 +198,10 @@ the reason(s) are output to the client. e.g.
     % git push
     Counting objects: 9, done.
     ...
-    remote: [checked] lib/CHI/Util.pm        
-    remote: Code before strictures are enabled on line 13 [TestingAndDebugging::RequireUseStrict]        
-    remote: 
-    remote: 1 file did not pass tidyall check        
+    remote: [checked] lib/CHI/Util.pm
+    remote: Code before strictures are enabled on line 13 [TestingAndDebugging::RequireUseStrict]
+    remote:
+    remote: 1 file did not pass tidyall check
     To ...
      ! [remote rejected] master -> master (pre-receive hook declined)
 
@@ -213,12 +213,12 @@ commits 3 consecutive times (configurable via L</allow_repeated_push>):
 
     % git push
     ...
-    remote: 1 file did not pass tidyall check        
+    remote: 1 file did not pass tidyall check
 
     % git push
     ...
     *** Identical push seen 2 times
-    remote: 1 file did not pass tidyall check        
+    remote: 1 file did not pass tidyall check
 
     % git push
     ...

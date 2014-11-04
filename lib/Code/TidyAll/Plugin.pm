@@ -151,7 +151,7 @@ __END__
     package Code::TidyAll::Plugin::SomeTidier;
     use Moo;
     extends 'Code::TidyAll::Plugin';
-    
+
     sub transform_source {
         my ( $self, $source ) = @_;
         ...
@@ -162,7 +162,7 @@ __END__
     package Code::TidyAll::Plugin::SomeValidator;
     use Moo;
     extends 'Code::TidyAll::Plugin';
-    
+
     sub validate_file {
         my ( $self, $file ) = @_;
         die "not valid" if ...;
@@ -203,7 +203,7 @@ as parameters. e.g. given
 then L<Code::TidyAll::Plugin::PerlCritic|Code::TidyAll::Plugin::PerlCritic>
 would be constructed with parameters
 
-    select => 'lib/**/*.pm', 
+    select => 'lib/**/*.pm',
     ignore = 'lib/UtterHack.pm',
     argv = '-severity 3'
 
