@@ -1,4 +1,4 @@
-package Pod::Weaver::Section::SeeAlsoCodeTidyAll;
+package inc::Pod::Weaver::Section::SeeAlsoCodeTidyAll;
 
 use Moose;
 with 'Pod::Weaver::Role::Section';
