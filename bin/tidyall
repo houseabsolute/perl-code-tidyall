@@ -705,6 +705,13 @@ L<Time::Duration::Parse|Time::Duration::Parse>. It defaults to "1h" (1 hour).
 
 You can turn off backups with C<--no-backups>.
 
+=head1 "MISSING" PREREQS
+
+The C<Code::TidyAll> distribution intentionally does not depend on the prereqs
+needed for each plugin. This means that if you want to use the
+L<perltidy|Code::TidyAll::Plugin::PerlTidy>, you must install the
+L<Perl::Tidy> module manually.
+
 =head1 RELATED TOOLS
 
 =over
