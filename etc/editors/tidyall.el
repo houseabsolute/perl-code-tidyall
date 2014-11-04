@@ -106,4 +106,7 @@
                         (insert-file-contents error-file))
                       (when (< (length (window-list)) 2)
                         (split-window-vertically))
-                      (set-window-buffer (next-window) error-buffer)))))))))
+                      (set-window-buffer (next-window) error-buffer))))
+             (delete-file error-file))))))
+
+(provide 'tidyall)
