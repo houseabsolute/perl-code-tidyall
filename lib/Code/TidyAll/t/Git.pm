@@ -80,8 +80,8 @@ sub test_git : Tests {
     #
     my $shared_dir = "$temp_dir/shared";
     my $clone_dir  = "$temp_dir/clone";
-    run( "git", "clone", "--bare", $work_dir, $shared_dir );
-    run( "git", "clone", $shared_dir, $clone_dir );
+    run( "git", "clone", "-q", "--bare", $work_dir, $shared_dir );
+    run( "git", "clone", "-q", $shared_dir, $clone_dir );
     chdir($clone_dir);
     $committed->();
 
