@@ -139,7 +139,7 @@ sub test_git : Tests {
 
 }
 
-$precommit_hook_template = '#!/usr/bin/perl
+$precommit_hook_template = '#!' . $^X . "\n" . <<'EOF';
 use lib qw(%s);
 use Code::TidyAll::Git::Precommit;
 use strict;
@@ -148,20 +148,20 @@ use warnings;
 Code::TidyAll::Git::Precommit->check(
     tidyall_options => { verbose => 1 }
 );
-';
+EOF
 
-$prereceive_hook_template = '#!/usr/bin/perl
+$prereceive_hook_template = '#!' . $^X . "\n" . <<'EOF';
 use lib qw(%s);
 use Code::TidyAll::Git::Prereceive;
 use strict;
 use warnings;
 
 Code::TidyAll::Git::Prereceive->check();
-';
+EOF
 
-$tidyall_ini_template = '
+$tidyall_ini_template = <<'EOF';
 [+Code::TidyAll::Test::Plugin::UpperText]
 select = **/*.txt
-';
+EOF
 
 1;
