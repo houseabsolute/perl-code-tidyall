@@ -1,14 +1,19 @@
 package inc::Pod::Weaver::Section::SeeAlsoCodeTidyAll;
 
+use namespace::autoclean;
+
 use Moose;
 with 'Pod::Weaver::Role::Section';
 
 use Moose::Autobox;
+use Pod::Elemental::Selectors;
 
-# Add "SEE ALSO: CodeTidyAll"
+# Add "SEE ALSO: Code::TidyAll"
 
 sub weave_section {
     my ( $self, $document, $input ) = @_;
+
+    return if $input->{filename} =~ m{\QCode/TidyAll.pm};
 
     my $idc = $input->{pod_document}->children;
     for ( my $i = 0 ; $i < $idc->length ; $i++ ) {
@@ -35,5 +40,4 @@ sub weave_section {
 
 __PACKAGE__->meta->make_immutable;
 
-no Moose;
 1;
