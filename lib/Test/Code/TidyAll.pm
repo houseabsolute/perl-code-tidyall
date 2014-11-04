@@ -20,7 +20,13 @@ sub tidyall_ok {
         $conf_file = Code::TidyAll->find_conf_file( \@conf_names, "." );
     }
     my $ct =
-      Code::TidyAll->new_from_conf_file( $conf_file, check_only => 1, mode => 'test', %options );
+    Code::TidyAll->new_from_conf_file(
+        $conf_file,
+        quiet      => 1,
+        check_only => 1,
+        mode       => 'test',
+        %options,
+    );
     my @files = $ct->find_matched_files;
     $test->plan( tests => scalar(@files) );
     foreach my $file (@files) {
@@ -30,8 +36,8 @@ sub tidyall_ok {
             $test->ok( 1, $desc );
         }
         else {
-            $test->diag( $result->error );
             $test->ok( 0, $desc );
+            $test->diag( $result->error );
         }
     }
 }
