@@ -25,7 +25,6 @@ install:
   - sudo apt-get update
   - sudo apt-get install ispell
   - cpan-install ExtUtils::MakeMaker~6.68 --deps
-  - cpan-install JSON Mason::Tidy Mason::Tidy::App Perl::Tidy Pod::Checker Pod::Spell Pod::Tidy SVN::Look
 script:
   - perl Makefile.PL
   - make
