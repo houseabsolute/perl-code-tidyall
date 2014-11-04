@@ -480,6 +480,8 @@ sub _error_result {
 
 1;
 
+#ABSTRACT: Tidy and validate code in many ways at once
+
 __END__
 
 =pod
