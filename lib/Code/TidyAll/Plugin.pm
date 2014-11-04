@@ -139,13 +139,12 @@ sub matches_path {
 }
 
 1;
+
+# ABSTRACT: Create plugins for tidying or validating code
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Plugin - Create plugins for tidying or validating code
 
 =head1 SYNOPSIS
 

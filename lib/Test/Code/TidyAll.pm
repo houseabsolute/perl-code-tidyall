@@ -38,12 +38,11 @@ sub tidyall_ok {
 
 1;
 
+# ABSTRACT: Check that all your files are tidy and valid according to tidyall
+
 __END__
 
-=head1 NAME
-
-Test::Code::TidyAll - check that all your files are tidy and valid according to
-tidyall
+=pod
 
 =head1 SYNOPSIS
 

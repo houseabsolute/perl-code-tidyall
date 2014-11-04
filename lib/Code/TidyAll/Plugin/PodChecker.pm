@@ -21,13 +21,11 @@ sub validate_file {
 
 1;
 
+# ABSTRACT: Use podchecker with tidyall
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Plugin::PodChecker - use podchecker with tidyall
 
 =head1 SYNOPSIS
 

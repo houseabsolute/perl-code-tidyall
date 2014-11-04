@@ -24,13 +24,11 @@ sub transform_file {
 
 1;
 
+# ABSTRACT: Use podtidy with tidyall
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Plugin::PodTidy - use podtidy with tidyall
 
 =head1 SYNOPSIS
 

@@ -11,13 +11,11 @@ sub transform_source {
 
 1;
 
+# ABSTRACT: Sort the lines in a file
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Plugin::SortLines - sort lines of a file
 
 =head1 SYNOPSIS
 

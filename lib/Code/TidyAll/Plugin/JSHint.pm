@@ -41,13 +41,11 @@ sub validate_file {
 
 1;
 
+# ABSTRACT: Use jshint with tidyall
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Plugin::JSHint - use jshint with tidyall
 
 =head1 SYNOPSIS
 

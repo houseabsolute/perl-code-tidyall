@@ -16,13 +16,11 @@ sub validate_file {
 
 1;
 
+# ABSTRACT: Use perlcritic with tidyall
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Plugin::PerlCritic - use perlcritic with tidyall
 
 =head1 SYNOPSIS
 

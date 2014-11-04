@@ -69,14 +69,11 @@ sub check {
 
 1;
 
+# ABSTRACT: Git pre-commit hook that requires files to be tidyall'd
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Git::Precommit - Git pre-commit hook that requires files to be
-tidyall'd
 
 =head1 SYNOPSIS
 

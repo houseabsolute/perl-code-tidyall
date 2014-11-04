@@ -141,14 +141,11 @@ sub check_repeated_push {
 
 1;
 
+# ABSTRACT: Git pre-receive hook that requires files to betidyall'd
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Git::Prereceive - Git pre-receive hook that requires files to be
-tidyall'd
 
 =head1 SYNOPSIS
 

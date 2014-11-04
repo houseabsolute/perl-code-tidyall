@@ -16,13 +16,11 @@ sub validate_file {
 
 1;
 
+# ABSTRACT: Use jslint with tidyall
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Plugin::JSLint - use jslint with tidyall
 
 =head1 SYNOPSIS
 

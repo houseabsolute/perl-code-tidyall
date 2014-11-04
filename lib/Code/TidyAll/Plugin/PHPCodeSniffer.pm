@@ -21,13 +21,11 @@ sub validate_file {
 
 1;
 
+# ABSTRACT: Use phpcs with tidyall
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Plugin::PHPCodeSniffer - use phpcs with tidyall
 
 =head1 VERSION
 

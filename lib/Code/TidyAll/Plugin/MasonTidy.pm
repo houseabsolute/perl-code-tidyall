@@ -19,13 +19,11 @@ sub transform_source {
 
 1;
 
+# ABSTRACT: Use masontidy with tidyall
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Plugin::MasonTidy - use masontidy with tidyall
 
 =head1 SYNOPSIS
 

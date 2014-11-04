@@ -480,15 +480,11 @@ sub _error_result {
 
 1;
 
-#ABSTRACT: Tidy and validate code in many ways at once
+# ABSTRACT: Engine for tidyall, your all-in-one code tidier and validator
 
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
 =head1 SYNOPSIS
 

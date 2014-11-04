@@ -160,14 +160,11 @@ sub cat_file {
 
 1;
 
+# ABSTRACT: Subversion pre-commit hook that requires files to be tidyall'd
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::SVN::Precommit - Subversion pre-commit hook that requires files
-to be tidyall'd
 
 =head1 SYNOPSIS
 

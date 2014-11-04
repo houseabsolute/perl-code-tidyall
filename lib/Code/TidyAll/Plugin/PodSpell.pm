@@ -44,13 +44,11 @@ sub validate_file {
 
 1;
 
+# ABSTRACT: Use Pod::Spell + ispell with tidyall
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Plugin::PodSpell - use Pod::Spell + ispell with tidyall
 
 =head1 SYNOPSIS
 

@@ -23,13 +23,11 @@ sub transform_file {
 
 1;
 
+# ABSTRACT: Use js-beautify with tidyall
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Plugin::JSBeautify - use js-beautify with tidyall
 
 =head1 SYNOPSIS
 
