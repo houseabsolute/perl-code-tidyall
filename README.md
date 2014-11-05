@@ -1,6 +1,6 @@
 # VERSION
 
-version 0.20
+version 0.21
 
 # SYNOPSIS
 
@@ -45,7 +45,7 @@ You can call this API from your own program instead of executing `tidyall`.
 
 - new\_with\_conf\_file ($conf\_file, %params)
 
-    Takes a conf file path, followed optionally by a set of key/value parameters. 
+    Takes a conf file path, followed optionally by a set of key/value parameters.
     Reads parameters out of the conf file and combines them with the passed
     parameters (the latter take precedence), and calls the regular constructor.
 
@@ -124,6 +124,7 @@ You can call this API from your own program instead of executing `tidyall`.
 
 # CONTRIBUTORS
 
+- George Hartzell <georgewh@gene.com>
 - Gregory Oschwald <goschwald@maxmind.com>
 - Joe Crotty <joe.crotty@returnpath.net>
 - Olaf Alders <olaf@wundersolutions.com>
@@ -131,7 +132,7 @@ You can call this API from your own program instead of executing `tidyall`.
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 - 2014 by David Rolsky.
+This software is copyright (c) 2011 - 2014 by Jonathan Swartz.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

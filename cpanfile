@@ -18,10 +18,8 @@ requires "IPC::System::Simple" => "0";
 requires "List::MoreUtils" => "0";
 requires "Log::Any" => "0";
 requires "Moo" => "0";
-requires "SVN::Look" => "0";
 requires "Scalar::Util" => "0";
 requires "Test::Builder" => "0";
-requires "Test::Class::Most" => "0";
 requires "Text::ParseWords" => "0";
 requires "Time::Duration::Parse" => "0";
 requires "Try::Tiny" => "0";
@@ -34,9 +32,15 @@ requires "warnings" => "0";
 on 'test' => sub {
   requires "ExtUtils::MakeMaker" => "0";
   requires "File::Spec" => "0";
+  requires "File::Which" => "0";
+  requires "File::pushd" => "0";
   requires "IO::Handle" => "0";
   requires "IPC::Open3" => "0";
+  requires "Test::Class::Most" => "0";
+  requires "Test::Differences" => "0";
   requires "Test::More" => "0.88";
+  requires "autodie" => "0";
+  requires "lib" => "0";
   requires "perl" => "5.006";
 };
 
@@ -49,13 +53,23 @@ on 'configure' => sub {
 };
 
 on 'develop' => sub {
-  requires "Pod::Coverage::TrustPod" => "0";
+  requires "Code::TidyAll::Plugin::Perl::AlignMooseAttributes" => "0";
+  requires "Code::TidyAll::Plugin::Perl::IgnoreMethodSignaturesSimple" => "0";
+  requires "File::Which" => "0";
+  requires "File::pushd" => "0";
+  requires "JSON" => "0";
+  requires "Mason::Tidy" => "0";
+  requires "Mason::Tidy::App" => "0";
+  requires "Perl::Tidy" => "0";
+  requires "Pod::Checker" => "0";
+  requires "Pod::Spell" => "0";
+  requires "Pod::Tidy" => "0";
+  requires "SVN::Look" => "0";
   requires "Test::CPAN::Changes" => "0.19";
+  requires "Test::Differences" => "0";
   requires "Test::EOL" => "0";
-  requires "Test::More" => "0.88";
+  requires "Test::More" => "0";
   requires "Test::NoTabs" => "0";
   requires "Test::Pod" => "1.41";
-  requires "Test::Pod::Coverage" => "1.08";
   requires "Test::Spelling" => "0.12";
-  requires "Test::Synopsis" => "0";
 };
