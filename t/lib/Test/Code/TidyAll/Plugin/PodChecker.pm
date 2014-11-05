@@ -11,7 +11,7 @@ sub test_main : Tests {
         desc      => 'ok',
     );
     $self->tidyall(
-        source       => '=head1 METHODS\n\n=over',
+        source       => '=head1 METHODS\n\n=over\n\n=item * foo\n\n',
         expect_error => qr/without closing =back/,
         desc         => 'error',
     );
