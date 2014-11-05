@@ -23,7 +23,7 @@ before_install:
   - cd $BUILD_DIR
 install:
   - sudo apt-get update
-  - sudo apt-get install ispell
+  - sudo apt-get install ispell nodejs php5-cli
   - cpan-install ExtUtils::MakeMaker~6.68 --deps
 script:
   - perl Makefile.PL
