@@ -1,5 +1,12 @@
 {{$NEXT}}
 
+[BUG FIXES]
+
+* Removed the compile test added in the last release. Many plugin modules
+  won't compile unless optional prereqs are manually installed first (such as
+  Perl::Critic, Perl::Tidy, etc.).
+
+
 0.21     2014-11-05
 
 [ENHANCEMENTS]
