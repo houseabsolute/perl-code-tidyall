@@ -13,6 +13,8 @@ my ( $precommit_hook_template, $tidyall_ini_template );
 sub test_svn : Tests {
     my ($self) = @_;
 
+    $self->require_executable('svn');
+
     my $temp_dir = tempdir_simple;
     my $repo_dir = "$temp_dir/repo";
     my $src_dir  = "$temp_dir/src";

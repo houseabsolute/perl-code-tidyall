@@ -5,6 +5,8 @@ use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
 sub test_main : Tests {
     my $self = shift;
 
+    $self->require_executable('cssunminifier');
+
     my $source = 'body {\nfont-family:helvetica;\nfont-size:15pt;\n}';
     $self->tidyall(
         source      => $source,

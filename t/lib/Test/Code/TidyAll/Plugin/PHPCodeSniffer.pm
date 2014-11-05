@@ -6,7 +6,13 @@ sub test_filename { 'foo.php' }
 
 sub test_main : Tests {
     my $self   = shift;
-    my $cmd    = '/usr/local/pear/bin/phpcs';
+
+    local $ENV{PATH} = $ENV{PATH};
+    $ENV{PATH} .= ':/usr/local/pear/bin'
+        unless $ENV{PATH} =~ q{/usr/local/pear/bin};
+
+    $self->require_executable('phpcs');
+
     my $source = '<?php function foo() { $bar = 5 } ?>';
 
     $self->tidyall(

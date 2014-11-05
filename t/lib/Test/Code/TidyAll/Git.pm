@@ -12,6 +12,8 @@ my ( $precommit_hook_template, $prereceive_hook_template, $tidyall_ini_template 
 sub test_git : Tests {
     my ($self) = @_;
 
+    $self->require_executable('git');
+
     my $temp_dir  = tempdir_simple;
     my $work_dir  = "$temp_dir/work";
     my $hooks_dir = "$work_dir/.git/hooks";

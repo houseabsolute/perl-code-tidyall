@@ -5,6 +5,8 @@ use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
 sub test_main : Tests {
     my $self = shift;
 
+    $self->require_executable('js-beautify');
+
     my $source = 'sp.toggleResult=function(id){foo(id)}';
     $self->tidyall(
         source      => $source,

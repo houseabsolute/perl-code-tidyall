@@ -8,7 +8,7 @@ sub test_filename { 'foo.js' }
 sub test_main : Tests {
     my $self = shift;
 
-    my $rc_file = $self->{root_dir} . "/jshint.json";
+    $self->require_executable('jshint');
 
     $self->tidyall(
         source    => 'var my_object = {};',
@@ -43,7 +43,10 @@ sub test_main : Tests {
         expect_error => qr/Expected \'{/,
         desc         => 'error - curly - options=camelcase,curly',
     );
+
+    my $rc_file = $self->{root_dir} . "/jshint.json";
     write_file( $rc_file, '{"camelcase": true}' );
+
     $self->tidyall(
         source       => 'var my_object = {};',
         conf         => { argv => "--config $rc_file" },

@@ -8,6 +8,8 @@ sub test_filename { 'foo.js' }
 sub test_main : Tests {
     my $self = shift;
 
+    $self->require_executable('jslint');
+
     $self->tidyall(
         source    => 'var my_object = {};',
         expect_ok => 1,
