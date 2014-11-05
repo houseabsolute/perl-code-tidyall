@@ -5,10 +5,14 @@ use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
 
 sub test_filename { 'foo.js' }
 
+sub _extra_path {
+    'node_modules/jshint/bin';
+}
+
 sub test_main : Tests {
     my $self = shift;
 
-    $self->require_executable('jshint');
+    $self->require_executable('node');
 
     $self->tidyall(
         source    => 'var my_object = {};',

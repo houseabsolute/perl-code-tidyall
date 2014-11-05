@@ -25,6 +25,10 @@ sub test_filename { 'foo.txt' }
 sub tidyall {
     my ( $self, %p ) = @_;
 
+    my $extra = $self->_extra_path();
+    local $ENV{PATH} = $ENV{PATH};
+    $ENV{PATH} .= q{:} . $extra if $extra;
+
     my $source = $p{source} || die "source required";
     my $desc   = $p{desc}   || $source;
     $desc =~ s/\n/\\n/g;
@@ -57,6 +61,10 @@ sub tidyall {
         is( $result->state, 'error', "state=error [$desc]" );
         like( $result->error || '', $expect_error, "error message [$desc]" );
     }
+}
+
+sub _extra_path {
+    return;
 }
 
 1;

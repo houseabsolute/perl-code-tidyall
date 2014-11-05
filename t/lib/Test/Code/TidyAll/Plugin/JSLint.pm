@@ -5,10 +5,14 @@ use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
 
 sub test_filename { 'foo.js' }
 
+sub _extra_path {
+    'node_modules/jslint/bin';
+}
+
 sub test_main : Tests {
     my $self = shift;
 
-    $self->require_executable('jslint');
+    $self->require_executable('node');
 
     $self->tidyall(
         source    => 'var my_object = {};',
@@ -21,7 +25,7 @@ sub test_main : Tests {
         desc         => 'error - bad indentation'
     );
     $self->tidyall(
-        source    => 'while (true) {\nvar i = 5;\n}',
+        source    => 'var i; while (true) {\ni = 5;\n}',
         conf      => { argv => '--white' },
         expect_ok => 1,
         desc      => 'ok - bad indentation, --white'

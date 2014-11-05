@@ -2,10 +2,14 @@ package Test::Code::TidyAll::Plugin::CSSUnminifier;
 
 use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
 
+sub _extra_path {
+    'node_modules/cssunminifier/bin';
+}
+
 sub test_main : Tests {
     my $self = shift;
 
-    $self->require_executable('cssunminifier');
+    $self->require_executable('node');
 
     my $source = 'body {\nfont-family:helvetica;\nfont-size:15pt;\n}';
     $self->tidyall(
