@@ -90,10 +90,10 @@ __END__
 
 This module implements a L<Git pre-commit
 hook|http://git-scm.com/book/en/Customizing-Git-Git-Hooks> that checks if all
-files are tidied and valid according to L<tidyall|tidyall>, and rejects the
+files are tidied and valid according to L<tidyall>, and rejects the
 commit if not. Files/commits are never modified by this hook.
 
-See also L<Code::TidyAll::Git::Prereceive|Code::TidyAll::Git::Prereceive>,
+See also L<Code::TidyAll::Git::Prereceive>,
 which validates pushes to a shared repo.
 
 =head1 METHODS
@@ -103,7 +103,7 @@ which validates pushes to a shared repo.
 =item check (key/value params...)
 
 Class method. Check that all files being added or modified in this commit are
-tidied and valid according to L<tidyall|tidyall>. If not, then the entire
+tidied and valid according to L<tidyall>. If not, then the entire
 commit is rejected and the reason(s) are output to the client. e.g.
 
     % git commit -m "fixups" CHI.pm CHI/Driver.pm
@@ -154,11 +154,11 @@ process even files that are not going to be committed.
 
 =item tidyall_class
 
-Subclass to use instead of L<Code::TidyAll|Code::TidyAll>
+Subclass to use instead of L<Code::TidyAll>
 
 =item tidyall_options
 
-Hashref of options to pass to the L<Code::TidyAll|Code::TidyAll> constructor
+Hashref of options to pass to the L<Code::TidyAll> constructor
 
 =back
 
@@ -210,7 +210,7 @@ of the repo
 More information on pre-commit hooks and the impossibility of enforcing them
 L<here|http://stackoverflow.com/questions/3703159/git-remote-shared-pre-commit-hook>.
 
-See also L<Code::TidyAll::Git::Prereceive|Code::TidyAll::Git::Prereceive>,
+See also L<Code::TidyAll::Git::Prereceive>,
 which enforces tidyall on pushes to a remote shared repository.
 
 =cut

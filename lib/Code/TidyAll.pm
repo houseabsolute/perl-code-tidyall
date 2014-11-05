@@ -514,7 +514,7 @@ __END__
 
 =head1 DESCRIPTION
 
-This is the engine used by L<tidyall|tidyall> - read that first to get an
+This is the engine used by L<tidyall> - read that first to get an
 overview.
 
 You can call this API from your own program instead of executing C<tidyall>.
@@ -586,7 +586,7 @@ C<backup_ttl> here).
 
 Call L</process_file> on each file; descend recursively into each directory if
 the C<recursive> flag is on. Return a list of
-L<Code::TidyAll::Result|Code::TidyAll::Result> objects, one for each file.
+L<Code::TidyAll::Result> objects, one for each file.
 
 =item process_file (file)
 
@@ -612,7 +612,7 @@ Write the cache if enabled
 
 =item *
 
-Return a L<Code::TidyAll::Result|Code::TidyAll::Result> object
+Return a L<Code::TidyAll::Result> object
 
 =back
 
@@ -621,12 +621,12 @@ Return a L<Code::TidyAll::Result|Code::TidyAll::Result> object
 Like L</process_file>, but process the I<source> string instead of a file, and
 do not read from or write to the cache. You must still pass the relative
 I<path> from the root as the second argument, so that we know which plugins to
-apply. Return a L<Code::TidyAll::Result|Code::TidyAll::Result> object.
+apply. Return a L<Code::TidyAll::Result> object.
 
 =item plugins_for_path (I<path>)
 
 Given a relative I<path> from the root, return a list of
-L<Code::TidyAll::Plugin|Code::TidyAll::Plugin> objects that apply to it, or an
+L<Code::TidyAll::Plugin> objects that apply to it, or an
 empty list if no plugins apply.
 
 =item find_conf_file (I<conf_names>, I<start_dir>)

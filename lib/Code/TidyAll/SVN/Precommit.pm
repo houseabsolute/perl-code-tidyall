@@ -182,7 +182,7 @@ __END__
 
 This module implements a L<Subversion pre-commit
 hook|http://svnbook.red-bean.com/en/1.7/svn.ref.reposhooks.pre-commit.html>
-that checks if all files are tidied and valid according to L<tidyall|tidyall>,
+that checks if all files are tidied and valid according to L<tidyall>,
 and rejects the commit if not.
 
 =head1 METHODS
@@ -192,7 +192,7 @@ and rejects the commit if not.
 =item check (key/value params...)
 
 Class method. Check that all files being added or modified in this commit are
-tidied and valid according to L<tidyall|tidyall>. If not, then the entire
+tidied and valid according to L<tidyall>. If not, then the entire
 commit is rejected and the reason(s) are output to the client. e.g.
 
     % svn commit -m "fixups" CHI.pm CHI/Driver.pm
@@ -263,11 +263,11 @@ Repository path being committed; defaults to C<< $ARGV[0] >>
 
 =item tidyall_class
 
-Subclass to use instead of L<Code::TidyAll|Code::TidyAll>
+Subclass to use instead of L<Code::TidyAll>
 
 =item tidyall_options
 
-Hashref of options to pass to the L<Code::TidyAll|Code::TidyAll> constructor
+Hashref of options to pass to the L<Code::TidyAll> constructor
 
 =item txn
 
@@ -279,7 +279,7 @@ Commit transaction; defaults to C<< $ARGV[1] >>
 
 =head1 LOGGING
 
-This module uses L<Log::Any|Log::Any> to log its activity, including all files
+This module uses L<Log::Any> to log its activity, including all files
 that were checked, an inability to find the configuration file, and any runtime
 errors that occur. You can create a simple date-stamped log file with
 

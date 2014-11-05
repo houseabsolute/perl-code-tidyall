@@ -30,7 +30,7 @@ sub weave_section {
                 content  => 'SEE ALSO',
                 children => [
                     Pod::Elemental::Element::Pod5::Ordinary->new(
-                        { content => "L<Code::TidyAll|Code::TidyAll>" }
+                        { content => "L<Code::TidyAll>" }
                     ),
                 ],
             }

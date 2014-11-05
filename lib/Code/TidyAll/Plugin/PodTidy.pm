@@ -40,7 +40,7 @@ __END__
 
 =head1 DESCRIPTION
 
-Runs L<podtidy|podtidy>, which will tidy the POD in your Perl or POD-only file.
+Runs L<podtidy>, which will tidy the POD in your Perl or POD-only file.
 
 =head1 INSTALLATION
 

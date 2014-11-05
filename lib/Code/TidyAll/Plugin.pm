@@ -175,8 +175,8 @@ plugin class that inherits from this class. This document describes how to
 implement a new plugin.
 
 The easiest way to start is to look at existing plugins, such as
-L<Code::TidyAll::Plugin::PerlTidy|Code::TidyAll::Plugin::PerlTidy> and
-L<Code::TidyAll::Plugin::PerlCritic|Code::TidyAll::Plugin::PerlCritic>.
+L<Code::TidyAll::Plugin::PerlTidy> and
+L<Code::TidyAll::Plugin::PerlCritic>.
 
 =head1 NAMING
 
@@ -200,7 +200,7 @@ as parameters. e.g. given
     ignore = lib/UtterHack.pm
     argv = -severity 3
 
-then L<Code::TidyAll::Plugin::PerlCritic|Code::TidyAll::Plugin::PerlCritic>
+then L<Code::TidyAll::Plugin::PerlCritic>
 would be constructed with parameters
 
     select => 'lib/**/*.pm',
@@ -227,7 +227,7 @@ Name of the plugin to be used in error messages etc.
 
 =item tidyall
 
-A weak reference back to the L<Code::TidyAll|Code::TidyAll> object.
+A weak reference back to the L<Code::TidyAll> object.
 
 =item select, ignore
 

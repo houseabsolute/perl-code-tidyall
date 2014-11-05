@@ -59,7 +59,7 @@ Code::TidyAll::Plugin::PerlTidy - use perltidy with tidyall
 
 =head1 DESCRIPTION
 
-Runs L<perltidy|perltidy>, a Perl tidier.
+Runs L<perltidy>, a Perl tidier.
 
 =head1 INSTALLATION
 

@@ -35,12 +35,12 @@ __END__
 
 =head1 DESCRIPTION
 
-Runs L<masontidy|masontidy>, a tidier for L<HTML::Mason|HTML::Mason> and
-L<Mason 2|Mason> components.
+Runs L<masontidy>, a tidier for L<HTML::Mason> and L<Mason 2|Mason>
+components.
 
 =head1 INSTALLATION
 
-Install L<masontidy|masontidy> from CPAN.
+Install L<masontidy> from CPAN.
 
     cpanm masontidy
 

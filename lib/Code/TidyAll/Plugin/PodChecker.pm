@@ -44,7 +44,7 @@ __END__
 
 =head1 DESCRIPTION
 
-Runs L<podchecker|podchecker>, a POD validator, and dies if any problems were
+Runs L<podchecker>, a POD validator, and dies if any problems were
 found.
 
 =head1 INSTALLATION

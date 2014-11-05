@@ -40,7 +40,7 @@ __END__
 
 =head1 DESCRIPTION
 
-Runs L<perlcritic|perlcritic>, a Perl validator, and dies if any problems were
+Runs L<perlcritic>, a Perl validator, and dies if any problems were
 found.
 
 =head1 INSTALLATION
