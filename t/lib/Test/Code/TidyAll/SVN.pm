@@ -105,7 +105,7 @@ sub test_svn : Tests {
     $committed->();
 }
 
-$precommit_hook_template = '#!/usr/bin/perl
+$precommit_hook_template = '#!' . $^X . "\n" . <<'EOF';
 use lib qw(%s);
 use Code::TidyAll::SVN::Precommit;
 use Log::Any::Adapter (File => "%s");
@@ -116,9 +116,9 @@ Code::TidyAll::SVN::Precommit->check(
     extra_conf_files => ["perlcriticrc"],
     tidyall_options => { verbose => 1 }
 );
-';
+EOF
 
-$tidyall_ini_template = '
+$tidyall_ini_template = <<'EOF';
 [+Code::TidyAll::Test::Plugin::UpperText]
 select = **/*.txt
-';
+EOF
