@@ -5,6 +5,13 @@
 * Test::Code::TidyAll now sets "quiet => 1" when creating the Code::TidyAll
   object to suppress noise from any plugins.
 
+* Test::Code::TidyAll now calls Test::More::diag() after test failures instead
+  of before.
+
+[BUG FIXES]
+
+* Lots of little doc tweaks and fixes.
+
 
 0.20    2014-05-18
 
