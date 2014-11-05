@@ -4,6 +4,7 @@ use Capture::Tiny qw(capture);
 use Code::TidyAll::Util qw(tempdir_simple);
 use Code::TidyAll;
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
+use Test::Differences qw( eq_or_diff );
 
 __PACKAGE__->SKIP_CLASS("Virtual base class");
 
@@ -46,9 +47,12 @@ sub tidyall {
 
     if ( my $expect_tidy = $p{expect_tidy} ) {
         $expect_tidy =~ s/\\n/\n/g;
-        is( $result->state,        'tidied',     "state=tidied [$desc]" );
-        is( $result->new_contents, $expect_tidy, "new contents [$desc]" );
-        is( $result->error,        undef,        "no error [$desc]" );
+        is( $result->state, 'tidied', "state=tidied [$desc]" );
+        eq_or_diff(
+            $result->new_contents, $expect_tidy,
+            "new contents [$desc]"
+        );
+        is( $result->error, undef, "no error [$desc]" );
     }
     elsif ( my $expect_ok = $p{expect_ok} ) {
         is( $result->state, 'checked', "state=checked [$desc]" );
