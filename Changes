@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.22     2014-11-05
+
 [BUG FIXES]
 
 * Removed the compile test added in the last release. Many plugin modules

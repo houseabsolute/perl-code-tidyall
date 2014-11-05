@@ -34,14 +34,11 @@ on 'test' => sub {
   requires "File::Spec" => "0";
   requires "File::Which" => "0";
   requires "File::pushd" => "0";
-  requires "IO::Handle" => "0";
-  requires "IPC::Open3" => "0";
   requires "Test::Class::Most" => "0";
   requires "Test::Differences" => "0";
   requires "Test::More" => "0.88";
   requires "autodie" => "0";
   requires "lib" => "0";
-  requires "perl" => "5.006";
 };
 
 on 'test' => sub {
