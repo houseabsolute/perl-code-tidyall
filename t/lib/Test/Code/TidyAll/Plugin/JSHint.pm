@@ -6,7 +6,7 @@ use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
 sub test_filename { 'foo.js' }
 
 sub _extra_path {
-    'node_modules/jshint/bin';
+    'node_modules/.bin';
 }
 
 sub test_main : Tests {
