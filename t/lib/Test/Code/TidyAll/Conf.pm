@@ -1,4 +1,4 @@
-package Code::TidyAll::t::Conf;
+package Test::Code::TidyAll::Conf;
 
 use Code::TidyAll;
 use Code::TidyAll::Util qw(dirname tempdir_simple write_file);

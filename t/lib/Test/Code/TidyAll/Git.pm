@@ -1,4 +1,4 @@
-package Code::TidyAll::t::Git;
+package Test::Code::TidyAll::Git;
 
 use Capture::Tiny qw(capture_stdout capture_stderr capture);
 use Code::TidyAll::Git::Util qw(git_uncommitted_files);

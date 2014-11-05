@@ -1,3 +1,4 @@
 #!/usr/bin/perl
-use Code::TidyAll::t::Conf;
-Code::TidyAll::t::Conf->runtests;
+use lib 't/lib';
+use Test::Code::TidyAll::Conf;
+Test::Code::TidyAll::Conf->runtests;

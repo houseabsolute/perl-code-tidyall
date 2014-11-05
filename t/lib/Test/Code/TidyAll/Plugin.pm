@@ -1,4 +1,4 @@
-package Code::TidyAll::t::Plugin;
+package Test::Code::TidyAll::Plugin;
 
 use Capture::Tiny qw(capture);
 use Code::TidyAll::Util qw(tempdir_simple);

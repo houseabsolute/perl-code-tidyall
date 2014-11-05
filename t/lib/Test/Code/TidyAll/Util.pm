@@ -1,4 +1,4 @@
-package Code::TidyAll::t::Util;
+package Test::Code::TidyAll::Util;
 
 use Code::TidyAll::Util qw(dirname tempdir_simple);
 use IPC::System::Simple qw(capturex);

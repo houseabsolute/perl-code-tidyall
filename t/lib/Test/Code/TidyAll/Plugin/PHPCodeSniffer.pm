@@ -1,6 +1,6 @@
-package Code::TidyAll::t::Plugin::PHPCodeSniffer;
+package Test::Code::TidyAll::Plugin::PHPCodeSniffer;
 
-use Test::Class::Most parent => 'Code::TidyAll::t::Plugin';
+use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
 
 sub test_filename { 'foo.php' }
 

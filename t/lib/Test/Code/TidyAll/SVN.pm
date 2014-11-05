@@ -1,4 +1,4 @@
-package Code::TidyAll::t::SVN;
+package Test::Code::TidyAll::SVN;
 
 use Capture::Tiny qw(capture_stdout capture_stderr capture);
 use Code::TidyAll::SVN::Precommit;

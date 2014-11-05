@@ -1,7 +1,7 @@
-package Code::TidyAll::t::Plugin::PodSpell;
+package Test::Code::TidyAll::Plugin::PodSpell;
 
 use Code::TidyAll::Util qw(write_file);
-use Test::Class::Most parent => 'Code::TidyAll::t::Plugin';
+use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
 
 sub test_filename { 'Foo.pod' }
 
