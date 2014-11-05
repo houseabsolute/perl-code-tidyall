@@ -12,7 +12,7 @@ sub validate_file {
 
     my $result;
     my %options = ( defined( $self->warnings ) ? ( '-warnings' => $self->warnings ) : () );
-    my $checker = new Pod::Checker(%options);
+    my $checker = Pod::Checker->new(%options);
     my $output  = capture_merged { $checker->parse_from_file( $file, \*STDERR ) };
     die $output
       if $checker->num_errors
