@@ -3,8 +3,11 @@ package Test::Code::TidyAll::Plugin;
 use Capture::Tiny qw(capture);
 use Code::TidyAll::Util qw(tempdir_simple);
 use Code::TidyAll;
+use File::pushd;
+use File::Path qw( mkpath );
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 use Test::Differences qw( eq_or_diff );
+use autodie;
 
 __PACKAGE__->SKIP_CLASS("Virtual base class");
 
@@ -13,6 +16,22 @@ my $Test = Test::Builder->new;
 sub startup : Tests(startup => no_plan) {
     my $self = shift;
     $self->{root_dir} = tempdir_simple();
+
+    my $bin = 'node_modules/.bin';
+    mkpath( $bin, 0, 0755 );
+    my $pushed = pushd($bin);
+
+    my %links = (
+        'css-beautify'  => '../js-beautify/js/bin/css-beautify.js',
+        'cssunminifier' => '../cssunminifier/bin/cssunminifier',
+        'html-beautify' => '../js-beautify/js/bin/html-beautify.js',
+        'js-beautify'   => '../js-beautify/js/bin/js-beautify.js',
+        'jshint'        => '../jshint/bin/jshint',
+        'jslint'        => '../jslint/bin/jslint.js',
+    );
+    for my $from ( keys %links ) {
+        symlink $links{$from}, $from unless -l $from;
+    }
 }
 
 sub plugin_class {
