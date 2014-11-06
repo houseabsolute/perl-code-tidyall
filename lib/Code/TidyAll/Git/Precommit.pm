@@ -2,8 +2,9 @@ package Code::TidyAll::Git::Precommit;
 
 use Capture::Tiny qw(capture_stdout capture_stderr);
 use Code::TidyAll;
-use Code::TidyAll::Util qw(dirname mkpath realpath tempdir_simple write_file);
+use Code::TidyAll::Util qw(dirname mkpath realpath tempdir_simple);
 use Cwd qw(cwd);
+use File::Slurp::Tiny qw(write_file);
 use Guard;
 use Log::Any qw($log);
 use IPC::System::Simple qw(capturex run);

@@ -1,7 +1,8 @@
 package Code::TidyAll::Plugin;
 
-use Code::TidyAll::Util qw(basename read_file write_file);
+use Code::TidyAll::Util qw(basename);
 use Code::TidyAll::Util::Zglob qw(zglobs_to_regex);
+use File::Slurp::Tiny qw(read_file write_file);
 use Scalar::Util qw(weaken);
 use Moo;
 

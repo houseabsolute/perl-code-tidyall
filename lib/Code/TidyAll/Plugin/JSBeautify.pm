@@ -1,7 +1,7 @@
 package Code::TidyAll::Plugin::JSBeautify;
 
 use Capture::Tiny qw(capture_merged);
-use Code::TidyAll::Util qw(write_file);
+use File::Slurp::Tiny qw(write_file);
 use Moo;
 use Try::Tiny;
 extends 'Code::TidyAll::Plugin';

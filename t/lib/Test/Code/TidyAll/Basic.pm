@@ -1,11 +1,12 @@
 package Test::Code::TidyAll::Basic;
 
 use Cwd qw(realpath);
-use Code::TidyAll::Util qw(dirname mkpath pushd read_file tempdir_simple write_file);
+use Code::TidyAll::Util qw(dirname mkpath pushd tempdir_simple);
 use Code::TidyAll;
 use Capture::Tiny qw(capture capture_stdout capture_merged);
 use File::Find qw(find);
 use File::pushd qw(pushd);
+use File::Slurp::Tiny qw(read_file write_file);
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 
 sub test_plugin { "+Code::TidyAll::Test::Plugin::$_[0]" }

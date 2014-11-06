@@ -1,6 +1,5 @@
 package Test::Code::TidyAll::Plugin::JSLint;
 
-use Code::TidyAll::Util qw(write_file);
 use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
 
 sub test_filename { 'foo.js' }

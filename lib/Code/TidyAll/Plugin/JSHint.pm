@@ -1,6 +1,7 @@
 package Code::TidyAll::Plugin::JSHint;
 
-use Code::TidyAll::Util qw(tempdir_simple write_file);
+use Code::TidyAll::Util qw(tempdir_simple);
+use File::Slurp::Tiny qw(write_file);
 use Capture::Tiny qw(capture_merged);
 use Moo;
 extends 'Code::TidyAll::Plugin';

@@ -2,8 +2,9 @@ package Test::Code::TidyAll::Git;
 
 use Capture::Tiny qw(capture_stdout capture_stderr capture);
 use Code::TidyAll::Git::Util qw(git_uncommitted_files);
-use Code::TidyAll::Util qw(dirname mkpath pushd read_file realpath tempdir_simple write_file);
+use Code::TidyAll::Util qw(dirname mkpath pushd realpath tempdir_simple);
 use Code::TidyAll;
+use File::Slurp::Tiny qw(read_file write_file);
 use IPC::System::Simple qw(capturex run);
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 

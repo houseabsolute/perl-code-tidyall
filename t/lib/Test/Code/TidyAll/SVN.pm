@@ -3,8 +3,9 @@ package Test::Code::TidyAll::SVN;
 use Capture::Tiny qw(capture_stdout capture_stderr capture);
 use Code::TidyAll::SVN::Precommit;
 use Code::TidyAll::SVN::Util qw(svn_uncommitted_files);
-use Code::TidyAll::Util qw(dirname mkpath read_file realpath tempdir_simple write_file);
+use Code::TidyAll::Util qw(dirname mkpath realpath tempdir_simple);
 use Code::TidyAll;
+use File::Slurp::Tiny qw(read_file write_file);
 use IPC::System::Simple qw(run);
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 

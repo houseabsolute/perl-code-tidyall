@@ -1,6 +1,6 @@
 package Test::Code::TidyAll::Plugin::PodSpell;
 
-use Code::TidyAll::Util qw(write_file);
+use File::Slurp::Tiny qw(write_file);
 use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
 
 sub test_filename { 'Foo.pod' }
