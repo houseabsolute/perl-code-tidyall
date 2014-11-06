@@ -21,15 +21,15 @@ use warnings;
 sub default_conf_names { ( 'tidyall.ini', '.tidyallrc' ) }
 
 # External
-has 'backup_ttl'    => ( is => 'ro', default => sub { '1 hour' } );
+has 'backup_ttl'    => ( is => 'ro', default => '1 hour' );
 has 'check_only'    => ( is => 'ro' );
 has 'data_dir'      => ( is => 'lazy' );
-has 'iterations'    => ( is => 'ro', default => sub { 1 } );
+has 'iterations'    => ( is => 'ro', default => 1 );
 has 'list_only'     => ( is => 'ro' );
-has 'mode'          => ( is => 'ro', default => sub { 'cli' } );
+has 'mode'          => ( is => 'ro', default =>  'cli'  );
 has 'no_backups'    => ( is => 'ro' );
 has 'no_cache'      => ( is => 'ro' );
-has 'output_suffix' => ( is => 'ro', default => sub { '' } );
+has 'output_suffix' => ( is => 'ro', default => q{} );
 has 'plugins'       => ( is => 'ro', required => 1 );
 has 'quiet'         => ( is => 'ro' );
 has 'recursive'     => ( is => 'ro' );

@@ -8,7 +8,7 @@ use Moo;
 
 extends 'Code::TidyAll::Plugin';
 
-has 'ascii' => ( is => 'ro', default => sub { 0 } );
+has 'ascii' => ( is => 'ro', default => 0 );
 
 sub transform_source {
     my $self   = shift;

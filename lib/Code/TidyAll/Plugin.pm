@@ -7,7 +7,7 @@ use Scalar::Util qw(weaken);
 use Moo;
 
 # External
-has 'argv'         => ( is => 'ro', default => sub { '' } );
+has 'argv'         => ( is => 'ro', default => q{} );
 has 'class'        => ( is => 'ro' );
 has 'cmd'          => ( is => 'lazy' );
 has 'ignore'       => ( is => 'ro' );

@@ -13,10 +13,10 @@ use Try::Tiny;
 
 # Public
 has 'conf_name'       => ( is => 'ro' );
-has 'git_path'        => ( is => 'ro', default => sub { 'git' } );
+has 'git_path'        => ( is => 'ro', default => 'git' );
 has 'no_stash'        => ( is => 'ro' );
 has 'reject_on_error' => ( is => 'ro' );
-has 'tidyall_class'   => ( is => 'ro', default => sub { "Code::TidyAll" } );
+has 'tidyall_class'   => ( is => 'ro', default => 'Code::TidyAll' );
 has 'tidyall_options' => ( is => 'ro', default => sub { {} } );
 
 sub check {

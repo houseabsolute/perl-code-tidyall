@@ -10,12 +10,12 @@ use Moo;
 use Try::Tiny;
 
 # Public
-has 'allow_repeated_push' => ( is => 'ro', default => sub { 3 } );
+has 'allow_repeated_push' => ( is => 'ro', default => 3 );
 has 'conf_name'           => ( is => 'ro' );
 has 'extra_conf_files'    => ( is => 'ro', default => sub { [] } );
-has 'git_path'            => ( is => 'ro', default => sub { 'git' } );
+has 'git_path'            => ( is => 'ro', default =>  'git' );
 has 'reject_on_error'     => ( is => 'ro' );
-has 'tidyall_class'       => ( is => 'ro', default => sub { "Code::TidyAll" } );
+has 'tidyall_class'       => ( is => 'ro', default => 'Code::TidyAll' );
 has 'tidyall_options'     => ( is => 'ro', default => sub { {} } );
 
 sub check {

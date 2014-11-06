@@ -9,8 +9,8 @@ use Moo;
 use Text::ParseWords qw(shellwords);
 extends 'Code::TidyAll::Plugin';
 
-has 'ispell_argv' => ( is => 'ro', default => sub { '' } );
-has 'ispell_cmd'  => ( is => 'ro', default => sub { 'ispell' } );
+has 'ispell_argv' => ( is => 'ro', default => q{} );
+has 'ispell_cmd'  => ( is => 'ro', default => 'ispell' );
 has 'suggest'     => ( is => 'ro' );
 
 sub validate_file {
