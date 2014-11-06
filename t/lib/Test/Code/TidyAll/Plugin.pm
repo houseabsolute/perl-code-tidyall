@@ -1,10 +1,9 @@
 package Test::Code::TidyAll::Plugin;
 
 use Capture::Tiny qw(capture);
-use Code::TidyAll::Util qw(tempdir_simple);
+use Code::TidyAll::Util qw(pushd tempdir_simple);
 use Code::TidyAll;
-use File::pushd;
-use File::Path qw( mkpath );
+use File::Path qw(mkpath);
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 use Test::Differences qw( eq_or_diff );
 use autodie;
