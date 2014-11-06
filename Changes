@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- Fix test failures seen on CPANTesters.
+
+
 0.22     2014-11-05
 
 [BUG FIXES]
