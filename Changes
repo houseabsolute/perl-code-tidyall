@@ -6,8 +6,8 @@
 
 - At some point in the future, it will probably be necessary for Code::TidyAll
   to become aware of encodings on a per-file basis. As it stands right now,
-  it's possible that any tidying plugin which reformats text could, in theory,
-  end up splitting up a UTF-8 character's bytes across at a line break.
+  any tidying plugin which reformats text could, in theory, end up splitting
+  up a UTF-8 character's bytes across at a line break.
 
 [BUG FIXES]
 
