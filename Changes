@@ -1,5 +1,20 @@
 {{$NEXT}}
 
+[WARNING FOR A FUTURE RELEASE]
+
+- At some point in the future, it will probably be necessary for Code::TidyAll
+  to become aware of encodings on a per-file basis. As it stands right now,
+  it's possible that any tidying plugin which reformats text could, in theory,
+  end up splitting up a UTF-8 character's bytes across at a line break.
+
+[BUG FIXES]
+
+- Replaced the use of Capture::Tiny with IPC::Run3 for some plugins. The
+  former seems to sometimes return character data where we want bytes, even if
+  the STDOUT and STDERR handles are binmode()'d to the ":bytes" encoding. This
+  prevents warnings about writing wide characters from the JSBeautify plugin.
+
+
 0.23     2014-11-06
 
 - Fix test failures seen on CPANTesters.
