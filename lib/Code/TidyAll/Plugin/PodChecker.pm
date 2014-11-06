@@ -1,6 +1,5 @@
 package Code::TidyAll::Plugin::PodChecker;
 
-use Capture::Tiny qw(capture_merged);
 use Pod::Checker;
 use Moo;
 extends 'Code::TidyAll::Plugin';
@@ -13,7 +12,9 @@ sub validate_file {
     my $result;
     my %options = ( defined( $self->warnings ) ? ( '-warnings' => $self->warnings ) : () );
     my $checker = Pod::Checker->new(%options);
-    my $output  = capture_merged { $checker->parse_from_file( $file, \*STDERR ) };
+    my $output;
+    open my $fh, '>', \$output;
+    $checker->parse_from_file( $file, $fh );
     die $output
       if $checker->num_errors
       or ( $self->warnings && $checker->num_warnings );

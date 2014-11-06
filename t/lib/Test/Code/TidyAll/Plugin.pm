@@ -4,6 +4,7 @@ use Capture::Tiny qw(capture);
 use Code::TidyAll::Util qw(pushd tempdir_simple);
 use Code::TidyAll;
 use File::Path qw(mkpath);
+use File::Slurp::Tiny qw(read_file);
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 use Test::Differences qw( eq_or_diff );
 use autodie;
@@ -48,18 +49,32 @@ sub tidyall {
     local $ENV{PATH} = $ENV{PATH};
     $ENV{PATH} .= q{:} . $extra if $extra;
 
-    my $source = $p{source} || die "source required";
-    my $desc   = $p{desc}   || $source;
-    $desc =~ s/\n/\\n/g;
     my $plugin_class = $self->plugin_class;
     my %plugin_conf = ( $plugin_class => { select => '*', %{ $p{conf} || {} } } );
-    my $ct =
-      Code::TidyAll->new( quiet => 1, root_dir => $self->{root_dir}, plugins => \%plugin_conf );
+    my $ct = Code::TidyAll->new(
+        quiet    => 1,
+        root_dir => $self->{root_dir},
+        plugins  => \%plugin_conf,
+    );
 
-    $source =~ s/\\n/\n/g;
-    my $result;
-    my ( $output, $error ) =
-      capture { $result = $ct->process_source( $source, $self->test_filename ) };
+    my ( $source, $result, $output, $error );
+    if ( $p{source} ) {
+        $source = $p{source};
+        $source =~ s/\\n/\n/g;
+        ( $output, $error ) = capture {
+            $result = $ct->process_source( $source, $self->test_filename )
+        };
+    }
+    elsif ( $p{source_file} ) {
+        ( $output, $error )
+            = capture { $result = $ct->process_file( $p{source_file} ) };
+    }
+    else {
+        die 'The tidyall() method requires a source or source_file parameter';
+    }
+
+    my $desc = $p{desc} || $p{source} || $p{source_file};
+
     $Test->diag($output) if $output && $ENV{TEST_VERBOSE};
     $Test->diag($error)  if $error  && $ENV{TEST_VERBOSE};
 
@@ -76,6 +91,7 @@ sub tidyall {
         is( $result->state, 'checked', "state=checked [$desc]" );
         is( $result->error, undef,     "no error [$desc]" );
         if ( $result->new_contents ) {
+            $source ||= read_file( $p{source_file} );
             is( $result->new_contents, $source, "same contents [$desc]" );
         }
     }

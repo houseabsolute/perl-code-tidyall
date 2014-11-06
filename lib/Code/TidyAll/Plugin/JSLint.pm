@@ -1,6 +1,6 @@
 package Code::TidyAll::Plugin::JSLint;
 
-use Capture::Tiny qw(capture_merged);
+use IPC::Run3 qw(run3);
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
@@ -10,7 +10,8 @@ sub validate_file {
     my ( $self, $file ) = @_;
 
     my $cmd = sprintf( "%s %s %s", $self->cmd, $self->argv, $file );
-    my $output = capture_merged { system($cmd) };
+    my $output;
+    run3( $cmd, \undef, \$output, \$output );
     die "$output\n" if $output !~ /is OK\./;
 }
 
