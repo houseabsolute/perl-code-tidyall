@@ -14,6 +14,7 @@ has 'is_tidier'    => ( is => 'lazy' );
 has 'is_validator' => ( is => 'lazy' );
 has 'name'         => ( is => 'ro', required => 1 );
 has 'select'       => ( is => 'ro' );
+has 'shebang'      => ( is => 'ro' );
 has 'tidyall'      => ( is => 'ro', required => 1, weak_ref => 1 );
 
 # Internal

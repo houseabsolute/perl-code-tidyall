@@ -409,6 +409,14 @@ sub find_matched_files {
             my %is_ignored = map { ( $_, 1 ) } $self->_zglob( $plugin->ignores );
             @selected = grep { !$is_ignored{$_} } @selected;
         }
+        if ( my $shebang = $plugin->shebang ) {
+            my $re = join '|', map quotemeta, split ' ', $shebang;
+            $re = qr/\b(?:$re)\b/;
+            @selected = grep {
+                my $fh;
+                open $fh, '<', $_ and <$fh> =~ /$re/;
+            } @selected;
+        }
         push( @matched_files, @selected );
         foreach my $file (@selected) {
             my $path = substr( $file, $root_length + 1 );
