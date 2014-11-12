@@ -420,6 +420,18 @@ C<select>. e.g.
     select = bin/**/*.pl
     ignore = bin/awful.pl bin/tmp/**/*.pl
 
+=item shebang
+
+One or more words, separated by whitespace or on multiple lines, indicating
+which shebang lines to accept. This is optional and further filters
+C<select>. e.g.
+
+    ; All files with no extension anywhere under bin that include a "perl" or
+    ; "perl5" shebang line.
+    select = bin/**/*
+    ignore = bin/**/*.*
+    shebang = perl perl5
+
 =item only_modes
 
 A list of modes, separated by whitespace. e.g.

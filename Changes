@@ -9,6 +9,10 @@
 - The PodChecker plugin no longer generates warnings about an undef variable
   if the file did not have any Pod.
 
+- Added an option for the tidyall config file, shebang. This is an additional
+  filter that selects files based on the shebang line
+  (#!/bin/foo). Implemented by timgimyee. GH #25.
+
 
 0.25     2015-03-31
 
