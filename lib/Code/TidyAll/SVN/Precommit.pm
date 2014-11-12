@@ -10,11 +10,11 @@ use Try::Tiny;
 
 # Public
 has 'conf_name'                => ( is => 'ro' );
-has 'emergency_comment_prefix' => ( is => 'ro', default => sub { "NO TIDYALL" } );
+has 'emergency_comment_prefix' => ( is => 'ro', default => 'NO TIDYALL' );
 has 'extra_conf_files'         => ( is => 'ro', default => sub { [] } );
 has 'reject_on_error'          => ( is => 'ro' );
 has 'repos'                    => ( is => 'ro', default => sub { $ARGV[0] } );
-has 'tidyall_class'            => ( is => 'ro', default => sub { "Code::TidyAll" } );
+has 'tidyall_class'            => ( is => 'ro', default => 'Code::TidyAll' );
 has 'tidyall_options'          => ( is => 'ro', default => sub { {} } );
 has 'txn'                      => ( is => 'ro', default => sub { $ARGV[1] } );
 
@@ -160,14 +160,11 @@ sub cat_file {
 
 1;
 
+# ABSTRACT: Subversion pre-commit hook that requires files to be tidyall'd
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::SVN::Precommit - Subversion pre-commit hook that requires files
-to be tidyall'd
 
 =head1 SYNOPSIS
 
@@ -178,14 +175,14 @@ to be tidyall'd
     use Log::Any::Adapter (File => "/path/to/hooks/logs/tidyall.log");
     use strict;
     use warnings;
-    
+
     Code::TidyAll::SVN::Precommit->check();
 
 =head1 DESCRIPTION
 
 This module implements a L<Subversion pre-commit
 hook|http://svnbook.red-bean.com/en/1.7/svn.ref.reposhooks.pre-commit.html>
-that checks if all files are tidied and valid according to L<tidyall|tidyall>,
+that checks if all files are tidied and valid according to L<tidyall>,
 and rejects the commit if not.
 
 =head1 METHODS
@@ -195,10 +192,10 @@ and rejects the commit if not.
 =item check (key/value params...)
 
 Class method. Check that all files being added or modified in this commit are
-tidied and valid according to L<tidyall|tidyall>. If not, then the entire
+tidied and valid according to L<tidyall>. If not, then the entire
 commit is rejected and the reason(s) are output to the client. e.g.
 
-    % svn commit -m "fixups" CHI.pm CHI/Driver.pm 
+    % svn commit -m "fixups" CHI.pm CHI/Driver.pm
     Sending        CHI/Driver.pm
     Sending        CHI.pm
     Transmitting file data ..svn: Commit failed (details follow):
@@ -212,11 +209,11 @@ commit is rejected and the reason(s) are output to the client. e.g.
 In an emergency the hook can be bypassed by prefixing the comment with "NO
 TIDYALL", e.g.
 
-    % svn commit -m "NO TIDYALL - this is an emergency!" CHI.pm CHI/Driver.pm 
+    % svn commit -m "NO TIDYALL - this is an emergency!" CHI.pm CHI/Driver.pm
     Sending        CHI/Driver.pm
     Sending        CHI.pm
-    Transmitting file data .                                                              
-    Committed revision 7562.  
+    Transmitting file data .
+    Committed revision 7562.
 
 The configuration file (C<tidyall.ini> or C<.tidyallrc>) must be checked into
 svn. For each file, the hook will look upwards from the file's repo location
@@ -266,11 +263,11 @@ Repository path being committed; defaults to C<< $ARGV[0] >>
 
 =item tidyall_class
 
-Subclass to use instead of L<Code::TidyAll|Code::TidyAll>
+Subclass to use instead of L<Code::TidyAll>
 
 =item tidyall_options
 
-Hashref of options to pass to the L<Code::TidyAll|Code::TidyAll> constructor
+Hashref of options to pass to the L<Code::TidyAll> constructor
 
 =item txn
 
@@ -282,7 +279,7 @@ Commit transaction; defaults to C<< $ARGV[1] >>
 
 =head1 LOGGING
 
-This module uses L<Log::Any|Log::Any> to log its activity, including all files
+This module uses L<Log::Any> to log its activity, including all files
 that were checked, an inability to find the configuration file, and any runtime
 errors that occur. You can create a simple date-stamped log file with
 

@@ -4,6 +4,7 @@ JSON
 JavaScript
 Misc
 PHP
+PREREQS
 Raggett
 STDERR
 STDIN
@@ -21,7 +22,9 @@ config
 cssunminifier
 ctrl
 dir
+filename
 iff
+ispell
 js
 jsbeautify
 jshint
@@ -34,6 +37,7 @@ npm
 ok
 ops
 params
+pathname
 perlcritic
 perlcriticrc
 perltidy
@@ -42,12 +46,16 @@ plugins
 podspell
 podtidy
 pre
+prereqs
 repo
 repos
+runtime
 sourceforge
 svn
 tidiers
 tidyall
+timestamped
+ttl
 txn
 validator
 validators

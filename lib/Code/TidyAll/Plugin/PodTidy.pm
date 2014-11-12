@@ -24,13 +24,11 @@ sub transform_file {
 
 1;
 
+# ABSTRACT: Use podtidy with tidyall
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Plugin::PodTidy - use podtidy with tidyall
 
 =head1 SYNOPSIS
 
@@ -42,7 +40,7 @@ Code::TidyAll::Plugin::PodTidy - use podtidy with tidyall
 
 =head1 DESCRIPTION
 
-Runs L<podtidy|podtidy>, which will tidy the POD in your Perl or POD-only file.
+Runs L<podtidy>, which will tidy the POD in your Perl or POD-only file.
 
 =head1 INSTALLATION
 

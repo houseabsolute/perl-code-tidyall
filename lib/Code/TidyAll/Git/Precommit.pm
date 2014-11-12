@@ -2,8 +2,9 @@ package Code::TidyAll::Git::Precommit;
 
 use Capture::Tiny qw(capture_stdout capture_stderr);
 use Code::TidyAll;
-use Code::TidyAll::Util qw(dirname mkpath realpath tempdir_simple write_file);
+use Code::TidyAll::Util qw(dirname mkpath realpath tempdir_simple);
 use Cwd qw(cwd);
+use File::Slurp::Tiny qw(write_file);
 use Guard;
 use Log::Any qw($log);
 use IPC::System::Simple qw(capturex run);
@@ -12,10 +13,10 @@ use Try::Tiny;
 
 # Public
 has 'conf_name'       => ( is => 'ro' );
-has 'git_path'        => ( is => 'ro', default => sub { 'git' } );
+has 'git_path'        => ( is => 'ro', default => 'git' );
 has 'no_stash'        => ( is => 'ro' );
 has 'reject_on_error' => ( is => 'ro' );
-has 'tidyall_class'   => ( is => 'ro', default => sub { "Code::TidyAll" } );
+has 'tidyall_class'   => ( is => 'ro', default => 'Code::TidyAll' );
 has 'tidyall_options' => ( is => 'ro', default => sub { {} } );
 
 sub check {
@@ -69,14 +70,11 @@ sub check {
 
 1;
 
+# ABSTRACT: Git pre-commit hook that requires files to be tidyall'd
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Git::Precommit - Git pre-commit hook that requires files to be
-tidyall'd
 
 =head1 SYNOPSIS
 
@@ -93,10 +91,10 @@ tidyall'd
 
 This module implements a L<Git pre-commit
 hook|http://git-scm.com/book/en/Customizing-Git-Git-Hooks> that checks if all
-files are tidied and valid according to L<tidyall|tidyall>, and rejects the
+files are tidied and valid according to L<tidyall>, and rejects the
 commit if not. Files/commits are never modified by this hook.
 
-See also L<Code::TidyAll::Git::Prereceive|Code::TidyAll::Git::Prereceive>,
+See also L<Code::TidyAll::Git::Prereceive>,
 which validates pushes to a shared repo.
 
 =head1 METHODS
@@ -106,10 +104,10 @@ which validates pushes to a shared repo.
 =item check (key/value params...)
 
 Class method. Check that all files being added or modified in this commit are
-tidied and valid according to L<tidyall|tidyall>. If not, then the entire
+tidied and valid according to L<tidyall>. If not, then the entire
 commit is rejected and the reason(s) are output to the client. e.g.
 
-    % git commit -m "fixups" CHI.pm CHI/Driver.pm 
+    % git commit -m "fixups" CHI.pm CHI/Driver.pm
     2 files did not pass tidyall check
     lib/CHI.pm: *** 'PerlTidy': needs tidying
     lib/CHI/Driver.pm: *** 'PerlCritic': Code before strictures are enabled
@@ -157,11 +155,11 @@ process even files that are not going to be committed.
 
 =item tidyall_class
 
-Subclass to use instead of L<Code::TidyAll|Code::TidyAll>
+Subclass to use instead of L<Code::TidyAll>
 
 =item tidyall_options
 
-Hashref of options to pass to the L<Code::TidyAll|Code::TidyAll> constructor
+Hashref of options to pass to the L<Code::TidyAll> constructor
 
 =back
 
@@ -213,7 +211,7 @@ of the repo
 More information on pre-commit hooks and the impossibility of enforcing them
 L<here|http://stackoverflow.com/questions/3703159/git-remote-shared-pre-commit-hook>.
 
-See also L<Code::TidyAll::Git::Prereceive|Code::TidyAll::Git::Prereceive>,
+See also L<Code::TidyAll::Git::Prereceive>,
 which enforces tidyall on pushes to a remote shared repository.
 
 =cut

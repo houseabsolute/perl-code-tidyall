@@ -8,7 +8,7 @@ use Moo;
 
 extends 'Code::TidyAll::Plugin';
 
-has 'ascii' => ( is => 'ro', default => sub { 0 } );
+has 'ascii' => ( is => 'ro', default => 0 );
 
 sub transform_source {
     my $self   = shift;
@@ -23,13 +23,11 @@ sub transform_source {
 
 1;
 
+# ABSTRACT: Use the JSON module to tidy JSON documents with tidyall
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Plugin::JSON - use the JSON module with tidyall
 
 =head1 SYNOPSIS
 

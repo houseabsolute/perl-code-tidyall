@@ -1,3 +1,5 @@
 #!/usr/bin/perl
-use Code::TidyAll::t::Plugin::JSBeautify;
-Code::TidyAll::t::Plugin::JSBeautify->runtests;
+use lib 't/lib';
+use lib 't/lib';
+use Test::Code::TidyAll::Plugin::JSBeautify;
+Test::Code::TidyAll::Plugin::JSBeautify->runtests;

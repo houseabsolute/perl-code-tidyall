@@ -1,6 +1,5 @@
 package Code::TidyAll::Plugin::PodChecker;
 
-use Capture::Tiny qw(capture_merged);
 use Pod::Checker;
 use Moo;
 extends 'Code::TidyAll::Plugin';
@@ -12,8 +11,10 @@ sub validate_file {
 
     my $result;
     my %options = ( defined( $self->warnings ) ? ( '-warnings' => $self->warnings ) : () );
-    my $checker = new Pod::Checker(%options);
-    my $output  = capture_merged { $checker->parse_from_file( $file, \*STDERR ) };
+    my $checker = Pod::Checker->new(%options);
+    my $output;
+    open my $fh, '>', \$output;
+    $checker->parse_from_file( $file, $fh );
     die $output
       if $checker->num_errors
       or ( $self->warnings && $checker->num_warnings );
@@ -21,13 +22,11 @@ sub validate_file {
 
 1;
 
+# ABSTRACT: Use podchecker with tidyall
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Plugin::PodChecker - use podchecker with tidyall
 
 =head1 SYNOPSIS
 
@@ -46,7 +45,7 @@ Code::TidyAll::Plugin::PodChecker - use podchecker with tidyall
 
 =head1 DESCRIPTION
 
-Runs L<podchecker|podchecker>, a POD validator, and dies if any problems were
+Runs L<podchecker>, a POD validator, and dies if any problems were
 found.
 
 =head1 INSTALLATION
