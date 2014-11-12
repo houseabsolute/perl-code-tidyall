@@ -29,3 +29,9 @@ script:
   - perl Makefile.PL
   - make
   - prove -br -j$(test-jobs) $(test-files)
+notifications:
+  email:
+    recipients:
+      - autarch@urth.org
+    on_success: change
+    on_failure: always
