@@ -294,6 +294,36 @@ sub test_selects_and_ignores : Tests {
         [ test_plugin('UpperText') ] );
 }
 
+sub test_shebang : Tests {
+    my $self = shift;
+
+    my %files = (
+        "a/foo.pl" => "#!/usr/bin/perl",
+        "a/foo"    => "#!/usr/bin/perl",
+        "a/bar"    => "#!/usr/bin/ruby",
+        "a/baz"    => "just another perl hacker",
+        "b/foo"    => "#!/usr/bin/perl6",
+        "b/bar"    => "#!/usr/bin/perl5",
+        "b/baz"    => "#!perl -w",
+        "b/bar.pm" => "package b::bar;",
+    );
+    my $root_dir = $self->create_dir(\%files);
+    my $ct = Code::TidyAll->new(
+        root_dir => $root_dir,
+        plugins  => {
+            test_plugin('UpperText') => {
+                select  => '**/*',
+                ignore  => '**/*.*',
+                shebang => 'perl perl5',
+            }
+        }
+    );
+    cmp_set(
+        [ $ct->find_matched_files() ],
+        [ map "$root_dir/$_", qw< a/foo b/bar b/baz > ],
+    );
+}
+
 sub test_dirs : Tests {
     my $self = shift;
 
