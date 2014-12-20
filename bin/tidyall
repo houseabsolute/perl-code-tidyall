@@ -237,7 +237,7 @@ distribution comes with plugins for:
 
 Perl: L<perlcritic|Code::TidyAll::Plugin::PerlCritic>,
 L<perltidy|Code::TidyAll::Plugin::PerlTidy>,
-L<perltidier|Code::TidyAll::Plugin::PerlTid::Sweetened>
+L<perltidy-sweet|Code::TidyAll::Plugin::PerlTidy::Sweet>
 
 =item *
 

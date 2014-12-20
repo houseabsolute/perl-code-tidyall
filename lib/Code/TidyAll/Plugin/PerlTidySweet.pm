@@ -1,6 +1,6 @@
-package Code::TidyAll::Plugin::PerlTidier;
+package Code::TidyAll::Plugin::PerlTidySweet;
 use Capture::Tiny qw(capture_merged);
-use Perl::Tidy::Sweetened;
+use Perl::Tidy::Sweet;
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
@@ -13,7 +13,7 @@ sub transform_source {
     #
     my ( $output, $error_flag, $errorfile, $destination );
     $output = capture_merged {
-        $error_flag = Perl::Tidy::Sweetened::perltidy(
+        $error_flag = Perl::Tidy::Sweet::perltidy(
             argv        => $self->argv,
             source      => \$source,
             destination => \$destination,
@@ -34,7 +34,7 @@ __END__
 
 =head1 NAME
 
-Code::TidyAll::Plugin::PerlTidier - use perltidier with tidyall
+Code::TidyAll::Plugin::PerlTidySweet - use perltidy-sweet with tidyall
 
 =head1 SYNOPSIS
 
@@ -42,27 +42,27 @@ Code::TidyAll::Plugin::PerlTidier - use perltidier with tidyall
 
    ; Configure in-line
    ;
-   [PerlTidier]
+   [PerlTidySweet]
    select = lib/**/*.pm
    argv = --noll
 
    ; or refer to a .perltidyrc in the same directory
    ;
-   [PerlTidier]
+   [PerlTidySweet]
    select = lib/**/*.pm
    argv = --profile=$ROOT/.perltidyrc
 
 =head1 DESCRIPTION
 
-Runs L<perltidier|perltider>, a Perl tidier based on Perl::Tidy that also
+Runs L<perltidy-sweet>, a Perl tidier based on Perl::Tidy that also
 supports new syntactic sugar as provided by L<Method::Signature::Simple>,
 L<MooseX::Method::Signatures> and the p5-mop.
 
 =head1 INSTALLATION
 
-Install perltidier from CPAN.
+Install perltidy-sweet from CPAN.
 
-    cpanm Perl::Tidy::Sweetened
+    cpanm Perl::Tidy::Sweet
 
 =head1 CONFIGURATION
 
@@ -70,7 +70,7 @@ Install perltidier from CPAN.
 
 =item argv
 
-Arguments to pass to perltidier
+Arguments to pass to perltidy-sweet
 
 =back
 
