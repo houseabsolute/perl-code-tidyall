@@ -1,4 +1,5 @@
 package Code::TidyAll::Plugin::PerlTidySweet;
+
 use Capture::Tiny qw(capture_merged);
 use Perl::Tidy::Sweet;
 use Moo;
