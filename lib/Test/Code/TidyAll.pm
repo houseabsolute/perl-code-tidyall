@@ -1,4 +1,5 @@
 package Test::Code::TidyAll;
+
 use IPC::System::Simple qw(run);
 use Code::TidyAll;
 use Test::Builder;
@@ -12,9 +13,20 @@ our @EXPORT_OK = qw(tidyall_ok);
 our @EXPORT    = @EXPORT_OK;
 
 sub tidyall_ok {
-    my @conf_names = Code::TidyAll->default_conf_names;
-    my $conf_file = Code::TidyAll->find_conf_file( \@conf_names, "." );
-    my $ct    = Code::TidyAll->new_from_conf_file( $conf_file, check_only => 1, mode => 'test' );
+    my %options   = @_;
+    my $conf_file = delete( $options{conf_file} );
+    if ( !$conf_file ) {
+        my @conf_names = Code::TidyAll->default_conf_names;
+        $conf_file = Code::TidyAll->find_conf_file( \@conf_names, "." );
+    }
+    my $ct =
+    Code::TidyAll->new_from_conf_file(
+        $conf_file,
+        quiet      => 1,
+        check_only => 1,
+        mode       => 'test',
+        %options,
+    );
     my @files = $ct->find_matched_files;
     $test->plan( tests => scalar(@files) );
     foreach my $file (@files) {
@@ -24,20 +36,19 @@ sub tidyall_ok {
             $test->ok( 1, $desc );
         }
         else {
-            $test->diag( $result->error );
             $test->ok( 0, $desc );
+            $test->diag( $result->error );
         }
     }
 }
 
 1;
 
+# ABSTRACT: Check that all your files are tidy and valid according to tidyall
+
 __END__
 
-=head1 NAME
-
-Test::Code::TidyAll - check that all your files are tidy and valid according to
-tidyall
+=pod
 
 =head1 SYNOPSIS
 
@@ -55,21 +66,21 @@ would change the contents of the file. Does not actually modify any files.
 
 By default, looks for config file C<tidyall.ini> or C<.tidyallrc> in the
 current directory and parent directories, which is generally the right place if
-you are running L<prove|prove>.
+you are running L<prove>.
 
 Passes mode = "test" by default; see L<modes|tidyall/MODES>.
 
 C<tidyall_ok> is exported by default. Any options will be passed along to the
-L<Code::TidyAll|Code::TidyAll> constructor. For example, if you don't want to
+L<Code::TidyAll> constructor. For example, if you don't want to
 use the tidyall cache and instead check all files every time:
 
-    run_tests(no_cache => 1);
+    tidyall_ok(no_cache => 1);
 
 or if you need to specify the config file:
 
-    run_tests(conf_file => '/path/to/conf/file');
+    tidyall_ok(conf_file => '/path/to/conf/file');
 
 =head1 SEE ALSO
 
-L<tidyall|tidyall>
+L<tidyall>
 

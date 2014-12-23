@@ -1,168 +1,313 @@
-Revision history for Code-TidyAll
+{{$NEXT}}
 
-** denotes an incompatible change
+0.24     2014-11-06
 
-0.18  Sep 21, 2013
+[WARNING FOR A FUTURE RELEASE]
 
-* Fixes
-  - Fix Test::Code::TidyAll::tidyall_ok - https://github.com/jonswar/perl-code-tidyall/issues/12 (Adam Taylor)
-  - Fix JSBeautify plugin as js-beautify no longer respects --replace
+- At some point in the future, it will probably be necessary for Code::TidyAll
+  to become aware of encodings on a per-file basis. As it stands right now,
+  any tidying plugin which reformats text could, in theory, end up splitting
+  up a UTF-8 character's bytes across at a line break.
 
-0.17  Mar 11, 2013
+[BUG FIXES]
 
-* Improvements
-  - ** Rename API method process_files to more accurate process_paths
+- Replaced the use of Capture::Tiny with IPC::Run3 for some plugins. The
+  former seems to sometimes return character data where we want bytes, even if
+  the STDOUT and STDERR handles are binmode()'d to the ":bytes" encoding. This
+  prevents warnings about writing wide characters from the JSBeautify plugin.
 
-* Fixes
-  - Fix recursive processing of directories (Mark Risman)
-  - Improve git precommit setup script - https://github.com/jonswar/perl-code-tidyall/pull/10 (Olaf Anders)
 
-0.16  Oct 22, 2012
+0.23     2014-11-06
 
-* Plugins
-  - Add phpcs plugin (Joseph Crotty)
-  - Add cssunminifier plugin
-  - Add SortLines plugin, for one-entry-per-line files like .gitignore
+- Fix test failures seen on CPANTesters.
 
-0.15  Oct 11, 2012
 
-* Fixes
-  - Fix test_dirs test to not rely on file ordering
+0.22     2014-11-05
 
-0.14  Oct 10, 2012
+[BUG FIXES]
 
-* Improvements
-  - Allow a plugin to be listed multiple times in config with different configuration
-  - Specify order that plugins run (tidiers before validators, then alpha) and document
-    that they are applied atomically
-  - Add etc/editors/tidyall.vim for Vim (Justin Devuyst)
-  - Add -r/--recursive flag to process directories recursively
-  - In -p/--pipe mode, mirror input to output in case of error (Justin Devuyst)
-  - Fix -l/--list handling of local files
-  - Add --version option
-  - Make git prereceive hook more modular, so it can be combined with other checks
+* Removed the compile test added in the last release. Many plugin modules
+  won't compile unless optional prereqs are manually installed first (such as
+  Perl::Critic, Perl::Tidy, etc.).
 
-0.13  Sep 30, 2012
 
-* Fixes
-  - Adjust MasonTidy plugin for new API
-  - Remove Util.t containing only author-only tests
+0.21     2014-11-05
 
-0.12  Sep 27, 2012
+[ENHANCEMENTS]
 
-* Plugins
-  - Add podspell plugin (POD spell checker)
+* Test::Code::TidyAll now sets "quiet => 1" when creating the Code::TidyAll
+  object to suppress noise from any plugins.
 
-* Improvements
-  - Add --iterations flag to run tidier transforms multiple times
-  - Allow .tidyallrc as alternative to tidyall.ini
-  - Allow git prereceive hook to be bypassed by pushing an identical set of commits
+* Test::Code::TidyAll now calls Test::More::diag() after test failures instead
+  of before.
+
+[BUG FIXES]
+
+* Lots of little doc tweaks and fixes.
+
+
+0.20    2014-05-18
+
+[BUG FIXES]
+
+* Fix option handling implentation and documentation for
+  Test::Code::TidyAll::tidyall_ok -
+  https://github.com/jonswar/perl-code-tidyall/issues/18 (Olad Alders)
+
+
+0.19    2014-03-06
+
+[ENHANCEMENTS]
+
+* Added a JSON plugin (Gregory Oschwald)
+
+
+0.18    2013-09-21
+
+[BUG FIXES]
+
+* Fix Test::Code::TidyAll::tidyall_ok -
+  https://github.com/jonswar/perl-code-tidyall/issues/12 (Adam Taylor)
+
+* Fix JSBeautify plugin as js-beautify no longer respects --replace
+
+
+0.17    2013-03-11
+
+[BACKWARDS INCOMPATIBILITIES]
+
+* Rename API method process_files to more accurate process_paths
+
+[BUG FIXES]
+
+* Fix recursive processing of directories (Mark Risman)
+
+* Improve git precommit setup script -
+  https://github.com/jonswar/perl-code-tidyall/pull/10 (Olaf Anders)
+
+
+0.16    2012-10-22
+
+[ENHANCEMENTS]
+
+* Added phpcs plugin (Joseph Crotty)
+
+* Added cssunminifier plugin
+
+* Added SortLines plugin, for one-entry-per-line files like .gitignore
+
+
+0.15    2012-10-11
+
+[BUG FIXES]
+
+* Fix test_dirs test to not rely on file ordering
+
+
+0.14    2012-10-10
+
+[ENHANCEMENTS]
+
+* Allow a plugin to be listed multiple times in config with different
+  configuration
+
+* Specify order that plugins run (tidiers before validators, then alpha) and
+  document that they are applied atomically
+
+* Added etc/editors/tidyall.vim for Vim (Justin Devuyst)
+
+* Added -r/--recursive flag to process directories recursively
+
+* In -p/--pipe mode, mirror input to output in case of error (Justin Devuyst)
+
+* Fix -l/--list handling of local files
+
+* Added --version option
+
+* Make git prereceive hook more modular, so it can be combined with other
+  checks
+
+
+0.13    2012-09-30
+
+[BUG FIXES]
+
+* Adjust MasonTidy plugin for new API
+
+* Remove Util.t containing only author-only tests
+
+
+0.12    2012-09-27
+
+[ENHANCEMENTS]
+
+* Added podspell plugin (POD spell checker)
+
+* Added --iterations flag to run tidier transforms multiple times
+
+* Allow .tidyallrc as alternative to tidyall.ini
+
+* Allow git prereceive hook to be bypassed by pushing an identical set of commits
     several consecutive times (allow_repeated_push)
-  - Add handcrafted usage w/summary of options, instead of Pod::Usage
 
-0.11  Sep 21, 2012
+* Added handcrafted usage w/summary of options, instead of Pod::Usage
 
-* Improvements
-  - Allow multiple select and ignore patterns, separated by whitespace or on separate lines
-  - Add -l/--list flag to show which plugins match which files
-  - Add conf_name parameter to specify name other than tidyall.ini
-  - Redirect stdout to stderr with -p/--pipe, so that stdout is dedicated to the tidied content
-  - In tidyall.el, hide error buffer on successful tidy
 
-* Fixes
-  - Handle argv/config errors correctly in various plugins
-  - Eliminate double-printed error with -p/--pipe
-  - Allow relative paths to -p/--pipe
+0.11    2012-09-21
 
-0.10  Sep 12, 2012
+[ENHANCEMENTS]
 
-* Plugins
-  - Add masontidy plugin (Mason component tidier)
-  - Add jslint plugin (javascript validator)
+* Allow multiple select and ignore patterns, separated by whitespace or on separate lines
 
-0.09  Sep 11, 2012
+* Added -l/--list flag to show which plugins match which files
 
-* Fixes
-  - Remove use of ex-dependency Hash::MoreUtils from bin/tidyall (Jason Wieland)
-  - Add IPC::System::Simple and Pod::Usage to deps (Jason Wieland)
+* Added conf_name parameter to specify name other than tidyall.ini
 
-0.08  Sep 10, 2012
+* Redirect stdout to stderr with -p/--pipe, so that stdout is dedicated to the tidied content
 
-* Plugins
-  - Add js-beautify plugin (javascript tidier)
-  - Add jshint plugin (javascript validator)
-  - Add podchecker plugin
+* In tidyall.el, hide error buffer on successful tidy
 
-* Improvements
-  - Add -p/--pipe flag to read from STDIN and write to STDOUT
-  - Allow tidyall.el to work in narrowed regions
-  - Make plugins into Moo classes, pass configuration as attributes
+[BUG FIXES]
 
-* Fixes
-  - Remove unused SVN::Look - perl-code-tidyall/pull/1 (Pedro Melo)
-  - Filter just files from git status in Code::TidyAll::Git::Precommit (Pedro Melo)
+* Handle argv/config errors correctly in various plugins
 
-0.07  Sep 5, 2012
+* Eliminate double-printed error with -p/--pipe
 
-* Improvements
-  - Add git pre-receive hook (Code::TidyAll::Git::Prereceive)
+* Allow relative paths to -p/--pipe
 
-* Fixes
-  - Show file paths with errors in quiet mode
 
-0.06  Sep 3, 2012
+0.10    2012-09-12
 
-* Improvements
-  - Add -g/--git flag and git pre-commit hook (Code::TidyAll::Git::Precommit)
+[ENHANCEMENTS]
 
-* Fixes
-  - Omit directories from svn_uncommitted_files (--svn)
+* Added masontidy plugin (Mason component tidier)
 
-0.05  Aug 21, 2012
+* Added jslint plugin (javascript validator)
 
-* Improvements
-  - Add etc/editors/tidyall.el for Emacs
-  - Only print 'no plugins apply' warning in verbose mode
 
-0.04  Aug 14, 2012
+0.09    2012-09-11
 
-* Fixes
-  - Add back missing plugins
-  - Fix --check-only flag
+[BUG FIXES]
 
-* Improvements
-  - Add -s/--svn flag
-  - Add emergency_comment_prefix ("NO TIDYALL") to svn precommit hook
+* Remove use of ex-dependency Hash::MoreUtils from bin/tidyall (Jason Wieland)
 
-0.03  Jul 24, 2012
+* Added IPC::System::Simple and Pod::Usage to deps (Jason Wieland)
 
-* Improvements
-  - Add svn precommit hook (Code::TidyAll::SVN::Precommit)
-  - Add preprocess_source and postprocess_source to plugins
-  - Add only_modes and except_modes configuration for plugins
-  - Add Code::TidyAll::process_source(), for processing a string instead of a file
-  - When only specified files are being processed, don't scan the whole hierarchy
-  - Add -I flag to tidyall
 
-* Implementation
-  - Switch to Moo
-  - Add separate new_from_conf_file constructor, for cleaner separation of cases
+0.08    2012-09-10
 
-0.02  Jul 3, 2012
+[ENHANCEMENTS]
 
-* Improvements
-  - Add Test::Code::TidyAll, to test that a project is tidied
-  - Add prefilter and postfilter params, to be applied to code before and after processing
-  - Add --check-only option to check but not tidy
-  - Add --mode option and modes config entry, to activate only a subset of plugins in config
-  - Add --output-suffix to write file to a different destination
-  - Add --quiet option to suppress most output
-  - Add --tidyall-class option to specify a different Code::TidyAll subclass
+* Added js-beautify plugin (javascript tidier)
 
-* Documentation
-  - Document how to create new plugins in Code::Tidy::Plugin
+* Added jshint plugin (javascript validator)
 
-0.01  Jun 17, 2012
+* Added podchecker plugin
 
-- Initial version
+* Added -p/--pipe flag to read from STDIN and write to STDOUT
+
+* Allow tidyall.el to work in narrowed regions
+
+* Make plugins into Moo classes, pass configuration as attributes
+
+[BUG FIXES]
+
+* Remove unused SVN::Look - perl-code-tidyall/pull/1 (Pedro Melo)
+
+* Filter just files from git status in Code::TidyAll::Git::Precommit (Pedro Melo)
+
+
+0.07    2012-09-05
+
+[ENHANCEMENTS]
+
+* Added git pre-receive hook (Code::TidyAll::Git::Prereceive)
+
+[BUG FIXES]
+
+* Show file paths with errors in quiet mode
+
+
+0.06    2012-09-03
+
+[ENHANCEMENTS]
+
+* Added -g/--git flag and git pre-commit hook (Code::TidyAll::Git::Precommit)
+
+[BUG FIXES]
+
+* Omit directories from svn_uncommitted_files (--svn)
+
+
+0.05    2012-08-21
+
+[ENHANCEMENTS]
+
+* Added etc/editors/tidyall.el for Emacs
+
+* Only print 'no plugins apply' warning in verbose mode
+
+
+0.04    2012-08-14
+
+[ENHANCEMENTS]
+
+* Added -s/--svn flag
+
+* Added emergency_comment_prefix ("NO TIDYALL") to svn precommit hook
+
+[BUG FIXES]
+
+* Added back missing plugins
+
+* Fix --check-only flag
+
+
+0.03    2012-07-24
+
+[eNHANCEMENTS]
+
+* Added svn precommit hook (Code::TidyAll::SVN::Precommit)
+
+* Added preprocess_source and postprocess_source to plugins
+
+* Added only_modes and except_modes configuration for plugins
+
+* Added Code::TidyAll::process_source(), for processing a string instead of a file
+
+* When only specified files are being processed, don't scan the whole hierarchy
+
+* Added -I flag to tidyall
+
+[INTERNALS]
+
+* Switch to Moo
+
+* Added separate new_from_conf_file constructor, for cleaner separation of cases
+
+
+0.02    2012-07-03
+
+[ENHANCEMENTS]
+
+* Added Test::Code::TidyAll, to test that a project is tidied
+
+* Added prefilter and postfilter params, to be applied to code before and after processing
+
+* Added --check-only option to check but not tidy
+
+* Added --mode option and modes config entry, to activate only a subset of plugins in config
+
+* Added --output-suffix to write file to a different destination
+
+* Added --quiet option to suppress most output
+
+* Added --tidyall-class option to specify a different Code::TidyAll subclass
+
+* Document how to create new plugins in Code::Tidy::Plugin
+
+
+0.01    2012-06-17
+
+* Initial release
 

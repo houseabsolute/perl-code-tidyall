@@ -1,6 +1,8 @@
 package Code::TidyAll::Plugin::JSHint;
-use Code::TidyAll::Util qw(tempdir_simple write_file);
-use Capture::Tiny qw(capture_merged);
+
+use Code::TidyAll::Util qw(tempdir_simple);
+use File::Slurp::Tiny qw(write_file);
+use IPC::Run3 qw(run3);
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
@@ -31,7 +33,8 @@ sub validate_file {
     my ( $self, $file ) = @_;
 
     my $cmd = sprintf( "%s %s %s", $self->cmd, $self->argv, $file );
-    my $output = capture_merged { system($cmd) };
+    my $output;
+    run3( $cmd, \undef, \$output, \$output );
     if ( $output =~ /\S/ ) {
         $output =~ s/^$file:\s*//gm;
         die "$output\n";
@@ -40,13 +43,11 @@ sub validate_file {
 
 1;
 
+# ABSTRACT: Use jshint with tidyall
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Plugin::JSHint - use jshint with tidyall
 
 =head1 SYNOPSIS
 

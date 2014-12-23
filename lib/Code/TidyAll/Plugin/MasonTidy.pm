@@ -1,4 +1,5 @@
 package Code::TidyAll::Plugin::MasonTidy;
+
 use Mason::Tidy;
 use Mason::Tidy::App;
 use Moo;
@@ -18,13 +19,11 @@ sub transform_source {
 
 1;
 
+# ABSTRACT: Use masontidy with tidyall
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Plugin::MasonTidy - use masontidy with tidyall
 
 =head1 SYNOPSIS
 
@@ -36,12 +35,12 @@ Code::TidyAll::Plugin::MasonTidy - use masontidy with tidyall
 
 =head1 DESCRIPTION
 
-Runs L<masontidy|masontidy>, a tidier for L<HTML::Mason|HTML::Mason> and
-L<Mason 2|Mason> components.
+Runs L<masontidy>, a tidier for L<HTML::Mason> and L<Mason 2|Mason>
+components.
 
 =head1 INSTALLATION
 
-Install L<masontidy|masontidy> from CPAN.
+Install L<masontidy> from CPAN.
 
     cpanm masontidy
 

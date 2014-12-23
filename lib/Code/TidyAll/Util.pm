@@ -1,4 +1,5 @@
 package Code::TidyAll::Util;
+
 use Cwd qw(realpath);
 use Data::Dumper;
 use File::Basename;
@@ -13,7 +14,7 @@ use warnings;
 use base qw(Exporter);
 
 our @EXPORT_OK =
-  qw(abs2rel basename can_load dirname dump_one_line mkpath pushd read_dir read_file realpath rel2abs tempdir_simple trim uniq write_file);
+  qw(abs2rel basename can_load dirname dump_one_line mkpath pushd read_dir realpath rel2abs tempdir_simple trim uniq);
 
 sub can_load {
 
@@ -69,19 +70,6 @@ sub read_dir {
     opendir( my $dirh, $dir ) or die "could not open $dir: $!";
     my @dir_entries = grep { $_ ne "." && $_ ne ".." } readdir($dirh);
     return @dir_entries;
-}
-
-sub read_file {
-    my ($file) = @_;
-    open( my $fh, "<", $file ) or die "could not open $file: $!";
-    my $contents = do { local $/; <$fh> };
-    return $contents;
-}
-
-sub write_file {
-    my ( $file, $contents ) = @_;
-    open( my $fh, ">", $file ) or die "could not open $file: $!";
-    print $fh $contents;
 }
 
 1;

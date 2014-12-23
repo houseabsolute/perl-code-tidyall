@@ -1,5 +1,6 @@
 package Code::TidyAll::Plugin::PerlCritic;
-use Capture::Tiny qw(capture_merged);
+
+use IPC::Run3 qw(run3);
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
@@ -9,19 +10,18 @@ sub validate_file {
     my ( $self, $file ) = @_;
 
     my $cmd = sprintf( "%s %s %s", $self->cmd, $self->argv, $file );
-    my $output = capture_merged { system($cmd) };
+    my $output;
+    run3( $cmd, \undef, \$output, \$output );
     die "$output\n" if $output !~ /^.* source OK\n/;
 }
 
 1;
 
+# ABSTRACT: Use perlcritic with tidyall
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Plugin::PerlCritic - use perlcritic with tidyall
 
 =head1 SYNOPSIS
 
@@ -41,7 +41,7 @@ Code::TidyAll::Plugin::PerlCritic - use perlcritic with tidyall
 
 =head1 DESCRIPTION
 
-Runs L<perlcritic|perlcritic>, a Perl validator, and dies if any problems were
+Runs L<perlcritic>, a Perl validator, and dies if any problems were
 found.
 
 =head1 INSTALLATION

@@ -1,4 +1,5 @@
 package Code::TidyAll::Plugin::CSSUnminifier;
+
 use IPC::System::Simple qw(run);
 use Moo;
 extends 'Code::TidyAll::Plugin';
@@ -13,13 +14,11 @@ sub transform_file {
 
 1;
 
+# ABSTACT: Use cssunminifier with tidyall
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Plugin::CSUnminifier - use cssunminifier with tidyall
 
 =head1 SYNOPSIS
 

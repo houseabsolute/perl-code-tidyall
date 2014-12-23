@@ -257,19 +257,23 @@ L<jslint|Code::TidyAll::Plugin::JSLint>
 
 =item *
 
-CSS: L<cssunminifier|Code::TidyAll::Plugin::CSUnminifier>
+JSON: L<JSON|Code::TidyAll::Plugin::JSON>
 
 =item *
 
-PHP: L<phpcs|Code::TidyAll::Plugin::CSUnminifier>
+CSS: L<cssunminifier|Code::TidyAll::Plugin::CSSUnminifier>
 
 =item *
 
-Misc: L<Code::TidyAll::Plugin::SortLines|Code::TidyAll::Plugin::SortLines>
+PHP: L<phpcs|Code::TidyAll::Plugin::PHPCodeSniffer>
+
+=item *
+
+Misc: L<Code::TidyAll::Plugin::SortLines>
 
 =back
 
-See L<Code::TidyAll::Plugin|Code::TidyAll::Plugin> for information about
+See L<Code::TidyAll::Plugin> for information about
 creating your own plugin.
 
 =head1 USING TIDYALL
@@ -312,7 +316,7 @@ You can also pass --conf-name to change the name that is searched for, or
 =head1 CONFIGURATION
 
 The config file (C<tidyall.ini> or C<.tidyallrc>) is in
-L<Config::INI|Config::INI> format.  Here's a sample:
+L<Config::INI> format.  Here's a sample:
 
     [PerlTidy]
     select = **/*.{pl,pm,t}
@@ -386,7 +390,7 @@ same description), one of them will be silently ignored.
 
 =item select
 
-One or more L<File::Zglob|File::Zglob> patterns, separated by whitespace or on
+One or more L<File::Zglob> patterns, separated by whitespace or on
 multiple lines, indicating which files to select. At least one is required.
 e.g.
 
@@ -403,11 +407,11 @@ e.g.
 The pattern is relative to the root directory and should have no leading slash.
 All standard glob characters (C<*>, C<?>, C<[]>, C<{}>) will work; in addition,
 C<**> can be used to represent zero or more directories. See
-L<File::Zglob|File::Zglob> documentation for more details.
+L<File::Zglob> documentation for more details.
 
 =item ignore
 
-One or more L<File::Zglob|File::Zglob> patterns, separated by whitespace or on
+One or more L<File::Zglob> patterns, separated by whitespace or on
 multiple lines, indicating which files to ignore.  This is optional and
 overrides C<select>. e.g.
 
@@ -421,7 +425,7 @@ overrides C<select>. e.g.
 
 A list of modes, separated by whitespace. e.g.
 
-    only_modes = tests cli
+    only_modes = test cli
 
 The plugin will I<only> run if one of these modes is passed to C<tidyall> via
 C<-m> or C<--mode>.
@@ -535,14 +539,14 @@ Add one or more library paths to @INC, like Perl's -I. Useful if
 =item --backup-ttl I<duration>
 
 Amount of time before backup files can be purged. Can be a number of seconds or
-any string recognized by L<Time::Duration::Parse|Time::Duration::Parse>, e.g.
+any string recognized by L<Time::Duration::Parse>, e.g.
 "4h" or "1day". Defaults to "1h".
 
 =item --check-only
 
 Instead of actually tidying files, check if each file is tidied (i.e. if its
 tidied version is equal to its current version) and consider it an error if
-not. This is used by L<Test::Code::TidyAll|Test::Code::TidyAll> and the
+not. This is used by L<Test::Code::TidyAll> and the
 L<svn|Code::TidyAll::SVN::Precommit> and L<git|Code::TidyAll::Git::Precommit>
 pre-commit hooks, for example, to enforce that you've tidied your files.
 
@@ -652,12 +656,12 @@ C<editor> - when invoking from an editor
 =item *
 
 C<commit> - when using a commit hook like
-L<Code::TidyAll::SVN::Precommit|Code::TidyAll::SVN::Precommit> or
-L<Code::TidyAll::Git::Precommit|Code::TidyAll::Git::Precommit>
+L<Code::TidyAll::SVN::Precommit> or
+L<Code::TidyAll::Git::Precommit>
 
 =item *
 
-C<test> - when using L<Test::Code::TidyAll|Test::Code::TidyAll>
+C<test> - when using L<Test::Code::TidyAll>
 
 =back
 
@@ -667,7 +671,7 @@ command-line invocation:
 
     [PerlCritic]
     select = lib/**/*.pm
-    only_modes = tests cli
+    only_modes = test cli
     ...
 
 Or you could specify that it be run in all modes I<except> the editor:
@@ -698,9 +702,16 @@ Old backup files will be purged automatically as part of occasional C<tidyall>
 runs. The duration specified in C<--backup-ttl> indicates both the minimum
 amount of time backups should be kept, and the frequency that purges should be
 run. It may be specified as "30m" or "4 hours" or any string acceptable to
-L<Time::Duration::Parse|Time::Duration::Parse>. It defaults to "1h" (1 hour).
+L<Time::Duration::Parse>. It defaults to "1h" (1 hour).
 
 You can turn off backups with C<--no-backups>.
+
+=head1 "MISSING" PREREQS
+
+The C<Code::TidyAll> distribution intentionally does not depend on the prereqs
+needed for each plugin. This means that if you want to use the
+L<perltidy|Code::TidyAll::Plugin::PerlTidy>, you must install the
+L<Perl::Tidy> module manually.
 
 =head1 RELATED TOOLS
 
@@ -712,25 +723,25 @@ L<etc/editors/tidyall.el|https://raw.github.com/jonswar/perl-code-tidyall/master
 and
 L<etc/editors/tidyall.vim|https://raw.github.com/jonswar/perl-code-tidyall/master/etc/editors/tidyall.vim>
 in this distribution contains Emacs and Vim commands for running C<tidyall> on
-the current buffer. You can assign this to the keystroke of your choice (e.g. 
+the current buffer. You can assign this to the keystroke of your choice (e.g.
 ctrl-t or ,t).
 
 =item *
 
-L<Code::TidyAll::SVN::Precommit|Code::TidyAll::SVN::Precommit> implements a
+L<Code::TidyAll::SVN::Precommit> implements a
 subversion pre-commit hook that checks if all files are tidied and valid
 according to C<tidyall>, and rejects the commit if not.
 
 =item *
 
-L<Code::TidyAll::Git::Precommit|Code::TidyAll::Git::Precommit> and
-L<Code::TidyAll::Git::Prereceive|Code::TidyAll::Git::Prereceive> implement git
+L<Code::TidyAll::Git::Precommit> and
+L<Code::TidyAll::Git::Prereceive> implement git
 pre-commit and pre-receive hooks, respectively, that check if all files are
 tidied and valid according to C<tidyall>.
 
 =item *
 
-L<Test::Code::TidyAll|Test::Code::TidyAll> is a testing library to check that
+L<Test::Code::TidyAll> is a testing library to check that
 all the files in your project are in a tidied and valid state.
 
 =back

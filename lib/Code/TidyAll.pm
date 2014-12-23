@@ -1,13 +1,15 @@
 package Code::TidyAll;
+
 use Cwd qw(realpath);
 use Code::TidyAll::Config::INI::Reader;
 use Code::TidyAll::Cache;
 use Code::TidyAll::Util
-  qw(abs2rel basename can_load dirname dump_one_line mkpath read_dir read_file rel2abs tempdir_simple uniq write_file);
+  qw(abs2rel basename can_load dirname dump_one_line mkpath read_dir rel2abs tempdir_simple uniq);
 use Code::TidyAll::Result;
 use Date::Format;
 use Digest::SHA1 qw(sha1_hex);
 use File::Find qw(find);
+use File::Slurp::Tiny qw(read_file write_file);
 use File::Zglob;
 use List::MoreUtils qw(uniq);
 use Moo;
@@ -19,15 +21,15 @@ use warnings;
 sub default_conf_names { ( 'tidyall.ini', '.tidyallrc' ) }
 
 # External
-has 'backup_ttl'    => ( is => 'ro', default => sub { '1 hour' } );
+has 'backup_ttl'    => ( is => 'ro', default => '1 hour' );
 has 'check_only'    => ( is => 'ro' );
 has 'data_dir'      => ( is => 'lazy' );
-has 'iterations'    => ( is => 'ro', default => sub { 1 } );
+has 'iterations'    => ( is => 'ro', default => 1 );
 has 'list_only'     => ( is => 'ro' );
-has 'mode'          => ( is => 'ro', default => sub { 'cli' } );
+has 'mode'          => ( is => 'ro', default =>  'cli'  );
 has 'no_backups'    => ( is => 'ro' );
 has 'no_cache'      => ( is => 'ro' );
-has 'output_suffix' => ( is => 'ro', default => sub { '' } );
+has 'output_suffix' => ( is => 'ro', default => q{} );
 has 'plugins'       => ( is => 'ro', required => 1 );
 has 'quiet'         => ( is => 'ro' );
 has 'recursive'     => ( is => 'ro' );
@@ -479,13 +481,11 @@ sub _error_result {
 
 1;
 
+# ABSTRACT: Engine for tidyall, your all-in-one code tidier and validator
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
 =head1 SYNOPSIS
 
@@ -515,7 +515,7 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
 =head1 DESCRIPTION
 
-This is the engine used by L<tidyall|tidyall> - read that first to get an
+This is the engine used by L<tidyall> - read that first to get an
 overview.
 
 You can call this API from your own program instead of executing C<tidyall>.
@@ -532,7 +532,7 @@ The regular constructor. Must pass at least I<plugins> and I<root_dir>.
 
 =item new_with_conf_file ($conf_file, %params)
 
-Takes a conf file path, followed optionally by a set of key/value parameters. 
+Takes a conf file path, followed optionally by a set of key/value parameters.
 Reads parameters out of the conf file and combines them with the passed
 parameters (the latter take precedence), and calls the regular constructor.
 
@@ -587,7 +587,7 @@ C<backup_ttl> here).
 
 Call L</process_file> on each file; descend recursively into each directory if
 the C<recursive> flag is on. Return a list of
-L<Code::TidyAll::Result|Code::TidyAll::Result> objects, one for each file.
+L<Code::TidyAll::Result> objects, one for each file.
 
 =item process_file (file)
 
@@ -613,7 +613,7 @@ Write the cache if enabled
 
 =item *
 
-Return a L<Code::TidyAll::Result|Code::TidyAll::Result> object
+Return a L<Code::TidyAll::Result> object
 
 =back
 
@@ -622,12 +622,12 @@ Return a L<Code::TidyAll::Result|Code::TidyAll::Result> object
 Like L</process_file>, but process the I<source> string instead of a file, and
 do not read from or write to the cache. You must still pass the relative
 I<path> from the root as the second argument, so that we know which plugins to
-apply. Return a L<Code::TidyAll::Result|Code::TidyAll::Result> object.
+apply. Return a L<Code::TidyAll::Result> object.
 
 =item plugins_for_path (I<path>)
 
 Given a relative I<path> from the root, return a list of
-L<Code::TidyAll::Plugin|Code::TidyAll::Plugin> objects that apply to it, or an
+L<Code::TidyAll::Plugin> objects that apply to it, or an
 empty list if no plugins apply.
 
 =item find_conf_file (I<conf_names>, I<start_dir>)

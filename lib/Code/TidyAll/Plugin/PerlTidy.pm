@@ -1,4 +1,5 @@
 package Code::TidyAll::Plugin::PerlTidy;
+
 use Capture::Tiny qw(capture_merged);
 use Perl::Tidy;
 use Moo;
@@ -9,17 +10,21 @@ sub transform_source {
 
     # perltidy reports errors in two different ways.
     # Argument/profile errors are output and an error_flag is returned.
-    # Syntax errors are sent to errorfile.
-    #
-    my ( $output, $error_flag, $errorfile, $destination );
+    # Syntax errors are sent to errorfile or stderr, depending on the
+    # the setting of -se/-nse (aka --standard-error-output).  These flags
+    # might be hidden in other bundles, e.g. -pbp.  Be defensive and
+    # check both.
+    my ( $output, $error_flag, $errorfile, $stderr, $destination );
     $output = capture_merged {
         $error_flag = Perl::Tidy::perltidy(
             argv        => $self->argv,
             source      => \$source,
             destination => \$destination,
+            stderr      => \$stderr,
             errorfile   => \$errorfile
         );
     };
+    die $stderr          if $stderr;
     die $errorfile       if $errorfile;
     die $output          if $error_flag;
     print STDERR $output if defined($output);
@@ -54,7 +59,7 @@ Code::TidyAll::Plugin::PerlTidy - use perltidy with tidyall
 
 =head1 DESCRIPTION
 
-Runs L<perltidy|perltidy>, a Perl tidier.
+Runs L<perltidy>, a Perl tidier.
 
 =head1 INSTALLATION
 

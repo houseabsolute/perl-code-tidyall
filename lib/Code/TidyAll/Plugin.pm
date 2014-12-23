@@ -1,11 +1,13 @@
 package Code::TidyAll::Plugin;
-use Code::TidyAll::Util qw(basename read_file write_file);
+
+use Code::TidyAll::Util qw(basename);
 use Code::TidyAll::Util::Zglob qw(zglobs_to_regex);
+use File::Slurp::Tiny qw(read_file write_file);
 use Scalar::Util qw(weaken);
 use Moo;
 
 # External
-has 'argv'         => ( is => 'ro', default => sub { '' } );
+has 'argv'         => ( is => 'ro', default => q{} );
 has 'class'        => ( is => 'ro' );
 has 'cmd'          => ( is => 'lazy' );
 has 'ignore'       => ( is => 'ro' );
@@ -138,22 +140,21 @@ sub matches_path {
 }
 
 1;
+
+# ABSTRACT: Create plugins for tidying or validating code
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Plugin - Create plugins for tidying or validating code
 
 =head1 SYNOPSIS
 
     package Code::TidyAll::Plugin::SomeTidier;
     use Moo;
     extends 'Code::TidyAll::Plugin';
-    
+
     sub transform_source {
-        my ( $self, source ) = @_;
+        my ( $self, $source ) = @_;
         ...
         return $source;
     }
@@ -162,7 +163,7 @@ Code::TidyAll::Plugin - Create plugins for tidying or validating code
     package Code::TidyAll::Plugin::SomeValidator;
     use Moo;
     extends 'Code::TidyAll::Plugin';
-    
+
     sub validate_file {
         my ( $self, $file ) = @_;
         die "not valid" if ...;
@@ -175,8 +176,8 @@ plugin class that inherits from this class. This document describes how to
 implement a new plugin.
 
 The easiest way to start is to look at existing plugins, such as
-L<Code::TidyAll::Plugin::PerlTidy|Code::TidyAll::Plugin::PerlTidy> and
-L<Code::TidyAll::Plugin::PerlCritic|Code::TidyAll::Plugin::PerlCritic>.
+L<Code::TidyAll::Plugin::PerlTidy> and
+L<Code::TidyAll::Plugin::PerlCritic>.
 
 =head1 NAMING
 
@@ -200,10 +201,10 @@ as parameters. e.g. given
     ignore = lib/UtterHack.pm
     argv = -severity 3
 
-then L<Code::TidyAll::Plugin::PerlCritic|Code::TidyAll::Plugin::PerlCritic>
+then L<Code::TidyAll::Plugin::PerlCritic>
 would be constructed with parameters
 
-    select => 'lib/**/*.pm', 
+    select => 'lib/**/*.pm',
     ignore = 'lib/UtterHack.pm',
     argv = '-severity 3'
 
@@ -227,7 +228,7 @@ Name of the plugin to be used in error messages etc.
 
 =item tidyall
 
-A weak reference back to the L<Code::TidyAll|Code::TidyAll> object.
+A weak reference back to the L<Code::TidyAll> object.
 
 =item select, ignore
 

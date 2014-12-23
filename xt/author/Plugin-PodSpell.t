@@ -1,3 +1,4 @@
 #!/usr/bin/perl
-use Code::TidyAll::t::Plugin::PodSpell;
-Code::TidyAll::t::Plugin::PodSpell->runtests;
+use lib 't/lib';
+use Test::Code::TidyAll::Plugin::PodSpell;
+Test::Code::TidyAll::Plugin::PodSpell->runtests;

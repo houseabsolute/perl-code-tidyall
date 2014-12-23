@@ -1,4 +1,5 @@
 package Code::TidyAll::Result;
+
 use Moo;
 
 has 'error'        => ( is => 'ro' );
@@ -10,13 +11,11 @@ sub ok { return $_[0]->state ne 'error' }
 
 1;
 
+# ABSTRACT: Result returned from processing a file/source
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Result - Result returned from processing a file/source
 
 =head1 SYNOPSIS
 
