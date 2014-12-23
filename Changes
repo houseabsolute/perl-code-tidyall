@@ -3,6 +3,9 @@
 - The JSON plugin now uses JSON::MaybeXS instead of JSON.pm. Patch by Greg
   Oschwald. GitHub #37.
 
+- Added a new plugin, PerlTidySweet, which uses perltidy-sweet instead of
+  perltidy. Implemented by Mark Grimes. GitHub #26.
+
 
 0.27     2015-07-04
 

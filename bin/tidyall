@@ -238,7 +238,8 @@ distribution comes with plugins for:
 =item *
 
 Perl: L<perlcritic|Code::TidyAll::Plugin::PerlCritic>,
-L<perltidy|Code::TidyAll::Plugin::PerlTidy>
+L<perltidy|Code::TidyAll::Plugin::PerlTidy>,
+L<perltidy-sweet|Code::TidyAll::Plugin::PerlTidy::Sweetened>
 
 =item *
 
