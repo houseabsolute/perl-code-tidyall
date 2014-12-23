@@ -1,6 +1,6 @@
+package Test::Code::TidyAll::Plugin::PerlTidySweet;
 
-package Code::TidyAll::t::Plugin::PerlTidier;
-use Test::Class::Most parent => 'Code::TidyAll::t::Plugin';
+use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
 
 sub test_main : Tests {
     my $self = shift;
@@ -34,4 +34,5 @@ sub test_main : Tests {
     );
 }
 
+1;
 1;
