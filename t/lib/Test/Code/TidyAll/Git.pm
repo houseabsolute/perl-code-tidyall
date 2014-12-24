@@ -61,7 +61,10 @@ sub test_git : Tests {
     # Add pre-commit hook
     #
     my $precommit_hook_file = "$hooks_dir/pre-commit";
-    my $precommit_hook = sprintf( $precommit_hook_template, realpath("lib") );
+    my $precommit_hook = sprintf(
+        $precommit_hook_template, join q{ },
+        map { realpath($_) } qw( lib t/lib )
+    );
     write_file( $precommit_hook_file, $precommit_hook );
     chmod( 0775, $precommit_hook_file );
 
@@ -91,7 +94,10 @@ sub test_git : Tests {
     # Add prereceive hook to shared repo
     #
     my $prereceive_hook_file = "$shared_dir/hooks/pre-receive";
-    my $prereceive_hook = sprintf( $prereceive_hook_template, realpath("lib") );
+    my $prereceive_hook = sprintf(
+        $prereceive_hook_template, join q{ },
+        map { realpath($_) } qw( lib t/lib )
+    );
     write_file( $prereceive_hook_file, $prereceive_hook );
     chmod( 0775, $prereceive_hook_file );
 
