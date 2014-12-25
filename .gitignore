@@ -22,7 +22,6 @@ _build
 bench
 blib*
 cover_db*
-data
 docs
 htdocs
 perltidy.LOG
