@@ -127,6 +127,7 @@ You can call this API from your own program instead of executing `tidyall`.
 - George Hartzell <georgewh@gene.com>
 - Gregory Oschwald <goschwald@maxmind.com>
 - Joe Crotty <joe.crotty@returnpath.net>
+- Mark Grimes <mgrimes@cpan.org>
 - Olaf Alders <olaf@wundersolutions.com>
 - Pedro Melo <melo@simplicidade.org>
 

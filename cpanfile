@@ -59,6 +59,7 @@ on 'develop' => sub {
   requires "Mason::Tidy" => "0";
   requires "Mason::Tidy::App" => "0";
   requires "Perl::Tidy" => "0";
+  requires "Perl::Tidy::Sweetened" => "0";
   requires "Pod::Checker" => "0";
   requires "Pod::Spell" => "0";
   requires "Pod::Tidy" => "0";
