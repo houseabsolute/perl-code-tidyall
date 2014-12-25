@@ -35,7 +35,6 @@ sub test_git : Tests {
     };
 
     my $lib_dirs = join q{ }, map { realpath($_) } qw( lib t/lib );
-    diag("LIBS = $lib_dirs");
 
     # Create the repo
     #
