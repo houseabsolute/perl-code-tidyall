@@ -34,6 +34,9 @@ sub test_git : Tests {
         like( capturex( 'git', 'status' ), qr/Your branch is ahead/, "unpushed" );
     };
 
+    my $lib_dirs = join q{ }, map { realpath($_) } qw( lib t/lib );
+    diag("LIBS = $lib_dirs");
+
     # Create the repo
     #
     run( "git", "init", $work_dir );
@@ -61,10 +64,7 @@ sub test_git : Tests {
     # Add pre-commit hook
     #
     my $precommit_hook_file = "$hooks_dir/pre-commit";
-    my $precommit_hook = sprintf(
-        $precommit_hook_template, join q{ },
-        map { realpath($_) } qw( lib t/lib )
-    );
+    my $precommit_hook = sprintf( $precommit_hook_template, $lib_dirs );
     write_file( $precommit_hook_file, $precommit_hook );
     chmod( 0775, $precommit_hook_file );
 
@@ -94,10 +94,7 @@ sub test_git : Tests {
     # Add prereceive hook to shared repo
     #
     my $prereceive_hook_file = "$shared_dir/hooks/pre-receive";
-    my $prereceive_hook = sprintf(
-        $prereceive_hook_template, join q{ },
-        map { realpath($_) } qw( lib t/lib )
-    );
+    my $prereceive_hook = sprintf( $prereceive_hook_template, $lib_dirs );
     write_file( $prereceive_hook_file, $prereceive_hook );
     chmod( 0775, $prereceive_hook_file );
 
