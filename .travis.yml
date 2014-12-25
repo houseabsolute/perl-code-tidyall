@@ -30,7 +30,7 @@ install:
 script:
   - perl Makefile.PL
   - make
-  - prove -br $(test-files)
+  - prove -br -j$(test-jobs) $(test-files)
 notifications:
   email:
     recipients:
