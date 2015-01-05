@@ -1,6 +1,5 @@
 package Code::TidyAll::Plugin::PHPCodeSniffer;
 
-use Capture::Tiny qw(capture_merged);
 use IPC::Run3;
 use Moo;
 extends 'Code::TidyAll::Plugin';
