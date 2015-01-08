@@ -1,6 +1,5 @@
 package Code::TidyAll::Plugin::PHPCodeSniffer;
 
-use Capture::Tiny qw(capture_merged);
 use IPC::Run3;
 use Moo;
 extends 'Code::TidyAll::Plugin';
@@ -10,7 +9,6 @@ sub _build_cmd { 'phpcs' }
 sub validate_file {
     my ( $self, $file ) = @_;
 
-    my $exit;
     my @cmd = ( $self->cmd, $self->argv, $file );
     my $output;
     run3( \@cmd, \undef, \$output, \$output );
