@@ -19,9 +19,9 @@ sub tidyall_ok {
         my @conf_names = Code::TidyAll->default_conf_names;
         $conf_file = Code::TidyAll->find_conf_file( \@conf_names, "." );
     }
+    $options{quiet} = 1 unless $options{verbose};
     my $ct = Code::TidyAll->new_from_conf_file(
         $conf_file,
-        quiet      => 1,
         check_only => 1,
         mode       => 'test',
         %options,

@@ -1,5 +1,12 @@
 {{$NEXT}}
 
+[ENHANCEMENTS]
+
+- You can now pass "verbose => 1" to tidyall_ok(). Previously this would have
+  been overridden because we unconditionally set "quiet => 1", but now we only
+  do this when verbose is not specified.
+
+
 0.24     2014-11-06
 
 [WARNING FOR A FUTURE RELEASE]
