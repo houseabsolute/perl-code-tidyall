@@ -8,6 +8,8 @@ use Code::TidyAll::Util qw(can_load dirname rel2abs);
 use strict;
 use warnings;
 
+our $VERSION = '0.27';
+
 my $usage = '
 Usage: tidyall [options] [file] ...
 See https://metacpan.org/module/tidyall for full documentation.
