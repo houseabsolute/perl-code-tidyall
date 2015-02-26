@@ -4,6 +4,8 @@ use IPC::Run3 qw(run3);
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
+our $VERSION = '0.25';
+
 sub _build_cmd { 'jslint' }
 
 sub validate_file {

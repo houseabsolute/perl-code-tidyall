@@ -8,6 +8,8 @@ use Moo;
 use SVN::Look;
 use Try::Tiny;
 
+our $VERSION = '0.25';
+
 # Public
 has 'conf_name'                => ( is => 'ro' );
 has 'emergency_comment_prefix' => ( is => 'ro', default => 'NO TIDYALL' );

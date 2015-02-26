@@ -5,6 +5,8 @@ use Pod::Tidy;
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
+our $VERSION = '0.25';
+
 has 'columns' => ( is => 'ro' );
 
 sub transform_file {

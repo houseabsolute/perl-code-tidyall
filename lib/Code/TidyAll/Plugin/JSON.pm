@@ -6,6 +6,8 @@ use warnings;
 use JSON ();
 use Moo;
 
+our $VERSION = '0.25';
+
 extends 'Code::TidyAll::Plugin';
 
 has 'ascii' => ( is => 'ro', default => 0 );

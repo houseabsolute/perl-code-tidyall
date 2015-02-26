@@ -13,6 +13,8 @@ use strict;
 use warnings;
 use base qw(Exporter);
 
+our $VERSION = '0.25';
+
 our @EXPORT_OK =
   qw(abs2rel basename can_load dirname dump_one_line mkpath pushd read_dir realpath rel2abs tempdir_simple trim uniq);
 
