@@ -6,6 +6,8 @@ use File::Slurp::Tiny qw(read_file write_file);
 use Scalar::Util qw(weaken);
 use Moo;
 
+our $VERSION = '0.25';
+
 # External
 has 'argv'         => ( is => 'ro', default => q{} );
 has 'class'        => ( is => 'ro' );

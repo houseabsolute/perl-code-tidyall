@@ -9,6 +9,8 @@ use vars qw/@ISA @EXPORT_OK
 @ISA       = 'Exporter';
 @EXPORT_OK = qw( zglobs_to_regex zglob_to_regex );
 
+our $VERSION = '0.25';
+
 $strict_leading_dot    = 1;
 $strict_wildcard_slash = 1;
 

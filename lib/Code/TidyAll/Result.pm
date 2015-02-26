@@ -2,6 +2,8 @@ package Code::TidyAll::Result;
 
 use Moo;
 
+our $VERSION = '0.25';
+
 has 'error'        => ( is => 'ro' );
 has 'new_contents' => ( is => 'ro' );
 has 'path'         => ( is => 'ro' );

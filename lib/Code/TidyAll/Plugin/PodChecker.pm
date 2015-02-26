@@ -4,6 +4,8 @@ use Pod::Checker;
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
+our $VERSION = '0.25';
+
 has 'warnings' => ( is => 'ro' );
 
 sub validate_file {
