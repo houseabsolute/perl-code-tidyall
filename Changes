@@ -19,6 +19,12 @@
   warnings. As long as perlcritic says "source OK", we want to treat that as a
   pass, despite any warnings it may issue. Fixed by Mark Fowler.
 
+- Made the caching model pluggable, and added a new
+  Code::TidyAll::CacheModel::Shared class as an alternative to the default
+  model. This lets you share the cache directory between multiple branches in
+  a single checkout while still detecting file changes properly. Implemented
+  by Mark Fowler.
+
 
 0.24     2014-11-06
 
