@@ -7,6 +7,8 @@ use strict;
 use warnings;
 use base qw(Exporter);
 
+our $VERSION = '0.25';
+
 my $test = Test::Builder->new;
 
 our @EXPORT_OK = qw(tidyall_ok);
