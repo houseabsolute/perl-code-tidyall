@@ -7,6 +7,7 @@ use Capture::Tiny qw(capture capture_stdout capture_merged);
 use File::Find qw(find);
 use File::Slurp::Tiny qw(read_file write_file);
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
+use Code::TidyAll::CacheModel::Shared;
 
 sub test_plugin { "+Code::TidyAll::Test::Plugin::$_[0]" }
 my %UpperText  = ( test_plugin('UpperText')  => { select => '**/*.txt' } );
@@ -209,70 +210,89 @@ sub test_iterations : Tests {
 sub test_caching_and_backups : Tests {
     my $self = shift;
 
-    foreach my $no_cache ( 0 .. 1 ) {
-        foreach my $no_backups ( 0 .. 1 ) {
-            my $desc     = "(no_cache=$no_cache, no_backups=$no_backups)";
-            my $root_dir = $self->create_dir( { "foo.txt" => "abc" } );
-            my $ct       = Code::TidyAll->new(
-                plugins  => {%UpperText},
-                root_dir => $root_dir,
-                ( $no_cache   ? ( no_cache   => 1 ) : () ),
-                ( $no_backups ? ( no_backups => 1 ) : () )
-            );
-            my $output;
-            my $file = "$root_dir/foo.txt";
-            my $go   = sub {
-                $output = capture_stdout { $ct->process_paths($file) };
-            };
+    my @chi_or_no_chi = ('');
+    if (eval "use CHI; 1") {
+        push @chi_or_no_chi, "chi";
+    }
 
-            $go->();
-            is( read_file($file), "ABC", "first file change $desc" );
-            is( $output, "[tidied]  foo.txt\n", "first output $desc" );
-
-            $go->();
-            if ($no_cache) {
-                is( $output, "[checked] foo.txt\n", "second output $desc" );
-            }
-            else {
-                is( $output, '', "second output $desc" );
-            }
-
-            write_file( $file, "ABCD" );
-            $go->();
-            is( $output, "[checked] foo.txt\n", "third output $desc" );
-
-            write_file( $file, "def" );
-            $go->();
-            is( read_file($file), "DEF", "fourth file change $desc" );
-            is( $output, "[tidied]  foo.txt\n", "fourth output $desc" );
-
-            my $backup_dir = $ct->data_dir . "/backups";
-            mkpath( $backup_dir, 0, 0775 );
-            my @files;
-            find(
-                {
-                    follow   => 0,
-                    wanted   => sub { push @files, $_ if -f },
-                    no_chdir => 1
-                },
-                $backup_dir
-            );
-
-            if ($no_backups) {
-                ok( @files == 0, "no backup files $desc" );
-            }
-            else {
-                ok( scalar(@files) == 1 || scalar(@files) == 2, "1 or 2 backup files $desc" );
-                foreach my $file (@files) {
-                    like(
-                        $file,
-                        qr|\.tidyall\.d/backups/foo\.txt-\d+-\d+\.bak|,
-                        "backup filename $desc"
+    foreach my $chi (@chi_or_no_chi) {
+        foreach my $cache_model_class (qw(
+            Code::TidyAll::CacheModel
+            Code::TidyAll::CacheModel::Shared
+        )) {
+            foreach my $no_cache ( 0 .. 1 ) {
+                foreach my $no_backups ( 0 .. 1 ) {
+                    my $desc     = "(no_cache=$no_cache, no_backups=$no_backups, model=$cache_model_class, cache_class=$chi)";
+                    my $root_dir = $self->create_dir( { "foo.txt" => "abc" } );
+                    my $ct       = Code::TidyAll->new(
+                        plugins  => {%UpperText},
+                        root_dir => $root_dir,
+                        cache_model_class => $cache_model_class,
+                        ( $no_cache   ? ( no_cache   => 1 ) : () ),
+                        ( $no_backups ? ( no_backups => 1 ) : () ),
+                        ( $chi ? ( cache =>  _chi() ) : () ),
                     );
+                    my $output;
+                    my $file = "$root_dir/foo.txt";
+                    my $go   = sub {
+                        $output = capture_stdout { $ct->process_paths($file) };
+                    };
+
+                    $go->();
+                    is( read_file($file), "ABC", "first file change $desc" );
+                    is( $output, "[tidied]  foo.txt\n", "first output $desc" );
+
+                    $go->();
+                    if ($no_cache) {
+                        is( $output, "[checked] foo.txt\n", "second output $desc" );
+                    }
+                    else {
+                        is( $output, '', "second output $desc" );
+                    }
+
+                    write_file( $file, "ABCD" );
+                    $go->();
+                    is( $output, "[checked] foo.txt\n", "third output $desc" );
+
+                    write_file( $file, "def" );
+                    $go->();
+                    is( read_file($file), "DEF", "fourth file change $desc" );
+                    is( $output, "[tidied]  foo.txt\n", "fourth output $desc" );
+
+                    my $backup_dir = $ct->data_dir . "/backups";
+                    mkpath( $backup_dir, 0, 0775 );
+                    my @files;
+                    find(
+                        {
+                            follow   => 0,
+                            wanted   => sub { push @files, $_ if -f },
+                            no_chdir => 1
+                        },
+                        $backup_dir
+                    );
+
+                    if ($no_backups) {
+                        ok( @files == 0, "no backup files $desc" );
+                    }
+                    else {
+                        ok( scalar(@files) == 1 || scalar(@files) == 2, "1 or 2 backup files $desc" );
+                        foreach my $file (@files) {
+                            like(
+                                $file,
+                                qr|\.tidyall\.d/backups/foo\.txt-\d+-\d+\.bak|,
+                                "backup filename $desc"
+                            );
+                        }
+                    }
                 }
             }
         }
     }
+}
+
+sub _chi {
+    my $datastore = {};
+    return CHI->new( driver => 'Memory', datastore => $datastore );
 }
 
 sub test_selects_and_ignores : Tests {
