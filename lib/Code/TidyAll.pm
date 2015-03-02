@@ -588,8 +588,9 @@ The cache model class.  Defaults to C<Code::TidyAll::CacheModel>
 
 =item cache
 
-The cache instance (i.e. an instance of C<Code::TidyAll::Cache>.)
-Automatically instantiated if not passed.
+The cache instance (e.g. an instance of C<Code::TidyAll::Cache> or a C<CHI>
+instance.) An instance of C<Code::TidyAll::Cache> is automatically instantiated
+by default.
 
 =item backup_ttl
 
