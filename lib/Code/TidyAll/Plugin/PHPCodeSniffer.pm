@@ -28,10 +28,6 @@ __END__
 
 =pod
 
-=head1 VERSION
-
-version 0.25
-
 =head1 SYNOPSIS
 
    In configuration:
