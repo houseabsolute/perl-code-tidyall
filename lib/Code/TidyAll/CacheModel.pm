@@ -8,17 +8,14 @@ our $VERSION = '0.25';
 
 # todo, type checking?
 
-has 'full_path' => ( is => 'ro', required => 1 );
-has 'path' => ( is => 'ro', required => 1 );
-
-has 'cache_engine' => ( is => 'ro' );
-has 'base_sig' => ( is => 'ro', default => "" );
-
+has 'base_sig'      => ( is => 'ro', default => "" );
+has 'cache_engine'  => ( is => 'ro' );
+has 'cache_key'     => ( is => 'lazy', clearer => 1 );
+has 'cache_value'   => ( is => 'lazy', clearer => 1 );
 has 'file_contents' => ( is => 'rw', lazy => 1, builder => 1, trigger => 1, clearer => 1 );
-
-has 'cache_key'   => ( is => 'lazy', clearer => 1 );
-has 'cache_value' => ( is => 'lazy', clearer => 1 );
-has 'is_cached'   => ( is => 'rw', lazy => 1, builder => 1, clearer => 1  );
+has 'full_path'     => ( is => 'ro', required => 1 );
+has 'is_cached'     => ( is => 'rw', lazy => 1, builder => 1, clearer => 1 );
+has 'path'          => ( is => 'ro', required => 1 );
 
 sub _build_file_contents {
     my ($self) = @_;
@@ -35,13 +32,14 @@ sub _trigger_file_contents {
 
 sub _build_cache_key {
     my ($self) = @_;
-    return 'sig/'.$self->path;
+    return 'sig/' . $self->path;
 }
 
 sub _build_cache_value {
     my ($self) = @_;
+
     # this stat isn't ideal, but it'll do
-    my $last_mod = ( stat($self->full_path) )[9];
+    my $last_mod = ( stat( $self->full_path ) )[9];
     return $self->_sig( [ $self->base_sig, $last_mod, $self->file_contents ] );
 }
 
@@ -133,8 +131,8 @@ A base signature.
 
 =item is_cached (optional, default computed, rw)
 
-A flag indicating if this is cached.  By default checks that the cache key
-and cache value match the cache.
+A flag indicating if this is cached.  By default checks that the cache key and
+cache value match the cache.
 
 =back
 

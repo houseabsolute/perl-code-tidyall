@@ -25,6 +25,8 @@ sub default_conf_names { ( 'tidyall.ini', '.tidyallrc' ) }
 
 # External
 has 'backup_ttl'        => ( is => 'ro', default => '1 hour' );
+has 'cache'             => ( is => 'lazy' );
+has 'cache_model_class' => ( is => 'ro', default => 'Code::TidyAll::CacheModel' );
 has 'check_only'        => ( is => 'ro' );
 has 'data_dir'          => ( is => 'lazy' );
 has 'iterations'        => ( is => 'ro', default => 1 );
@@ -40,8 +42,6 @@ has 'recursive'         => ( is => 'ro' );
 has 'refresh_cache'     => ( is => 'ro' );
 has 'root_dir'          => ( is => 'ro', required => 1 );
 has 'verbose'           => ( is => 'ro' );
-has 'cache_model_class' => ( is => 'ro', default => 'Code::TidyAll::CacheModel' );
-has 'cache'             => ( is => 'lazy');
 
 # Internal
 has 'backup_dir'       => ( is => 'lazy', init_arg => undef, trigger => 1 );
@@ -236,10 +236,10 @@ sub process_file {
     }
 
     my $cache_model = $self->_cache_model_for( $path, $full_path );
-    if ($self->refresh_cache) {
+    if ( $self->refresh_cache ) {
         $cache_model->remove;
     }
-    elsif ($cache_model->is_cached) {
+    elsif ( $cache_model->is_cached ) {
         $self->msg( "[cached] %s", $path ) if $self->verbose;
         return Code::TidyAll::Result->new( path => $path, state => 'cached' );
     }
@@ -248,6 +248,7 @@ sub process_file {
     my $result = $self->process_source( $contents, $path );
 
     if ( $result->state eq 'tidied' ) {
+
         # backup original contents
         $self->_backup_file( $path, $contents );
 
@@ -256,7 +257,7 @@ sub process_file {
         write_file( join( '', $full_path, $self->output_suffix ), $contents );
 
         # change the in memory contents of the cache (but don't update yet)
-        $cache_model->file_contents( $contents ) unless $self->output_suffix;
+        $cache_model->file_contents($contents) unless $self->output_suffix;
     }
 
     $cache_model->update if $result->ok;
@@ -264,12 +265,12 @@ sub process_file {
 }
 
 sub _cache_model_for {
-    my ($self, $path, $full_path) = @_;
+    my ( $self, $path, $full_path ) = @_;
     return $self->cache_model_class->new(
-        path => $path,
-        full_path => $full_path,
+        path         => $path,
+        full_path    => $full_path,
         cache_engine => $self->no_cache ? undef : $self->cache,
-        base_sig => $self->base_sig,
+        base_sig     => $self->base_sig,
     );
 }
 

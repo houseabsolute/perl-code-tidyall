@@ -211,26 +211,29 @@ sub test_caching_and_backups : Tests {
     my $self = shift;
 
     my @chi_or_no_chi = ('');
-    if (eval "use CHI; 1") {
+    if ( eval "use CHI; 1" ) {
         push @chi_or_no_chi, "chi";
     }
 
     foreach my $chi (@chi_or_no_chi) {
-        foreach my $cache_model_class (qw(
+        foreach my $cache_model_class (
+            qw(
             Code::TidyAll::CacheModel
             Code::TidyAll::CacheModel::Shared
-        )) {
+            )
+            ) {
             foreach my $no_cache ( 0 .. 1 ) {
                 foreach my $no_backups ( 0 .. 1 ) {
-                    my $desc     = "(no_cache=$no_cache, no_backups=$no_backups, model=$cache_model_class, cache_class=$chi)";
+                    my $desc
+                        = "(no_cache=$no_cache, no_backups=$no_backups, model=$cache_model_class, cache_class=$chi)";
                     my $root_dir = $self->create_dir( { "foo.txt" => "abc" } );
-                    my $ct       = Code::TidyAll->new(
-                        plugins  => {%UpperText},
-                        root_dir => $root_dir,
+                    my $ct = Code::TidyAll->new(
+                        plugins           => {%UpperText},
+                        root_dir          => $root_dir,
                         cache_model_class => $cache_model_class,
-                        ( $no_cache   ? ( no_cache   => 1 ) : () ),
-                        ( $no_backups ? ( no_backups => 1 ) : () ),
-                        ( $chi ? ( cache =>  _chi() ) : () ),
+                        ( $no_cache   ? ( no_cache   => 1 )      : () ),
+                        ( $no_backups ? ( no_backups => 1 )      : () ),
+                        ( $chi        ? ( cache      => _chi() ) : () ),
                     );
                     my $output;
                     my $file = "$root_dir/foo.txt";
@@ -275,7 +278,10 @@ sub test_caching_and_backups : Tests {
                         ok( @files == 0, "no backup files $desc" );
                     }
                     else {
-                        ok( scalar(@files) == 1 || scalar(@files) == 2, "1 or 2 backup files $desc" );
+                        ok(
+                            scalar(@files) == 1 || scalar(@files) == 2,
+                            "1 or 2 backup files $desc"
+                        );
                         foreach my $file (@files) {
                             like(
                                 $file,
