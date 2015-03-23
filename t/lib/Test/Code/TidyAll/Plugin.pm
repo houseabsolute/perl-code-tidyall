@@ -40,7 +40,7 @@ sub plugin_class {
     return ( split( '::', ref($self) ) )[-1];
 }
 
-sub test_filename { 'foo.txt' }
+sub test_filename {'foo.txt'}
 
 sub tidyall {
     my ( $self, %p ) = @_;
@@ -50,8 +50,8 @@ sub tidyall {
     $ENV{PATH} .= q{:} . $extra if $extra;
 
     my $plugin_class = $self->plugin_class;
-    my %plugin_conf = ( $plugin_class => { select => '*', %{ $p{conf} || {} } } );
-    my $ct = Code::TidyAll->new(
+    my %plugin_conf  = ( $plugin_class => { select => '*', %{ $p{conf} || {} } } );
+    my $ct           = Code::TidyAll->new(
         quiet    => 1,
         root_dir => $self->{root_dir},
         plugins  => \%plugin_conf,

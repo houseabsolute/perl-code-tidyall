@@ -8,7 +8,7 @@ use File::Find qw(find);
 use File::Slurp::Tiny qw(read_file write_file);
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 
-sub test_plugin { "+Code::TidyAll::Test::Plugin::$_[0]" }
+sub test_plugin {"+Code::TidyAll::Test::Plugin::$_[0]"}
 my %UpperText  = ( test_plugin('UpperText')  => { select => '**/*.txt' } );
 my %ReverseFoo = ( test_plugin('ReverseFoo') => { select => '**/foo*' } );
 my %RepeatFoo  = ( test_plugin('RepeatFoo')  => { select => '**/foo*' } );
@@ -137,7 +137,7 @@ sub test_plugin_order_and_atomicity : Tests {
             %ReverseFoo,
             test_plugin("UpperText $_")  => { select => '**/*.txt' },
             test_plugin("CheckUpper $_") => { select => '**/*.txt' }
-          )
+            )
     } ( 1 .. 3 );
     my $output = capture_stdout {
         $self->tidy(
@@ -146,7 +146,7 @@ sub test_plugin_order_and_atomicity : Tests {
             source  => { "foo.txt" => "abc" },
             dest    => { "foo.txt" => "CBA" },
             like_output =>
-              qr/.*ReverseFoo, .*UpperText 1, .*UpperText 2, .*UpperText 3, .*CheckUpper 1, .*CheckUpper 2, .*CheckUpper 3/
+                qr/.*ReverseFoo, .*UpperText 1, .*UpperText 2, .*UpperText 3, .*CheckUpper 1, .*CheckUpper 2, .*CheckUpper 3/
         );
     };
 
@@ -182,7 +182,7 @@ sub test_quiet_and_verbose : Tests {
                 is( $output, "[tidied]  foo.txt\n" ) if $state eq 'normal';
                 is( $output, "" ) if $state eq 'quiet';
                 like( $output, qr/purging old backups/, "purging old backups ($state)" )
-                  if $state eq 'verbose';
+                    if $state eq 'verbose';
                 like(
                     $output,
                     qr/\[tidied\]  foo\.txt \(\+Code::TidyAll::Test::Plugin::UpperText\)/s,
@@ -290,8 +290,10 @@ sub test_selects_and_ignores : Tests {
         }
     );
     cmp_set( [ $ct->find_matched_files() ], [ "$root_dir/a/foo.pm", "$root_dir/b/foo.pl" ] );
-    cmp_deeply( [ map { $_->name } $ct->plugins_for_path("a/foo.pm") ],
-        [ test_plugin('UpperText') ] );
+    cmp_deeply(
+        [ map { $_->name } $ct->plugins_for_path("a/foo.pm") ],
+        [ test_plugin('UpperText') ]
+    );
 }
 
 sub test_dirs : Tests {
@@ -405,9 +407,7 @@ sub test_cli : Tests {
                 };
 
                 my ($params_msg)
-                    = ( $output
-                        =~ /constructing Code::TidyAll with these params:(.*)/
-                    );
+                    = ( $output =~ /constructing Code::TidyAll with these params:(.*)/ );
                 ok( defined($params_msg), "params msg" );
                 like( $params_msg, qr/backup_ttl => '15m'/, 'backup_ttl' );
                 like( $params_msg, qr/verbose => '?1'?/,    'verbose' );
@@ -431,7 +431,7 @@ sub test_cli : Tests {
                 my $cwd = realpath();
                 capture_stdout {
                     my $dir = pushd "$root_dir/subdir";
-                    system($^X, "-I$cwd/lib", "-I$cwd/t/lib", "$cwd/bin/tidyall", 'foo.txt');
+                    system( $^X, "-I$cwd/lib", "-I$cwd/t/lib", "$cwd/bin/tidyall", 'foo.txt' );
                 };
                 is(
                     read_file("$root_dir/subdir/foo.txt"), "BYEBYEBYE",

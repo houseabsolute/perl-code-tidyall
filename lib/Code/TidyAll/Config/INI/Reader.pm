@@ -11,7 +11,7 @@ sub set_value {
 
     if ( exists( $self->{data}{ $self->current_section }{$name} ) ) {
         die "cannot list multiple config values for '$name'"
-          unless $name =~ /select|ignore/;
+            unless $name =~ /select|ignore/;
         $self->{data}{ $self->current_section }{$name} .= " " . $value;
     }
     else {

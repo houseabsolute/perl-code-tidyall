@@ -2,7 +2,7 @@ package Test::Code::TidyAll::Plugin::JSLint;
 
 use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
 
-sub test_filename { 'foo.js' }
+sub test_filename {'foo.js'}
 
 sub _extra_path {
     'node_modules/.bin';

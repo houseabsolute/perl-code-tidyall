@@ -15,7 +15,7 @@ sub validate_params {
     return $self->SUPER::validate_params($params);
 }
 
-sub _build_cmd { 'jshint' }
+sub _build_cmd {'jshint'}
 
 sub BUILDARGS {
     my ( $class, %params ) = @_;
@@ -24,7 +24,7 @@ sub BUILDARGS {
         my @options   = split( /\s+/, $options_string );
         my $conf_dir  = tempdir_simple();
         my $conf_file = "$conf_dir/jshint.json";
-        write_file( $conf_file, '{ ' . join( ",\n", map { "\"$_\": true" } @options ) . ' }' );
+        write_file( $conf_file, '{ ' . join( ",\n", map {"\"$_\": true"} @options ) . ' }' );
         $params{argv} ||= "";
         $params{argv} .= " --config $conf_file";
     }

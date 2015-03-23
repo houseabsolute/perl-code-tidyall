@@ -77,7 +77,7 @@ sub validate_params {
         die sprintf(
             "unknown option%s %s for plugin '%s'",
             @bad_params > 1 ? "s" : "",
-            join( ", ", sort map { "'$_'" } @bad_params ),
+            join( ", ", sort map {"'$_'"} @bad_params ),
             $self->name
         );
     }
@@ -87,7 +87,7 @@ sub _parse_zglob_list {
     my ( $self, $zglob_list ) = @_;
     $zglob_list = '' if !defined($zglob_list);
     my @zglobs = split( /\s+/, $zglob_list );
-    if ( my ($bad_zglob) = ( grep { m{^/} } @zglobs ) ) {
+    if ( my ($bad_zglob) = ( grep {m{^/}} @zglobs ) ) {
         die "zglob '$bad_zglob' should not begin with slash";
     }
     return \@zglobs;
@@ -178,8 +178,7 @@ plugin class that inherits from this class. This document describes how to
 implement a new plugin.
 
 The easiest way to start is to look at existing plugins, such as
-L<Code::TidyAll::Plugin::PerlTidy> and
-L<Code::TidyAll::Plugin::PerlCritic>.
+L<Code::TidyAll::Plugin::PerlTidy> and L<Code::TidyAll::Plugin::PerlCritic>.
 
 =head1 NAMING
 
@@ -203,8 +202,7 @@ as parameters. e.g. given
     ignore = lib/UtterHack.pm
     argv = -severity 3
 
-then L<Code::TidyAll::Plugin::PerlCritic>
-would be constructed with parameters
+then L<Code::TidyAll::Plugin::PerlCritic> would be constructed with parameters
 
     select => 'lib/**/*.pm',
     ignore = 'lib/UtterHack.pm',

@@ -72,8 +72,8 @@ you are running L<prove>.
 Passes mode = "test" by default; see L<modes|tidyall/MODES>.
 
 C<tidyall_ok> is exported by default. Any options will be passed along to the
-L<Code::TidyAll> constructor. For example, if you don't want to
-use the tidyall cache and instead check all files every time:
+L<Code::TidyAll> constructor. For example, if you don't want to use the tidyall
+cache and instead check all files every time:
 
     tidyall_ok(no_cache => 1);
 

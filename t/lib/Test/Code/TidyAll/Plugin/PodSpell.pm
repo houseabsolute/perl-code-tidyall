@@ -3,7 +3,7 @@ package Test::Code::TidyAll::Plugin::PodSpell;
 use File::Slurp::Tiny qw(write_file);
 use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
 
-sub test_filename { 'Foo.pod' }
+sub test_filename {'Foo.pod'}
 
 sub test_main : Tests {
     my $self = shift;

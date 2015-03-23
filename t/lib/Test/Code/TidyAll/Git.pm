@@ -57,8 +57,10 @@ sub test_git : Tests {
     # git add foo.txt and make sure it is now in uncommitted list
     #
     run( "git", "add", "foo.txt" );
-    cmp_deeply( [ git_uncommitted_files($work_dir) ],
-        ["$work_dir/foo.txt"], "one uncommitted file" );
+    cmp_deeply(
+        [ git_uncommitted_files($work_dir) ],
+        ["$work_dir/foo.txt"], "one uncommitted file"
+    );
 
     # Add pre-commit hook
     #

@@ -33,10 +33,10 @@ sub check {
         # Find conf file at git root
         my $root_dir = capturex( $self->git_path, "rev-parse", "--show-toplevel" );
         chomp($root_dir);
-        my @conf_names =
-          $self->conf_name ? ( $self->conf_name ) : Code::TidyAll->default_conf_names;
-        my ($conf_file) = grep { -f } map { join( "/", $root_dir, $_ ) } @conf_names
-          or die sprintf( "could not find conf file %s", join( " or ", @conf_names ) );
+        my @conf_names
+            = $self->conf_name ? ( $self->conf_name ) : Code::TidyAll->default_conf_names;
+        my ($conf_file) = grep {-f} map { join( "/", $root_dir, $_ ) } @conf_names
+            or die sprintf( "could not find conf file %s", join( " or ", @conf_names ) );
 
         # Store the stash, and restore it upon exiting this scope
         unless ( $self->no_stash ) {
@@ -46,7 +46,7 @@ sub check {
 
         # Gather file paths to be committed
         my $output = capturex( $self->git_path, "status", "--porcelain" );
-        my @files = grep { -f } ( $output =~ /^[MA]\s+(.*)/gm );
+        my @files = grep {-f} ( $output =~ /^[MA]\s+(.*)/gm );
 
         my $tidyall = $tidyall_class->new_from_conf_file(
             $conf_file,
@@ -55,12 +55,14 @@ sub check {
             mode       => 'commit',
             %{ $self->tidyall_options },
         );
-        my @results = $tidyall->process_paths( map { "$root_dir/$_" } @files );
+        my @results = $tidyall->process_paths( map {"$root_dir/$_"} @files );
 
         if ( my @error_results = grep { $_->error } @results ) {
             my $error_count = scalar(@error_results);
-            $fail_msg = sprintf( "%d file%s did not pass tidyall check\n",
-                $error_count, $error_count > 1 ? "s" : "" );
+            $fail_msg = sprintf(
+                "%d file%s did not pass tidyall check\n",
+                $error_count, $error_count > 1 ? "s" : ""
+            );
         }
     }
     catch {
@@ -93,11 +95,11 @@ __END__
 
 This module implements a L<Git pre-commit
 hook|http://git-scm.com/book/en/Customizing-Git-Git-Hooks> that checks if all
-files are tidied and valid according to L<tidyall>, and rejects the
-commit if not. Files/commits are never modified by this hook.
+files are tidied and valid according to L<tidyall>, and rejects the commit if
+not. Files/commits are never modified by this hook.
 
-See also L<Code::TidyAll::Git::Prereceive>,
-which validates pushes to a shared repo.
+See also L<Code::TidyAll::Git::Prereceive>, which validates pushes to a shared
+repo.
 
 =head1 METHODS
 
@@ -106,8 +108,8 @@ which validates pushes to a shared repo.
 =item check (key/value params...)
 
 Class method. Check that all files being added or modified in this commit are
-tidied and valid according to L<tidyall>. If not, then the entire
-commit is rejected and the reason(s) are output to the client. e.g.
+tidied and valid according to L<tidyall>. If not, then the entire commit is
+rejected and the reason(s) are output to the client. e.g.
 
     % git commit -m "fixups" CHI.pm CHI/Driver.pm
     2 files did not pass tidyall check
@@ -213,7 +215,7 @@ of the repo
 More information on pre-commit hooks and the impossibility of enforcing them
 L<here|http://stackoverflow.com/questions/3703159/git-remote-shared-pre-commit-hook>.
 
-See also L<Code::TidyAll::Git::Prereceive>,
-which enforces tidyall on pushes to a remote shared repository.
+See also L<Code::TidyAll::Git::Prereceive>, which enforces tidyall on pushes to
+a remote shared repository.
 
 =cut

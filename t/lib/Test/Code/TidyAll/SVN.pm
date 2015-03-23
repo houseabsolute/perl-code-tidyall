@@ -84,8 +84,8 @@ sub test_svn : Tests {
     run( sprintf( 'svn -q commit -m "added" %s/tidyall.ini', $work_dir ) );
 
     write_file( "$work_dir/foo.txt", "abc" );
-    $stderr =
-      capture_stderr { system( sprintf( 'svn -q commit -m "changed" %s/foo.txt', $work_dir ) ) };
+    $stderr
+        = capture_stderr { system( sprintf( 'svn -q commit -m "changed" %s/foo.txt', $work_dir ) ) };
     like( $stderr, qr/1 file did not pass tidyall check/ );
     like( $stderr, qr/needs tidying/ );
     $uncommitted->();

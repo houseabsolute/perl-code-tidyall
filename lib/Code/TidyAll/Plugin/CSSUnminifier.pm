@@ -6,7 +6,7 @@ extends 'Code::TidyAll::Plugin';
 
 our $VERSION = '0.25';
 
-sub _build_cmd { 'cssunminifier' }
+sub _build_cmd {'cssunminifier'}
 
 sub transform_file {
     my ( $self, $file ) = @_;

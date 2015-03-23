@@ -51,7 +51,7 @@ sub check {
         $log->infof(
             "%s [%s] repos = %s; txn = %s",
             scalar(localtime), $$, scalar( getpwuid($<) ),
-            $self->repos, $self->txn
+            $self->repos,      $self->txn
         );
         $log->infof( "looking at files: %s", join( ", ", @files ) );
 
@@ -92,7 +92,7 @@ sub check {
                 %{ $self->tidyall_options },
             );
             my $stdout = capture_stdout {
-                push( @results, $tidyall->process_paths( map { "$tempdir/$_" } @files ) );
+                push( @results, $tidyall->process_paths( map {"$tempdir/$_"} @files ) );
             };
             if ($stdout) {
                 chomp($stdout);
@@ -184,8 +184,8 @@ __END__
 
 This module implements a L<Subversion pre-commit
 hook|http://svnbook.red-bean.com/en/1.7/svn.ref.reposhooks.pre-commit.html>
-that checks if all files are tidied and valid according to L<tidyall>,
-and rejects the commit if not.
+that checks if all files are tidied and valid according to L<tidyall>, and
+rejects the commit if not.
 
 =head1 METHODS
 
@@ -194,8 +194,8 @@ and rejects the commit if not.
 =item check (key/value params...)
 
 Class method. Check that all files being added or modified in this commit are
-tidied and valid according to L<tidyall>. If not, then the entire
-commit is rejected and the reason(s) are output to the client. e.g.
+tidied and valid according to L<tidyall>. If not, then the entire commit is
+rejected and the reason(s) are output to the client. e.g.
 
     % svn commit -m "fixups" CHI.pm CHI/Driver.pm
     Sending        CHI/Driver.pm
@@ -281,9 +281,9 @@ Commit transaction; defaults to C<< $ARGV[1] >>
 
 =head1 LOGGING
 
-This module uses L<Log::Any> to log its activity, including all files
-that were checked, an inability to find the configuration file, and any runtime
-errors that occur. You can create a simple date-stamped log file with
+This module uses L<Log::Any> to log its activity, including all files that were
+checked, an inability to find the configuration file, and any runtime errors
+that occur. You can create a simple date-stamped log file with
 
     use Log::Any::Adapter (File => "/path/to/hooks/logs/tidyall.log");
 

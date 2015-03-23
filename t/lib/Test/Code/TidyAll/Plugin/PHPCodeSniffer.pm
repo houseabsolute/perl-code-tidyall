@@ -2,14 +2,14 @@ package Test::Code::TidyAll::Plugin::PHPCodeSniffer;
 
 use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
 
-sub test_filename { 'foo.php' }
+sub test_filename {'foo.php'}
 
 sub _extra_path {
     'php5/usr/bin';
 }
 
 sub test_main : Tests {
-    my $self   = shift;
+    my $self = shift;
 
     $self->require_executable('php');
 

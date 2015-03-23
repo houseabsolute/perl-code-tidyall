@@ -12,8 +12,8 @@ sub test_main : Tests {
         expect_tidy => 'if ($foo) {\n    my $bar = $baz;\n}\n'
     );
     $self->tidyall(
-        conf   => { argv => '-npro -bl' },
-        source => $source,
+        conf        => { argv => '-npro -bl' },
+        source      => $source,
         expect_tidy => 'if ($foo)\n{\n    my $bar = $baz;\n}\n'
     );
     $self->tidyall(

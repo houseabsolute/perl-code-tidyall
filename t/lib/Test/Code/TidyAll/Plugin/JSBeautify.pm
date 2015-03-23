@@ -29,9 +29,8 @@ sub test_main : Tests {
 sub test_utf8 : Tests {
     my $self = shift;
 
-    my $contents
-        = encode( 'UTF-8', qq{var unicode  =  "Unicode - \x{263a}";} );
-    my $expect = encode( 'UTF-8', qq{var unicode = "Unicode - \x{263a}";} );
+    my $contents = encode( 'UTF-8', qq{var unicode  =  "Unicode - \x{263a}";} );
+    my $expect   = encode( 'UTF-8', qq{var unicode = "Unicode - \x{263a}";} );
 
     local $SIG{__WARN__} = sub { Carp::cluck(@_) };
     is_deeply(

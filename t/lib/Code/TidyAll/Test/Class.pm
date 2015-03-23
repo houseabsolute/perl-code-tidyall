@@ -9,7 +9,7 @@ __PACKAGE__->SKIP_CLASS("abstract base class");
 
 sub require_executable {
     my $self = shift;
-    my $exe = shift;
+    my $exe  = shift;
 
     which($exe)
         or $self->FAIL_ALL("These tests require that $exe be in your \$PATH");

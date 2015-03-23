@@ -6,7 +6,7 @@ extends 'Code::TidyAll::Plugin';
 
 our $VERSION = '0.25';
 
-sub _build_cmd { 'perlcritic' }
+sub _build_cmd {'perlcritic'}
 
 sub validate_file {
     my ( $self, $file ) = @_;
@@ -43,8 +43,7 @@ __END__
 
 =head1 DESCRIPTION
 
-Runs L<perlcritic>, a Perl validator, and dies if any problems were
-found.
+Runs L<perlcritic>, a Perl validator, and dies if any problems were found.
 
 =head1 INSTALLATION
 

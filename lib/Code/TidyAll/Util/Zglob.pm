@@ -5,7 +5,7 @@ package Code::TidyAll::Util::Zglob;
 use strict;
 use Exporter;
 use vars qw/@ISA @EXPORT_OK
-  $strict_leading_dot $strict_wildcard_slash/;
+    $strict_leading_dot $strict_wildcard_slash/;
 @ISA       = 'Exporter';
 @EXPORT_OK = qw( zglobs_to_regex zglob_to_regex );
 
@@ -51,27 +51,26 @@ sub zglob_to_regex_string {
             || $_ eq '^'
             || $_ eq '$'
             || $_ eq '@'
-            || $_ eq '%' )
-        {
+            || $_ eq '%' ) {
             $regex .= "\\$_";
         }
         elsif ( $_ eq "\cZ" ) {    # handle **/ - if escaping, only escape first *
             $regex .=
-              $escaping
-              ? ( "\\*" . ( $strict_wildcard_slash ? "[^/]*" : ".*" ) . "/" )
-              : ".*";
+                $escaping
+                ? ( "\\*" . ( $strict_wildcard_slash ? "[^/]*" : ".*" ) . "/" )
+                : ".*";
         }
         elsif ( $_ eq '*' ) {
             $regex .=
-                $escaping              ? "\\*"
-              : $strict_wildcard_slash ? "[^/]*"
-              :                          ".*";
+                  $escaping              ? "\\*"
+                : $strict_wildcard_slash ? "[^/]*"
+                :                          ".*";
         }
         elsif ( $_ eq '?' ) {
             $regex .=
-                $escaping              ? "\\?"
-              : $strict_wildcard_slash ? "[^/]"
-              :                          ".";
+                  $escaping              ? "\\?"
+                : $strict_wildcard_slash ? "[^/]"
+                :                          ".";
         }
         elsif ( $_ eq '{' ) {
             $regex .= $escaping ? "\\{" : "(";

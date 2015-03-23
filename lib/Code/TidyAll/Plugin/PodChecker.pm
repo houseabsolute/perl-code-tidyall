@@ -18,8 +18,8 @@ sub validate_file {
     open my $fh, '>', \$output;
     $checker->parse_from_file( $file, $fh );
     die $output
-      if $checker->num_errors
-      or ( $self->warnings && $checker->num_warnings );
+        if $checker->num_errors
+        or ( $self->warnings && $checker->num_warnings );
 }
 
 1;
@@ -47,8 +47,7 @@ __END__
 
 =head1 DESCRIPTION
 
-Runs L<podchecker>, a POD validator, and dies if any problems were
-found.
+Runs L<podchecker>, a POD validator, and dies if any problems were found.
 
 =head1 INSTALLATION
 

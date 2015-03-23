@@ -8,7 +8,7 @@ our $VERSION = '0.25';
 sub transform_source {
     my ( $self, $source ) = @_;
 
-    return join( "\n", sort( grep { /\S/ } split( /\n/, $source ) ) ) . "\n";
+    return join( "\n", sort( grep {/\S/} split( /\n/, $source ) ) ) . "\n";
 }
 
 1;

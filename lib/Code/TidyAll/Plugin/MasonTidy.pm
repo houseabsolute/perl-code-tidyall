@@ -8,7 +8,7 @@ extends 'Code::TidyAll::Plugin';
 
 our $VERSION = '0.25';
 
-sub _build_cmd { 'masontidy' }
+sub _build_cmd {'masontidy'}
 
 sub transform_source {
     my ( $self, $source ) = @_;
@@ -37,8 +37,7 @@ __END__
 
 =head1 DESCRIPTION
 
-Runs L<masontidy>, a tidier for L<HTML::Mason> and L<Mason 2|Mason>
-components.
+Runs L<masontidy>, a tidier for L<HTML::Mason> and L<Mason 2|Mason> components.
 
 =head1 INSTALLATION
 

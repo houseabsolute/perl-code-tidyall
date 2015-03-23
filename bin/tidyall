@@ -91,8 +91,8 @@ unshift( @INC, split( /\s*,\s*/, $inc_dirs ) ) if defined($inc_dirs);
 
 %params = map { ( $_, $params{$_} ) } grep { defined( $params{$_} ) } keys(%params);
 
-($conf_file) = ( grep { -f } map { "$params{root_dir}/$_" } @conf_names )
-  if $params{root_dir} && !$conf_file;
+($conf_file) = ( grep {-f} map {"$params{root_dir}/$_"} @conf_names )
+    if $params{root_dir} && !$conf_file;
 
 my $tidyall_class = $params{tidyall_class} || 'Code::TidyAll';
 
@@ -104,7 +104,7 @@ if ($pipe) {
 }
 elsif ( ( $all_files || $svn_files || $git_files ) ) {
     die "cannot use filename(s) with -a/--all, -s/--svn, or -g/--git"
-      if @ARGV;
+        if @ARGV;
     $conf_file ||= $tidyall_class->find_conf_file( \@conf_names, cwd() );
     $ct = $tidyall_class->new_from_conf_file( $conf_file, %params );
 
@@ -274,8 +274,7 @@ Misc: L<Code::TidyAll::Plugin::SortLines>
 
 =back
 
-See L<Code::TidyAll::Plugin> for information about
-creating your own plugin.
+See L<Code::TidyAll::Plugin> for information about creating your own plugin.
 
 =head1 USING TIDYALL
 
@@ -316,8 +315,8 @@ You can also pass --conf-name to change the name that is searched for, or
 
 =head1 CONFIGURATION
 
-The config file (C<tidyall.ini> or C<.tidyallrc>) is in
-L<Config::INI> format.  Here's a sample:
+The config file (C<tidyall.ini> or C<.tidyallrc>) is in L<Config::INI> format. 
+Here's a sample:
 
     [PerlTidy]
     select = **/*.{pl,pm,t}
@@ -391,9 +390,8 @@ same description), one of them will be silently ignored.
 
 =item select
 
-One or more L<File::Zglob> patterns, separated by whitespace or on
-multiple lines, indicating which files to select. At least one is required.
-e.g.
+One or more L<File::Zglob> patterns, separated by whitespace or on multiple
+lines, indicating which files to select. At least one is required. e.g.
 
     ; All .t and .pl somewhere under bin and t;
     ; plus all .pm files directly under lib/Foo and lib/Bar
@@ -407,14 +405,14 @@ e.g.
 
 The pattern is relative to the root directory and should have no leading slash.
 All standard glob characters (C<*>, C<?>, C<[]>, C<{}>) will work; in addition,
-C<**> can be used to represent zero or more directories. See
-L<File::Zglob> documentation for more details.
+C<**> can be used to represent zero or more directories. See L<File::Zglob>
+documentation for more details.
 
 =item ignore
 
-One or more L<File::Zglob> patterns, separated by whitespace or on
-multiple lines, indicating which files to ignore.  This is optional and
-overrides C<select>. e.g.
+One or more L<File::Zglob> patterns, separated by whitespace or on multiple
+lines, indicating which files to ignore.  This is optional and overrides
+C<select>. e.g.
 
     ; All .pl files anywhere under bin, except bin/awful.pl or anywhere
     ; under bin/tmp
@@ -540,8 +538,8 @@ Add one or more library paths to @INC, like Perl's -I. Useful if
 =item --backup-ttl I<duration>
 
 Amount of time before backup files can be purged. Can be a number of seconds or
-any string recognized by L<Time::Duration::Parse>, e.g.
-"4h" or "1day". Defaults to "1h".
+any string recognized by L<Time::Duration::Parse>, e.g. "4h" or "1day".
+Defaults to "1h".
 
 =item --check-only
 
@@ -656,8 +654,7 @@ C<editor> - when invoking from an editor
 
 =item *
 
-C<commit> - when using a commit hook like
-L<Code::TidyAll::SVN::Precommit> or
+C<commit> - when using a commit hook like L<Code::TidyAll::SVN::Precommit> or
 L<Code::TidyAll::Git::Precommit>
 
 =item *
@@ -711,8 +708,8 @@ You can turn off backups with C<--no-backups>.
 
 The C<Code::TidyAll> distribution intentionally does not depend on the prereqs
 needed for each plugin. This means that if you want to use the
-L<perltidy|Code::TidyAll::Plugin::PerlTidy>, you must install the
-L<Perl::Tidy> module manually.
+L<perltidy|Code::TidyAll::Plugin::PerlTidy>, you must install the L<Perl::Tidy>
+module manually.
 
 =head1 RELATED TOOLS
 
@@ -729,21 +726,20 @@ ctrl-t or ,t).
 
 =item *
 
-L<Code::TidyAll::SVN::Precommit> implements a
-subversion pre-commit hook that checks if all files are tidied and valid
-according to C<tidyall>, and rejects the commit if not.
+L<Code::TidyAll::SVN::Precommit> implements a subversion pre-commit hook that
+checks if all files are tidied and valid according to C<tidyall>, and rejects
+the commit if not.
 
 =item *
 
-L<Code::TidyAll::Git::Precommit> and
-L<Code::TidyAll::Git::Prereceive> implement git
-pre-commit and pre-receive hooks, respectively, that check if all files are
-tidied and valid according to C<tidyall>.
+L<Code::TidyAll::Git::Precommit> and L<Code::TidyAll::Git::Prereceive>
+implement git pre-commit and pre-receive hooks, respectively, that check if all
+files are tidied and valid according to C<tidyall>.
 
 =item *
 
-L<Test::Code::TidyAll> is a testing library to check that
-all the files in your project are in a tidied and valid state.
+L<Test::Code::TidyAll> is a testing library to check that all the files in your
+project are in a tidied and valid state.
 
 =back
 

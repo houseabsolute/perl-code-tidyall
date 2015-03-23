@@ -8,7 +8,7 @@ extends 'Code::TidyAll::Plugin';
 
 our $VERSION = '0.25';
 
-sub _build_cmd { 'js-beautify' }
+sub _build_cmd {'js-beautify'}
 
 sub transform_file {
     my ( $self, $file ) = @_;
@@ -21,7 +21,8 @@ sub transform_file {
         write_file( $file, $output );
     }
     catch {
-        die sprintf( "%s exited with error - possibly bad arg list '%s'\n    $_", $self->cmd, $self->argv );
+        die sprintf( "%s exited with error - possibly bad arg list '%s'\n    $_", $self->cmd,
+            $self->argv );
     };
 }
 

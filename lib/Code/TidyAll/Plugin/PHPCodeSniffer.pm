@@ -6,7 +6,7 @@ extends 'Code::TidyAll::Plugin';
 
 our $VERSION = '0.25';
 
-sub _build_cmd { 'phpcs' }
+sub _build_cmd {'phpcs'}
 
 sub validate_file {
     my ( $self, $file ) = @_;
