@@ -21,8 +21,10 @@ sub transform_file {
         write_file( $file, $output );
     }
     catch {
-        die sprintf( "%s exited with error - possibly bad arg list '%s'\n    $_", $self->cmd,
-            $self->argv );
+        die sprintf(
+            "%s exited with error - possibly bad arg list '%s'\n    $_", $self->cmd,
+            $self->argv
+        );
     };
 }
 
