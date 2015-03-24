@@ -1,8 +1,9 @@
 package Test::Code::TidyAll;
 
-use IPC::System::Simple qw(run);
 use Code::TidyAll;
 use Test::Builder;
+use Text::Diff;
+use Text::Diff::Table;
 use strict;
 use warnings;
 use base qw(Exporter);
@@ -24,8 +25,9 @@ sub tidyall_ok {
     $options{quiet} = 1 unless $options{verbose};
     my $ct = Code::TidyAll->new_from_conf_file(
         $conf_file,
-        check_only => 1,
-        mode       => 'test',
+        check_only    => 1,
+        mode          => 'test',
+        msg_outputter => \&_msg_outputter,
         %options,
     );
     my @files = $ct->find_matched_files;
@@ -39,8 +41,21 @@ sub tidyall_ok {
         else {
             $test->ok( 0, $desc );
             $test->diag( $result->error );
+
+            if ( $options{verbose} ) {
+                my $orig = $result->orig_contents;
+                my $new  = $result->new_contents;
+                if ( defined $orig && defined $new ) {
+                    $test->diag( diff( \$orig, \$new, { STYLE => 'Table' } ) );
+                }
+            }
         }
     }
+}
+
+sub _msg_outputter {
+    my $format = shift;
+    $test->diag( sprintf $format, @_ );
 }
 
 1;

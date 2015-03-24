@@ -29,6 +29,7 @@ has 'data_dir'      => ( is => 'lazy' );
 has 'iterations'    => ( is => 'ro', default => 1 );
 has 'list_only'     => ( is => 'ro' );
 has 'mode'          => ( is => 'ro', default => 'cli' );
+has 'msg_outputter' => ( is => 'ro', builder => '_build_msg_outputter' );
 has 'no_backups'    => ( is => 'ro' );
 has 'no_cache'      => ( is => 'ro' );
 has 'output_suffix' => ( is => 'ro', default => q{} );
@@ -138,8 +139,13 @@ sub new_from_conf_file {
         $class = $tidyall_class;
     }
 
-    $class->msg( "constructing %s with these params: %s", $class, dump_one_line( \%params ) )
-        if ( $params{verbose} );
+    if ( $params{verbose} ) {
+        my $msg_outputter = $params{msg_outputter} || $class->_build_msg_outputter();
+        $msg_outputter->(
+            "constructing %s with these params: %s", $class,
+            dump_one_line( \%params )
+        );
+    }
 
     return $class->new(%params);
 }
@@ -298,13 +304,14 @@ sub process_source {
     }
 
     if ($error) {
-        return $self->_error_result( $error, $path );
+        return $self->_error_result( $error, $path, $orig_contents, $new_contents );
     }
     elsif ($was_tidied) {
         return Code::TidyAll::Result->new(
-            path         => $path,
-            state        => 'tidied',
-            new_contents => $new_contents
+            path          => $path,
+            state         => 'tidied',
+            orig_contents => $orig_contents,
+            new_contents  => $new_contents
         );
     }
     else {
@@ -473,13 +480,26 @@ sub _tempdir {
 
 sub msg {
     my ( $self, $format, @params ) = @_;
-    printf "$format\n", @params;
+    $self->msg_outputter()->( $format, @params );
+}
+
+sub _build_msg_outputter {
+    return sub {
+        my $format = shift;
+        printf "$format\n", @_;
+    };
 }
 
 sub _error_result {
-    my ( $self, $msg, $path ) = @_;
+    my ( $self, $msg, $path, $orig_contents, $new_contents ) = @_;
     $self->msg( "%s", $msg );
-    return Code::TidyAll::Result->new( path => $path, state => 'error', error => $msg );
+    return Code::TidyAll::Result->new(
+        path          => $path,
+        state         => 'error',
+        error         => $msg,
+        orig_contents => $orig_contents,
+        new_contents  => $new_contents,
+    );
 }
 
 1;
@@ -578,6 +598,14 @@ file.
 These options are the same as the equivalent C<tidyall> command-line options,
 replacing dashes with underscore (e.g. the C<backup-ttl> option becomes
 C<backup_ttl> here).
+
+=item msg_outputter
+
+This is a subroutine reference that is called whenever a message needs to be
+printed in some way. The sub receives a C<sprintf()> format string followed by
+one or more parameters. The default sub used simply calls C<printf "$format\n",
+@_> but L<Test::Code::TidyAll> overrides this to use the C<<
+Test::Builder->diag >> method.
 
 =back
 

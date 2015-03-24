@@ -4,10 +4,11 @@ use Moo;
 
 our $VERSION = '0.25';
 
-has 'error'        => ( is => 'ro' );
-has 'new_contents' => ( is => 'ro' );
-has 'path'         => ( is => 'ro' );
-has 'state'        => ( is => 'ro' );
+has 'error'         => ( is => 'ro' );
+has 'new_contents'  => ( is => 'ro' );
+has 'orig_contents' => ( is => 'ro' );
+has 'path'          => ( is => 'ro' );
+has 'state'         => ( is => 'ro' );
 
 sub ok { return $_[0]->state ne 'error' }
 
@@ -59,6 +60,11 @@ A string, one of
 =item C<tidied> - File was successfully checked and changed
 
 =back
+
+=item orig_contents
+
+Contains the original contents if state is 'tidied' and with some errors (like
+when a file needs tidying in check-only mode)
 
 =item new_contents
 

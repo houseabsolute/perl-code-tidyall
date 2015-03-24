@@ -6,6 +6,15 @@
   been overridden because we unconditionally set "quiet => 1", but now we only
   do this when verbose is not specified.
 
+- Added a new "msg_outputter" attribute to Code::TidyAll. By default, this is
+  a sub that simply calls "printf", but you can pass something else to change
+  how messages are printed. Test::Code::TidyAll uses this to send messages
+  through diag().
+
+- If you set "verbose => 1" when calling Test::Code::TidyAll, it will now use
+  Text::Diff::Table to show details of how a file needs to be tidied in order
+  to pass the tidyall checks.
+
 
 0.24     2014-11-06
 
