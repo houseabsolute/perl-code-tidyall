@@ -21,7 +21,7 @@ before_install:
   - source ~/perl-travis-helper/init
   - build-perl
   - perl -V
-  - cpan-install Code::TidyAll Pod::Tidy
+  - cpanm -n Code::TidyAll Pod::Tidy
   - build-dist
   - cd $BUILD_DIR
 install:
