@@ -14,7 +14,7 @@ sub validate_file {
     my $cmd = sprintf( "%s %s %s", $self->cmd, $self->argv, $file );
     my $output;
     run3( $cmd, \undef, \$output, \$output );
-    die "$output\n" if $output !~ /^.* source OK\n/;
+    die "$output\n" if $output !~ /^.* source OK\n/s;
 }
 
 1;
