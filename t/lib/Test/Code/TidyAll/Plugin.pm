@@ -30,7 +30,7 @@ sub startup : Tests(startup => no_plan) {
         'jslint'        => '../jslint/bin/jslint.js',
     );
     for my $from ( keys %links ) {
-        symlink $links{$from}, $from unless -l $from;
+        symlink $links{$from}, $from unless -l $from || -f _;
     }
 }
 
