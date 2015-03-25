@@ -44,7 +44,7 @@ sub test_main : Tests {
     $self->tidyall(
         source       => 'while (day)\n  shuffle();',
         conf         => { options => 'camelcase curly' },
-        expect_error => qr/Expected \'{/,
+        expect_error => qr/Expected \'\{/,
         desc         => 'error - curly - options=camelcase,curly',
     );
 
