@@ -585,7 +585,7 @@ file.
 
 =item cache_model_class
 
-The cache model class.  Defaults to C<Code::TidyAll::CacheModel>
+The cache model class. Defaults to C<Code::TidyAll::CacheModel>
 
 =item cache
 
@@ -683,8 +683,7 @@ plugins apply.
 =item find_conf_file (I<conf_names>, I<start_dir>)
 
 Class method. Start in the I<start_dir> and work upwards, looking for one of
-the I<conf_names>.  Return the pathname if found or throw an error if not
-found.
+the I<conf_names>. Return the pathname if found or throw an error if not found.
 
 =item find_matched_files
 

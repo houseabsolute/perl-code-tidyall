@@ -44,8 +44,8 @@ An alternative caching model for Code::TidyAll designed to work in shared build
 systems / systems with lots of branches.
 
 This cache model uses both the file name and file contents to build the cache
-key and a meaningless cache value.  It does not care about the modification
-time of the file.
+key and a meaningless cache value. It does not care about the modification time
+of the file.
 
 This allows you to share a cache when you might have several versions of a file
 that you switch backwards and forwards between (e.g. when you're working on

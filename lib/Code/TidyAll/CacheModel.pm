@@ -99,7 +99,7 @@ Code::TidyAll::CacheModel - caching model for Cody::TidyAll
 
 =head1 DESCRIPTION
 
-A cache model for Code::TidyAll.  Different subclasses can employ different
+A cache model for Code::TidyAll. Different subclasses can employ different
 caching techniques.
 
 The basic model implemented here is simple;  It stores in the cache a hash key
@@ -131,7 +131,7 @@ A base signature.
 
 =item is_cached (optional, default computed, rw)
 
-A flag indicating if this is cached.  By default checks that the cache key and
+A flag indicating if this is cached. By default checks that the cache key and
 cache value match the cache.
 
 =back
