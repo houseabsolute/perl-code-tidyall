@@ -3,6 +3,7 @@ package Code::TidyAll;
 use Cwd qw(realpath);
 use Code::TidyAll::Config::INI::Reader;
 use Code::TidyAll::Cache;
+use Code::TidyAll::CacheModel;
 use Code::TidyAll::Util
     qw(abs2rel basename can_load dirname dump_one_line mkpath read_dir rel2abs tempdir_simple uniq);
 use Code::TidyAll::Result;
@@ -23,28 +24,29 @@ our $VERSION = '0.25';
 sub default_conf_names { ( 'tidyall.ini', '.tidyallrc' ) }
 
 # External
-has 'backup_ttl'    => ( is => 'ro', default => '1 hour' );
-has 'check_only'    => ( is => 'ro' );
-has 'data_dir'      => ( is => 'lazy' );
-has 'iterations'    => ( is => 'ro', default => 1 );
-has 'list_only'     => ( is => 'ro' );
-has 'mode'          => ( is => 'ro', default => 'cli' );
-has 'msg_outputter' => ( is => 'ro', builder => '_build_msg_outputter' );
-has 'no_backups'    => ( is => 'ro' );
-has 'no_cache'      => ( is => 'ro' );
-has 'output_suffix' => ( is => 'ro', default => q{} );
-has 'plugins'       => ( is => 'ro', required => 1 );
-has 'quiet'         => ( is => 'ro' );
-has 'recursive'     => ( is => 'ro' );
-has 'refresh_cache' => ( is => 'ro' );
-has 'root_dir'      => ( is => 'ro', required => 1 );
-has 'verbose'       => ( is => 'ro' );
+has 'backup_ttl'        => ( is => 'ro', default => '1 hour' );
+has 'cache'             => ( is => 'lazy' );
+has 'cache_model_class' => ( is => 'ro', default => 'Code::TidyAll::CacheModel' );
+has 'check_only'        => ( is => 'ro' );
+has 'data_dir'          => ( is => 'lazy' );
+has 'iterations'        => ( is => 'ro', default => 1 );
+has 'list_only'         => ( is => 'ro' );
+has 'mode'              => ( is => 'ro', default => 'cli' );
+has 'msg_outputter'     => ( is => 'ro', builder => '_build_msg_outputter' );
+has 'no_backups'        => ( is => 'ro' );
+has 'no_cache'          => ( is => 'ro' );
+has 'output_suffix'     => ( is => 'ro', default => q{} );
+has 'plugins'           => ( is => 'ro', required => 1 );
+has 'quiet'             => ( is => 'ro' );
+has 'recursive'         => ( is => 'ro' );
+has 'refresh_cache'     => ( is => 'ro' );
+has 'root_dir'          => ( is => 'ro', required => 1 );
+has 'verbose'           => ( is => 'ro' );
 
 # Internal
 has 'backup_dir'       => ( is => 'lazy', init_arg => undef, trigger => 1 );
 has 'backup_ttl_secs'  => ( is => 'lazy', init_arg => undef );
 has 'base_sig'         => ( is => 'lazy', init_arg => undef );
-has 'cache'            => ( is => 'lazy', init_arg => undef );
 has 'plugin_objects'   => ( is => 'lazy', init_arg => undef );
 has 'plugins_for_mode' => ( is => 'lazy', init_arg => undef );
 
@@ -221,10 +223,10 @@ sub process_path {
 }
 
 sub process_file {
-    my ( $self, $file ) = @_;
-    die "$file is not a file" unless -f $file;
+    my ( $self, $full_path ) = @_;
+    die "$full_path is not a file" unless -f $full_path;
 
-    my $path = $self->_small_path($file);
+    my $path = $self->_small_path($full_path);
 
     if ( $self->list_only ) {
         if ( my @plugins = $self->plugins_for_path($path) ) {
@@ -233,29 +235,43 @@ sub process_file {
         return Code::TidyAll::Result->new( path => $path, state => 'checked' );
     }
 
-    my $cache     = $self->no_cache ? undef : $self->cache;
-    my $cache_key = "sig/$path";
-    my $contents  = my $orig_contents = read_file($file);
-    if ( $cache && ( my $sig = $cache->get($cache_key) ) ) {
-        if ( $self->refresh_cache ) {
-            $cache->remove($cache_key);
-        }
-        elsif ( $sig eq $self->_file_sig( $file, $orig_contents ) ) {
-            $self->msg( "[cached] %s", $path ) if $self->verbose;
-            return Code::TidyAll::Result->new( path => $path, state => 'cached' );
-        }
+    my $cache_model = $self->_cache_model_for( $path, $full_path );
+    if ( $self->refresh_cache ) {
+        $cache_model->remove;
+    }
+    elsif ( $cache_model->is_cached ) {
+        $self->msg( "[cached] %s", $path ) if $self->verbose;
+        return Code::TidyAll::Result->new( path => $path, state => 'cached' );
     }
 
-    my $result = $self->process_source( $orig_contents, $path );
+    my $contents = $cache_model->file_contents || read_file($full_path);
+    my $result = $self->process_source( $contents, $path );
 
     if ( $result->state eq 'tidied' ) {
-        $self->_backup_file( $path, $contents );
-        $contents = $result->new_contents;
-        write_file( join( '', $file, $self->output_suffix ), $contents );
-    }
-    $cache->set( $cache_key, $self->_file_sig( $file, $contents ) ) if $cache && $result->ok;
 
+        # backup original contents
+        $self->_backup_file( $path, $contents );
+
+        # write new contents out to disk
+        $contents = $result->new_contents;
+        write_file( join( '', $full_path, $self->output_suffix ), $contents );
+
+        # change the in memory contents of the cache (but don't update yet)
+        $cache_model->file_contents($contents) unless $self->output_suffix;
+    }
+
+    $cache_model->update if $result->ok;
     return $result;
+}
+
+sub _cache_model_for {
+    my ( $self, $path, $full_path ) = @_;
+    return $self->cache_model_class->new(
+        path         => $path,
+        full_path    => $full_path,
+        cache_engine => $self->no_cache ? undef : $self->cache,
+        base_sig     => $self->base_sig,
+    );
 }
 
 sub process_source {
@@ -461,12 +477,6 @@ sub _small_path {
     return substr( $path, length( $self->root_dir ) + 1 );
 }
 
-sub _file_sig {
-    my ( $self, $file, $contents ) = @_;
-    my $last_mod = ( stat($file) )[9];
-    return $self->_sig( [ $self->base_sig, $last_mod, $contents ] );
-}
-
 sub _sig {
     my ( $self, $data ) = @_;
     return sha1_hex( join( ",", @$data ) );
@@ -573,6 +583,16 @@ Specify a hash of plugins, each of which is itself a hash of options. This is
 equivalent to what would be parsed out of the sections in the configuration
 file.
 
+=item cache_model_class
+
+The cache model class. Defaults to C<Code::TidyAll::CacheModel>
+
+=item cache
+
+The cache instance (e.g. an instance of C<Code::TidyAll::Cache> or a C<CHI>
+instance.) An instance of C<Code::TidyAll::Cache> is automatically instantiated
+by default.
+
 =item backup_ttl
 
 =item check_only
@@ -663,8 +683,7 @@ plugins apply.
 =item find_conf_file (I<conf_names>, I<start_dir>)
 
 Class method. Start in the I<start_dir> and work upwards, looking for one of
-the I<conf_names>.  Return the pathname if found or throw an error if not
-found.
+the I<conf_names>. Return the pathname if found or throw an error if not found.
 
 =item find_matched_files
 

@@ -49,7 +49,9 @@ pre
 prereqs
 repo
 repos
+ro
 runtime
+rw
 sourceforge
 svn
 tidiers
