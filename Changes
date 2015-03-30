@@ -15,6 +15,10 @@
   Text::Diff::Table to show details of how a file needs to be tidied in order
   to pass the tidyall checks.
 
+- Made the PerlCritic plugin pass even if a critic module issues some
+  warnings. As long as perlcritic says "source OK", we want to treat that as a
+  pass, despite any warnings it may issue. Fixed by Mark Fowler.
+
 
 0.24     2014-11-06
 
