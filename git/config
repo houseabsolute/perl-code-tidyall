@@ -5,7 +5,7 @@
 	logallrefupdates = true
 	ignorecase = true
 [remote "origin"]
-	url = git@github.com:jonswar/perl-code-tidyall
+	url = git@github.com:autarch-code/perl-code-tidyall
 	fetch = +refs/heads/*:refs/remotes/origin/*
 [branch "master"]
 	merge = master
