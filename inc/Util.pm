@@ -1,23 +1,19 @@
-package inc::MakeNodeSymlinks;
+package inc::Util;
 
 use strict;
 use warnings;
-use namespace::autoclean;
 
-use Code::TidyAll::Util qw(pushd);
+use Exporter qw(import);
 use File::Path qw(mkpath);
 
-use Moose;
+our @EXPORT_OK = qw(make_node_symlinks);
 
-with 'Dist::Zilla::Role::AfterBuild';
-
-sub after_build {
-    my $self   = shift;
-    my $config = shift;
-
-    my $bin = "$config->{build_root}/node_modules/.bin";
-    mkpath( $bin, 0, 0755 );
-    my $pushed = pushd($bin);
+sub make_node_symlinks {
+    return unless eval {
+        no warnings 'uninitialized';
+        symlink( qw{}, q{} );
+        1;
+    };
 
     my %links = (
         'css-beautify'  => '../js-beautify/js/bin/css-beautify.js',
@@ -27,11 +23,14 @@ sub after_build {
         'jshint'        => '../jshint/bin/jshint',
         'jslint'        => '../jslint/bin/jslint.js',
     );
+
+    my $bin = 'node_modules/.bin';
+    mkpath( $bin, 0, 0755 );
+    chdir $bin or die "Cannot chdir to $bin: $!";
+
     for my $from ( keys %links ) {
         symlink $links{$from}, $from unless -l $from || -f _;
     }
 }
-
-__PACKAGE__->meta->make_immutable;
 
 1;
