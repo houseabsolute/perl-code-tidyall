@@ -54,6 +54,7 @@ on 'configure' => sub {
 };
 
 on 'develop' => sub {
+  requires "CHI" => "0";
   requires "Code::TidyAll::Plugin::Perl::AlignMooseAttributes" => "0";
   requires "File::Which" => "0";
   requires "JSON" => "0";

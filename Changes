@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.25     2015-03-31
+
 [ENHANCEMENTS]
 
 - You can now pass "verbose => 1" to tidyall_ok(). Previously this would have
