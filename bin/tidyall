@@ -753,6 +753,10 @@ Does not yet work on Windows
 
 =back
 
+=head1 AUTHOR
+
+Jonathan Swartz
+
 =head1 ACKNOWLEDGMENTS
 
 Thanks to Jeff Thalhammer for helping me refine this API. Thanks to Jeff for
