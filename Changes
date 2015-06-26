@@ -1,5 +1,12 @@
 {{$NEXT}}
 
+[BUG FIXES]
+
+- The tidyall script did not handle the -I option correctly. It was treated as
+  a boolean rather than a string, meaning it basically ignored whatever you
+  passed. Fixed by Andy Jack. GH #35.
+
+
 0.25     2015-03-31
 
 [ENHANCEMENTS]

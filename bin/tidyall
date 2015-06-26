@@ -81,7 +81,7 @@ GetOptions(
     's|svn'           => \$svn_files,
     'q|quiet'         => \$params{quiet},
     'v|verbose'       => \$params{verbose},
-    'I'               => \$inc_dirs,
+    'I=s'             => \$inc_dirs,
 ) or usage();
 version() if $version;
 usage()   if $help;
