@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- The PodChecker plugin no longer generates warnings about an undef variable
+  if the file did not have any Pod.
+
+
 0.25     2015-03-31
 
 [ENHANCEMENTS]
