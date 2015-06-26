@@ -6,6 +6,9 @@
   a boolean rather than a string, meaning it basically ignored whatever you
   passed. Fixed by Andy Jack. GH #35.
 
+- The PodChecker plugin no longer generates warnings about an undef variable
+  if the file did not have any Pod.
+
 
 0.25     2015-03-31
 

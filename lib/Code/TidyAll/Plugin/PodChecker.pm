@@ -18,8 +18,8 @@ sub validate_file {
     open my $fh, '>', \$output;
     $checker->parse_from_file( $file, $fh );
     die $output
-        if $checker->num_errors
-        or ( $self->warnings && $checker->num_warnings );
+        if $checker->num_errors > 0
+        || ( $self->warnings && $checker->num_warnings > 0 );
 }
 
 1;
