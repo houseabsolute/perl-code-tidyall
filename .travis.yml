@@ -4,6 +4,7 @@ addons:
   apt:
     packages:
       - aspell
+      - ispell
       - nodejs
       - php5-cli
 language: perl
