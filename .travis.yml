@@ -1,7 +1,15 @@
 ---
+sudo: false
+addons:
+  apt:
+    packages:
+      - aspell
+      - nodejs
+      - php5-cli
 language: perl
 perl:
   - blead
+  - dev
   - 5.22
   - 5.20
   - 5.18
@@ -10,6 +18,12 @@ perl:
   - 5.12
   - 5.10
   - 5.8
+matrix:
+  allow_failures:
+    - perl: blead
+  include:
+    - env: COVERAGE=1
+      perl: 5.22
 env:
   global:
     - RELEASE_TESTING=1
@@ -17,17 +31,4 @@ env:
 before_install:
   - git config --global user.email "test@example.com"
   - git config --global user.name "Test User"
-  - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
-  - source ~/perl-travis-helper/init
-  - build-perl
-  - perl -V
-  - build-dist
-  - cd $BUILD_DIR
-install:
-  - sudo apt-get update
-  - sudo apt-get install ispell nodejs php5-cli
-  - cpan-install ExtUtils::MakeMaker~6.68 --deps
-script:
-  - perl Makefile.PL
-  - make
-  - prove -br -j$(test-jobs) $(test-files)
+  - eval $(curl https://travis-perl.github.io/init) --auto
