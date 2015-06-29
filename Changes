@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.26     2015-06-29
+
 [BUG FIXES]
 
 - The tidyall script did not handle the -I option correctly. It was treated as

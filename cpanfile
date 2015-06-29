@@ -55,6 +55,7 @@ on 'configure' => sub {
 
 on 'develop' => sub {
   requires "CHI" => "0";
+  requires "Code::TidyAll" => "0";
   requires "Code::TidyAll::Plugin::Perl::AlignMooseAttributes" => "0";
   requires "File::Which" => "0";
   requires "JSON" => "0";
@@ -69,7 +70,7 @@ on 'develop' => sub {
   requires "SVN::Look" => "0";
   requires "Test::CPAN::Changes" => "0.19";
   requires "Test::Differences" => "0";
-  requires "Test::More" => "0";
+  requires "Test::More" => "0.88";
   requires "Test::NoTabs" => "0";
   requires "Test::Pod" => "1.41";
   requires "Test::Spelling" => "0.12";
