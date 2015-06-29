@@ -335,8 +335,8 @@ sub test_shebang : Tests {
         "b/baz"    => "#!perl -w",
         "b/bar.pm" => "package b::bar;",
     );
-    my $root_dir = $self->create_dir(\%files);
-    my $ct = Code::TidyAll->new(
+    my $root_dir = $self->create_dir( \%files );
+    my $ct       = Code::TidyAll->new(
         root_dir => $root_dir,
         plugins  => {
             test_plugin('UpperText') => {
