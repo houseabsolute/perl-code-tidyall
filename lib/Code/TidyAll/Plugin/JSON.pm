@@ -6,7 +6,7 @@ use warnings;
 use JSON ();
 use Moo;
 
-our $VERSION = '0.26';
+our $VERSION = '0.27';
 
 extends 'Code::TidyAll::Plugin';
 

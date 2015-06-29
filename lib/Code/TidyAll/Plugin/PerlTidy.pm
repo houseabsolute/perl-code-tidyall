@@ -5,7 +5,7 @@ use Perl::Tidy;
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.26';
+our $VERSION = '0.27';
 
 sub transform_source {
     my ( $self, $source ) = @_;
