@@ -526,6 +526,8 @@ sub _error_result {
 
 __END__
 
+=encoding UTF-8
+
 =pod
 
 =encoding UTF-8

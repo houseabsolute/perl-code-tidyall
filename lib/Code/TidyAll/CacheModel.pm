@@ -74,7 +74,7 @@ sub _sig {
 
 =head1 NAME
 
-Code::TidyAll::CacheModel - caching model for Cody::TidyAll
+Code::TidyAll::CacheModel - caching model for Code::TidyAll
 
 =head1 SYNOPSIS
 
