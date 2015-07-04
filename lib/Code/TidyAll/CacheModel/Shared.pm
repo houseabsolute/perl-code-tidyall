@@ -25,11 +25,11 @@ sub remove {
 
 1;
 
+# ABSTRACT: Shared cache model for Code::TidyAll
+
 __END__
 
-=head1 NAME
-
-Code::TidyAll:CacheModel::Shared - shared cache model for Code::TidyAll
+=pod
 
 =head1 SYNOPSIS
 
@@ -51,3 +51,4 @@ This allows you to share a cache when you might have several versions of a file
 that you switch backwards and forwards between (e.g. when you're working on
 several branches) and keep the cache values
 
+=cut

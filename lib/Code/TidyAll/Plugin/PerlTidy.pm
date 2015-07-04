@@ -35,13 +35,11 @@ sub transform_source {
 
 1;
 
+# ABSTRACT: Use perltidy with tidyall
+
 __END__
 
 =pod
-
-=head1 NAME
-
-Code::TidyAll::Plugin::PerlTidy - use perltidy with tidyall
 
 =head1 SYNOPSIS
 
@@ -79,3 +77,4 @@ Arguments to pass to perltidy
 
 =back
 
+=cut

@@ -72,9 +72,11 @@ sub _sig {
 
 1;
 
-=head1 NAME
+# ABSTRACT: Caching model for Cody::TidyAll
 
-Code::TidyAll::CacheModel - caching model for Cody::TidyAll
+__END__
+
+=pod
 
 =head1 SYNOPSIS
 
@@ -158,4 +160,4 @@ Attempts to remove the value from the cache
 
 =back
 
-
+=cut
