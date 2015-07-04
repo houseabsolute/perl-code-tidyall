@@ -146,7 +146,7 @@ sub check_repeated_push {
 
 1;
 
-# ABSTRACT: Git pre-receive hook that requires files to betidyall'd
+# ABSTRACT: Git pre-receive hook that requires files to be tidyall'd
 
 __END__
 
