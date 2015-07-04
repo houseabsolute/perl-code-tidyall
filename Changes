@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+[BUG FIXES]
+
 - Fixed broken POD. Most modules were missing their NAME sections because of a
   mistake in the distro's weaver.ini file. Reported by Красимир Беров.
 
