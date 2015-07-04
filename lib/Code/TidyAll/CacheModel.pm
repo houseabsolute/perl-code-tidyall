@@ -72,7 +72,7 @@ sub _sig {
 
 1;
 
-# ABSTRACT: Caching model for Cody::TidyAll
+# ABSTRACT: Caching model for Code::TidyAll
 
 __END__
 
