@@ -34,8 +34,8 @@ __END__
 =head1 SYNOPSIS
 
    my $cta = Code::TidyAll->new(
-     cache_model_class => 'Code::TidyAll::CacheModel::Shared',
-     ...
+       cache_model_class => 'Code::TidyAll::CacheModel::Shared',
+       ...
    );
 
 =head1 DESCRIPTION

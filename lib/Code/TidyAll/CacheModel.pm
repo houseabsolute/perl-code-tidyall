@@ -81,8 +81,8 @@ __END__
 =head1 SYNOPSIS
 
   my $cache_model = Cody::TidyAll::CacheModel->new(
-     cache_engine => Code::TidyAll::Cache->new(...),
-     path => "/path/to/file/to/cache",
+      cache_engine => Code::TidyAll::Cache->new(...),
+      path         => "/path/to/file/to/cache",
   );
 
   # check cache
@@ -93,7 +93,7 @@ __END__
   $cache_model->update;
 
   # update the cache when you know the file contents
-  $cache_model->file_contents( $new_content );
+  $cache_model->file_contents($new_content);
   $cache_model->update;
 
   # force removal from cache
