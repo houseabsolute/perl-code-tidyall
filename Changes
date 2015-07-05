@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.27     2015-07-04
+
 [BUG FIXES]
 
 - Fixed broken POD. Most modules were missing their NAME sections because of a
