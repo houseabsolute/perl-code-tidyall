@@ -64,6 +64,7 @@ on 'develop' => sub {
   requires "Perl::Critic" => "1.123";
   requires "Perl::Critic::Policy::Moose::RequireMakeImmutable" => "0";
   requires "Perl::Tidy" => "20140711";
+  requires "Perl::Tidy::Sweetened" => "1.00";
   requires "Pod::Checker" => "0";
   requires "Pod::Spell" => "0";
   requires "Pod::Tidy" => "0";
