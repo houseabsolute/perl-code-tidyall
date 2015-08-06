@@ -23,6 +23,8 @@ sub tidyall_ok {
         $conf_file = Code::TidyAll->find_conf_file( \@conf_names, "." );
     }
     $options{quiet} = 1 unless $options{verbose};
+    diag("Using $conf_file for config")
+        if $options{verbose};
     my $ct = Code::TidyAll->new_from_conf_file(
         $conf_file,
         check_only    => 1,
