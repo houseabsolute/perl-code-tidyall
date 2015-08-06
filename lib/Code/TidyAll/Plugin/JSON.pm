@@ -3,7 +3,7 @@ package Code::TidyAll::Plugin::JSON;
 use strict;
 use warnings;
 
-use JSON ();
+use JSON::MaybeXS ();
 use Moo;
 
 our $VERSION = '0.28';
@@ -16,7 +16,12 @@ sub transform_source {
     my $self   = shift;
     my $source = shift;
 
-    my $json = JSON->new->utf8->relaxed->pretty->canonical;
+    my $json = JSON::MaybeXS->new(
+        canonical => 1,
+        pretty    => 1,
+        relaxed   => 1,
+        utf8      => 1,
+    );
 
     $json = $json->ascii if $self->ascii;
 
@@ -25,7 +30,7 @@ sub transform_source {
 
 1;
 
-# ABSTRACT: Use the JSON module to tidy JSON documents with tidyall
+# ABSTRACT: Use the JSON::MaybeXS module to tidy JSON documents with tidyall
 
 __END__
 
@@ -41,8 +46,8 @@ __END__
 
 =head1 DESCRIPTION
 
-Uses L<JSON> to format JSON files. Files are put into a canonical format with
-the keys of objects sorted.
+Uses L<JSON::MaybeXS> to format JSON files. Files are put into a canonical
+format with the keys of objects sorted.
 
 =head1 CONFIGURATION
 
