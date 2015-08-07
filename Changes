@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.28     2015-08-06
+
 - The JSON plugin now uses JSON::MaybeXS instead of JSON.pm. Patch by Greg
   Oschwald. GitHub #37.
 
