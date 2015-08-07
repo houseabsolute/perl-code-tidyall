@@ -19,7 +19,7 @@ use Try::Tiny;
 use strict;
 use warnings;
 
-our $VERSION = '0.28';
+our $VERSION = '0.29';
 
 sub default_conf_names { ( 'tidyall.ini', '.tidyallrc' ) }
 

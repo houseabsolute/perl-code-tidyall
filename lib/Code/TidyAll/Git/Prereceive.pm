@@ -9,7 +9,7 @@ use IPC::System::Simple qw(capturex run);
 use Moo;
 use Try::Tiny;
 
-our $VERSION = '0.28';
+our $VERSION = '0.29';
 
 # Public
 has 'allow_repeated_push' => ( is => 'ro', default => 3 );
