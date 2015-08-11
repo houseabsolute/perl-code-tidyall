@@ -1,6 +1,6 @@
 package Code::TidyAll::Cache;
 
-use Digest::SHA1 qw(sha1_hex);
+use Digest::SHA qw(sha1_hex);
 use Code::TidyAll::Util qw(dirname mkpath);
 use File::Slurp::Tiny qw(read_file write_file);
 use Moo;

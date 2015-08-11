@@ -3,7 +3,7 @@ package Code::TidyAll::Git::Prereceive;
 use Code::TidyAll;
 use Code::TidyAll::Util qw(dirname realpath tempdir_simple);
 use Capture::Tiny qw(capture);
-use Digest::SHA1 qw(sha1_hex);
+use Digest::SHA qw(sha1_hex);
 use File::Slurp::Tiny qw(read_file write_file);
 use IPC::System::Simple qw(capturex run);
 use Moo;
