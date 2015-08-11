@@ -1,6 +1,6 @@
 package Code::TidyAll::CacheModel;
 
-use Digest::SHA1 qw(sha1_hex);
+use Digest::SHA qw(sha1_hex);
 use File::Slurp::Tiny qw(read_file);
 use Moo;
 

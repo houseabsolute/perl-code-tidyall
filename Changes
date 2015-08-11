@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Replaced use of Digest::SHA1 with Digest::SHA. The latter module has been
+  part of the Perl core since 5.10. Implemented by Sergey Romanov. GitHub #39.
+
+
 0.28     2015-08-06
 
 - The JSON plugin now uses JSON::MaybeXS instead of JSON.pm. Patch by Greg
