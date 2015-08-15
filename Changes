@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.29     2015-08-15
+
 - Replaced use of Digest::SHA1 with Digest::SHA. The latter module has been
   part of the Perl core since 5.10. Implemented by Sergey Romanov. GitHub #39.
 
