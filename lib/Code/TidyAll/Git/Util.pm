@@ -7,7 +7,7 @@ use strict;
 use warnings;
 use base qw(Exporter);
 
-our $VERSION = '0.29';
+our $VERSION = '0.30';
 
 our @EXPORT_OK = qw(git_uncommitted_files);
 
