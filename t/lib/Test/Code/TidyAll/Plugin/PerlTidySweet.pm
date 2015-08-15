@@ -7,17 +7,17 @@ sub test_main : Tests {
 
     my $source = 'if (  $foo) {\nmy   $bar =  $baz;\n}\n';
     $self->tidyall(
-        conf        => { argv => '-npro' },
+        conf => { argv => '-npro' },
         source      => $source,
         expect_tidy => 'if ($foo) {\n    my $bar = $baz;\n}\n'
     );
     $self->tidyall(
-        conf        => { argv => '-npro -bl' },
+        conf => { argv => '-npro -bl' },
         source      => $source,
         expect_tidy => 'if ($foo)\n{\n    my $bar = $baz;\n}\n'
     );
     $self->tidyall(
-        conf      => { argv => '-npro' },
+        conf => { argv => '-npro' },
         source    => 'if ($foo) {\n    my $bar = $baz;\n}\n',
         expect_ok => 1
     );
@@ -30,7 +30,7 @@ sub test_main : Tests {
         expect_error => qr/Final nesting depth/
     );
     $self->tidyall(
-        conf         => { argv => '--badoption' },
+        conf => { argv => '--badoption' },
         source       => $source,
         expect_error => qr/Unknown option: badoption/
     );
