@@ -16,8 +16,8 @@ sub git_uncommitted_files {
 
     $dir = realpath($dir);
     my $pushd  = pushd($dir);
-    my $output = capturex( "git", "status" );
-    my @files  = ( $output =~ /(?:new file|modified):\s+(.*)/g );
+    my $output = capturex( "git", "status", "--porcelain" );
+    my @files  = ( $output =~ /^..\s(.*?)(?: -> .*)?$/g );
     @files = uniq( map {"$dir/$_"} @files );
     return @files;
 }
