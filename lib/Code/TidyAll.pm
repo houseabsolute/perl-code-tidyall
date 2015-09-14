@@ -50,6 +50,8 @@ has 'base_sig'         => ( is => 'lazy', init_arg => undef );
 has 'plugin_objects'   => ( is => 'lazy', init_arg => undef );
 has 'plugins_for_mode' => ( is => 'lazy', init_arg => undef );
 
+with 'Code::TidyAll::Role::Tempdir';
+
 sub _build_backup_dir {
     my $self = shift;
     return $self->data_dir . "/backups";
@@ -490,12 +492,6 @@ sub _sig {
     return sha1_hex( join( ",", @$data ) );
 }
 
-sub _tempdir {
-    my ($self) = @_;
-    $self->{tempdir} ||= tempdir_simple();
-    return $self->{tempdir};
-}
-
 sub msg {
     my ( $self, $format, @params ) = @_;
     $self->msg_outputter()->( $format, @params );
@@ -606,6 +602,11 @@ by default.
 =item backup_ttl
 
 =item check_only
+
+=item no_cleanup
+
+A boolean indicating if we should skip cleaning temporary files or
+not. Defaults to false.
 
 =item data_dir
 
