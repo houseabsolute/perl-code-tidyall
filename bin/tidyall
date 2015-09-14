@@ -34,6 +34,7 @@ Options:
    --iterations <count>     Number of times to repeat each transform - default is 1
    --no-backups             Don\'t backup files before processing
    --no-cache               Don\'t cache last processed times
+   --no-cleanup             Don\'t cleanup the temporary files
    --output-suffix <suffix> Suffix to add to tidied file
    --refresh-cache          Erase any existing cache info before processing each file
    --root-dir               Specify root directory explicitly
@@ -66,6 +67,7 @@ GetOptions(
     'data-dir=s'      => \$params{data_dir},
     'no-backups'      => \$params{no_backups},
     'no-cache'        => \$params{no_cache},
+    'no-cleanup'      => \$params{no_cleanup},
     'output-suffix=s' => \$params{output_suffix},
     'refresh-cache'   => \$params{refresh_cache},
     'root-dir=s'      => \$params{root_dir},
