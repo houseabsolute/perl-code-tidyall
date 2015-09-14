@@ -2,7 +2,7 @@ package Code::TidyAll::Result;
 
 use Moo;
 
-our $VERSION = '0.30';
+our $VERSION = '0.31';
 
 has 'error'         => ( is => 'ro' );
 has 'new_contents'  => ( is => 'ro' );

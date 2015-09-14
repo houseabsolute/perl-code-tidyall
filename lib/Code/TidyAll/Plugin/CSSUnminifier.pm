@@ -4,7 +4,7 @@ use IPC::System::Simple qw(run);
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.30';
+our $VERSION = '0.31';
 
 sub _build_cmd {'cssunminifier'}
 

@@ -3,7 +3,7 @@ package Code::TidyAll::CacheModel::Shared;
 use Moo;
 extends 'Code::TidyAll::CacheModel';
 
-our $VERSION = '0.30';
+our $VERSION = '0.31';
 
 sub _build_cache_key {
     my $self = shift;

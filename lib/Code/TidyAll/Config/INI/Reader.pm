@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use base qw(Config::INI::Reader);
 
-our $VERSION = '0.30';
+our $VERSION = '0.31';
 
 sub set_value {
     my ( $self, $name, $value ) = @_;
