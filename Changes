@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.30     2015-09-14
+
 - Added a --no-cleanup option for the tidyall script that causes it to leave
   any tempdirs it creates behind. Implemented by Mark Fowler. GitHub #41.
 
