@@ -16,6 +16,7 @@ has 'ignore'       => ( is => 'ro' );
 has 'is_tidier'    => ( is => 'lazy' );
 has 'is_validator' => ( is => 'lazy' );
 has 'name'         => ( is => 'ro', required => 1 );
+has 'ordering'     => ( is => 'lazy' );
 has 'select'       => ( is => 'ro' );
 has 'shebang'      => ( is => 'ro' );
 has 'tidyall'      => ( is => 'ro', required => 1, weak_ref => 1 );
@@ -60,6 +61,9 @@ sub _build_is_validator {
     my ($self) = @_;
     return ( $self->can('validate_source') || $self->can('validate_file') ) ? 1 : 0;
 }
+
+# default orderings
+sub _build_ordering { return 50; }
 
 sub BUILD {
     my ( $self, $params ) = @_;
@@ -230,6 +234,17 @@ A standard attribute for specifying the name of the command to run, e.g.
 =item name
 
 Name of the plugin to be used in error messages etc.
+
+=item ordering
+
+A number indicating the relative ordering of the plugin's execution relative to
+other plugins of the same type.  The lower the number the sooner the plugin
+will be executed.
+
+The order of plugin execution is determined first by the plugin type (tidiers
+are executed before validators), then by the value of the C<ordering> attribute,
+and then (if multiple plugins have the same ordering>) finally by sorting by the
+name of module.
 
 =item tidyall
 

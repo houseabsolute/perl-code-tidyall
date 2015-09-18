@@ -95,10 +95,16 @@ sub _build_plugin_objects {
     my @plugin_objects = map { $self->_load_plugin( $_, $self->plugins->{$_} ) }
         keys( %{ $self->plugins_for_mode } );
 
-    # Sort tidiers before validators, then alphabetical
+    # Sort tidiers before validators, then by ordering, then alphabetical
+    # TODO: These should probably sort in a consistent way independent of locale
     #
-    return [ sort { ( $a->is_validator <=> $b->is_validator ) || ( $a->name cmp $b->name ) }
-            @plugin_objects ];
+    return [
+        sort {
+                   ( $a->is_validator <=> $b->is_validator )
+                || ( $a->ordering <=> $b->ordering )
+                || ( $a->name cmp $b->name )
+        } @plugin_objects
+    ];
 }
 
 sub BUILD {
@@ -614,8 +620,8 @@ by default.
 
 =item no_cleanup
 
-A boolean indicating if we should skip cleaning temporary files or
-not. Defaults to false.
+A boolean indicating if we should skip cleaning temporary files or not.
+Defaults to false.
 
 =item data_dir
 
