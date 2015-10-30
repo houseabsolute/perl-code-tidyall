@@ -433,6 +433,28 @@ sub test_errors : Tests {
     throws_ok { $ct->process_paths("$other_dir/foo.txt") } qr/not underneath root dir/;
 }
 
+sub test_git_files : Tests {
+    my $self = shift;
+
+    # Included examples:
+    # * basic modified file
+    # * renamed but not modified file (perltidy) -- the -> is in the filename
+    # * deleted file
+    # * renamed and modified file
+    my $status = qq{## git-status-porcelain\0 M lib/Code/TidyAll/Git/Util.pm\0R  perltidyrc -> xyz\0perltidyrc\0 M t/lib/Test/Code/TidyAll/Basic.pm\0D  tidyall.ini\0RM weaver.initial\0weaver.ini\0};
+
+    require Code::TidyAll::Git::Util;
+    my @files = Code::TidyAll::Git::Util::_relevant_files_from_status($status);
+    is_deeply(
+      \@files,
+      [
+        "lib/Code/TidyAll/Git/Util.pm",
+        "t/lib/Test/Code/TidyAll/Basic.pm",
+        "weaver.initial",
+      ]
+    );
+}
+
 sub test_cli : Tests {
     my $self = shift;
     my $output;
