@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Use "git status --porcelain -z" when trying to figure out what files are
+  being uncommitted for git hooks. Implemented by Ricardo Signes. GitHub #40.
+
+
 0.38     2016-01-11
 
 - Tweaked the test names used by Test::Code::TidyAll so that they say
