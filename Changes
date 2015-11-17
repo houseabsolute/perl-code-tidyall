@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.31     2015-11-17
+
 - Added a new plugin, DiffOnTidyError. This plugin will call "diff -u" to
   compare the original file content to the tidy version.
 
