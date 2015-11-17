@@ -8,7 +8,7 @@ use File::Which qw( which );
 use IPC::Run3 qw( run3 );
 use Moo;
 
-our $VERSION = '0.31';
+our $VERSION = '0.32';
 
 extends 'Code::TidyAll::Plugin';
 with 'Code::TidyAll::Role::Tempdir';
