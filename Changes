@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Added a new plugin, DiffOnTidyError. This plugin will call "diff -u" to
+  compare the original file content to the tidy version.
+
+
 0.30     2015-09-14
 
 - Added a --no-cleanup option for the tidyall script that causes it to leave

@@ -103,6 +103,10 @@ sub postprocess_source {
     return $_[1];
 }
 
+sub diff {
+    return $_[1];
+}
+
 sub process_source_or_file {
     my ( $self, $source, $basename ) = @_;
 

@@ -311,6 +311,11 @@ sub process_source {
     my $was_tidied = !$error && ( $new_contents ne $orig_contents );
     if ( $was_tidied && $self->check_only ) {
         $error = "*** needs tidying";
+        my $diff = q{};
+        foreach $plugin (@plugins) {
+            $diff = $plugin->diff( $diff, $orig_contents, $new_contents, $path );
+        }
+        $error .= "\n\n" . $diff if length $diff;
         undef $was_tidied;
     }
 
