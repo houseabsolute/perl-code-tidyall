@@ -139,9 +139,9 @@ sub test_plugin_order_and_atomicity : Tests {
             test_plugin("UpperText $_")  => { select => '**/*.txt' },
             test_plugin("CheckUpper $_") => { select => '**/*.txt' },
 
-            # note without the ordering here this would run first, and the
+            # note without the weight here this would run first, and the
             # letters in the photetic words themselves would be reversed
-            test_plugin("AlwaysPhonetic") => { select => '**/*.txt', ordering => 51 }
+            test_plugin("AlwaysPhonetic") => { select => '**/*.txt', weight => 51 }
             )
     } ( 1 .. 3 );
     my $output = capture_stdout {
