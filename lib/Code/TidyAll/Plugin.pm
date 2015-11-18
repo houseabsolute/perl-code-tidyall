@@ -63,7 +63,11 @@ sub _build_is_validator {
 }
 
 # default weight
-sub _build_weight { return 50; }
+sub _build_weight {
+    my ($self) = @_;
+    return 60 if $self->is_validator;
+    return 50;
+}
 
 sub BUILD {
     my ( $self, $params ) = @_;
@@ -231,20 +235,15 @@ A standard attribute for passing command line arguments.
 A standard attribute for specifying the name of the command to run, e.g.
 "/usr/local/bin/perlcritic".
 
+=item is_validator
+
+An attribute that indicates if this is a validator or not; By default this
+returns true if either C<validate_source> or C<validate_file> methods have been
+implemented.
+
 =item name
 
 Name of the plugin to be used in error messages etc.
-
-=item weight
-
-A number indicating the relative weight of the plugin, used to calculate the
-order the plugins will execute in.  The lower the number the sooner the plugin
-will be executed.
-
-The order of plugin execution is determined first by the plugin type (tidiers
-are executed before validators), then by the value of the C<weight> attribute,
-and then (if multiple plugins have the same weight>) finally by sorting by the
-name of module.
 
 =item tidyall
 
@@ -253,6 +252,20 @@ A weak reference back to the L<Code::TidyAll> object.
 =item select, ignore
 
 Select and ignore patterns - you can ignore these.
+
+=item weight
+
+A number indicating the relative weight of the plugin, used to calculate the
+order the plugins will execute in. The lower the number the sooner the plugin
+will be executed.
+
+By default the weight will be C<50> for non validators (anything where
+C<is_validator> returns false) and C<60> for validators (anything where
+C<is_validator> returns true.)
+
+The order of plugin execution is determined first by the value of the C<weight>
+attribute, and then (if multiple plugins have the same weight>) by sorting by
+the name of module.
 
 =back
 
