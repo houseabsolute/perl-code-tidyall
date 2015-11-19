@@ -4,7 +4,7 @@ use Pod::Checker;
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.32';
+our $VERSION = '0.33';
 
 has 'warnings' => ( is => 'ro' );
 
