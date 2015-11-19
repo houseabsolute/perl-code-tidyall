@@ -295,6 +295,10 @@ sub process_source {
     my $new_contents = my $orig_contents = $contents;
     my $plugin;
 
+    if ($self->verbose) {
+        $self->msg("[applying the following plugins: @plugins]");
+    }
+
     try {
         foreach my $method (qw(preprocess_source process_source_or_file postprocess_source)) {
             foreach $plugin (@plugins) {
