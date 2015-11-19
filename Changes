@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.32     2015-11-19
+
 - When in verbose mode we now show what plugins are being applied to each
   file. This is helpful if you want to know why a file isn't being ignored,
   for example.
