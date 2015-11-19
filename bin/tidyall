@@ -462,9 +462,8 @@ arguments to pass to the underlying command-line utility.
 
 =item weight
 
-This is an integer that is used to sort plugins. By default, tidier
-plugins run first, then validator plugins, with each group sorted
-alphabetically.
+This is an integer that is used to sort plugins. By default, tidier plugins run
+first, then validator plugins, with each group sorted alphabetically.
 
 =back
 
@@ -474,9 +473,9 @@ If multiple plugins match a file, tidiers are applied before validators so that
 validators are checking the final result. Within those two groups, the plugins
 are applied in alphabetical order by plugin name/description.
 
-You can also explicitly set the weight of each plugin. By default, tidiers
-have a weight of 50 and validators have a weight of 60. You can set the weight
-to any integer to influence when the plugin runs.
+You can also explicitly set the weight of each plugin. By default, tidiers have
+a weight of 50 and validators have a weight of 60. You can set the weight to
+any integer to influence when the plugin runs.
 
 The application of multiple plugins is all-or-nothing. If an error occurs
 during the application of any plugin, the file is not modified at all.

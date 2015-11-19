@@ -296,7 +296,7 @@ sub process_source {
     my $new_contents = my $orig_contents = $contents;
     my $plugin;
 
-    if ($self->verbose) {
+    if ( $self->verbose ) {
         $self->msg("[applying the following plugins: @plugins]");
     }
 
