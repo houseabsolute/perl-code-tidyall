@@ -95,10 +95,11 @@ sub _build_plugin_objects {
     my @plugin_objects = map { $self->_load_plugin( $_, $self->plugins->{$_} ) }
         keys( %{ $self->plugins_for_mode } );
 
-    # Sort tidiers before validators, then alphabetical
-    #
-    return [ sort { ( $a->is_validator <=> $b->is_validator ) || ( $a->name cmp $b->name ) }
-            @plugin_objects ];
+    # Sort tidiers by weight (by default validators have a weight of 60 and non-
+    # validators a weight of 50 meaning non-validators normally go first), then
+    # alphabetical
+    # TODO: These should probably sort in a consistent way independent of locale
+    return [ sort { ( $a->weight <=> $b->weight ) || ( $a->name cmp $b->name ) } @plugin_objects ];
 }
 
 sub BUILD {
@@ -295,7 +296,7 @@ sub process_source {
     my $new_contents = my $orig_contents = $contents;
     my $plugin;
 
-    if ($self->verbose) {
+    if ( $self->verbose ) {
         $self->msg("[applying the following plugins: @plugins]");
     }
 
@@ -614,8 +615,8 @@ by default.
 
 =item no_cleanup
 
-A boolean indicating if we should skip cleaning temporary files or
-not. Defaults to false.
+A boolean indicating if we should skip cleaning temporary files or not.
+Defaults to false.
 
 =item data_dir
 

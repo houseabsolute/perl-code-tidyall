@@ -56,9 +56,9 @@ __END__
 =head1 DESCRIPTION
 
 When running L<Code::TidyAll> in C<check_only> mode, for example via
-L<Test::Code::TidyAll>, this plugin adds a diff to the output when a file
-needs to be tidied. This plugin uses the F<diff> command, and will simply die
-if it cannot find one in your C<$PATH>.
+L<Test::Code::TidyAll>, this plugin adds a diff to the output when a file needs
+to be tidied. This plugin uses the F<diff> command, and will simply die if it
+cannot find one in your C<$PATH>.
 
 This is helpful if you're trying to figure out what a test is failing on.
 

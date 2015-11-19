@@ -137,7 +137,11 @@ sub test_plugin_order_and_atomicity : Tests {
         (
             %ReverseFoo,
             test_plugin("UpperText $_")  => { select => '**/*.txt' },
-            test_plugin("CheckUpper $_") => { select => '**/*.txt' }
+            test_plugin("CheckUpper $_") => { select => '**/*.txt' },
+
+            # note without the weight here this would run first, and the
+            # letters in the photetic words themselves would be reversed
+            test_plugin("AlwaysPhonetic") => { select => '**/*.txt', weight => 51 }
             )
     } ( 1 .. 3 );
     my $output = capture_stdout {
@@ -145,7 +149,7 @@ sub test_plugin_order_and_atomicity : Tests {
             plugins => {@plugins},
             options => { verbose => 1 },
             source  => { "foo.txt" => "abc" },
-            dest    => { "foo.txt" => "CBA" },
+            dest    => { "foo.txt" => "CHARLIE-BRAVO-ALFA" },
             like_output =>
                 qr/.*ReverseFoo, .*UpperText 1, .*UpperText 2, .*UpperText 3, .*CheckUpper 1, .*CheckUpper 2, .*CheckUpper 3/
         );

@@ -4,6 +4,9 @@
   file. This is helpful if you want to know why a file isn't being ignored,
   for example.
 
+- Added a new plugin configuration option for the rc file, "weight". You can
+  use this to exercise greater control over the order that plugins run in.
+
 
 0.31     2015-11-17
 
