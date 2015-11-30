@@ -7,7 +7,6 @@ use File::Path;
 use File::Spec::Functions qw(abs2rel rel2abs);
 use File::Temp qw(tempdir);
 use Guard;
-use List::MoreUtils qw(uniq);
 use Try::Tiny;
 use strict;
 use warnings;
@@ -16,7 +15,7 @@ use base qw(Exporter);
 our $VERSION = '0.33';
 
 our @EXPORT_OK
-    = qw(abs2rel basename can_load dirname dump_one_line mkpath pushd read_dir realpath rel2abs tempdir_simple trim uniq);
+    = qw(abs2rel basename can_load dirname dump_one_line mkpath pushd read_dir realpath rel2abs tempdir_simple trim);
 
 sub can_load {
 

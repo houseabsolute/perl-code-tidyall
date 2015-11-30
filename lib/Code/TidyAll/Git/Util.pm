@@ -1,8 +1,9 @@
 package Code::TidyAll::Git::Util;
 
 use Cwd qw(realpath);
-use Code::TidyAll::Util qw(pushd uniq);
+use Code::TidyAll::Util qw(pushd);
 use IPC::System::Simple qw(capturex);
+use List::MoreUtils qw(uniq);
 use strict;
 use warnings;
 use base qw(Exporter);

@@ -1,9 +1,10 @@
 package Code::TidyAll::Plugin::PodSpell;
 
-use Code::TidyAll::Util qw(basename uniq);
+use Code::TidyAll::Util qw(basename);
 use Capture::Tiny qw();
 use IPC::System::Simple qw();
 use IPC::Run3;
+use List::MoreUtils qw(uniq);
 use Pod::Spell;
 use Moo;
 use Text::ParseWords qw(shellwords);
