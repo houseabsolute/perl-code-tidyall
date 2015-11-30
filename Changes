@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.33     2015-11-30 (TRIAL RELEASE)
+
 - Adding diff functionality as its own plugin (DiffOnTidyError), which was
   done in 0.31, turned out to be quite problematic. As a plugin you had to
   define which files it applied to via select & exclude, and in a large code
