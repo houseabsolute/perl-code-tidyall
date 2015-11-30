@@ -4,8 +4,7 @@ use Cwd qw(realpath);
 use Code::TidyAll::Config::INI::Reader;
 use Code::TidyAll::Cache;
 use Code::TidyAll::CacheModel;
-use Code::TidyAll::Util
-    qw(abs2rel basename can_load dirname dump_one_line mkpath read_dir rel2abs tempdir_simple);
+use Code::TidyAll::Util qw(basename can_load dirname dump_one_line mkpath read_dir rel2abs);
 use Code::TidyAll::Result;
 use Date::Format;
 use Digest::SHA qw(sha1_hex);

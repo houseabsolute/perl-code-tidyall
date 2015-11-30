@@ -2,7 +2,6 @@ package Code::TidyAll::Git::Precommit;
 
 use Capture::Tiny qw(capture_stdout capture_stderr);
 use Code::TidyAll;
-use Code::TidyAll::Util qw(dirname mkpath realpath tempdir_simple);
 use Cwd qw(cwd);
 use File::Slurp::Tiny qw(write_file);
 use Guard;
