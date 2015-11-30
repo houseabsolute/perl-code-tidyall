@@ -1,5 +1,20 @@
 {{$NEXT}}
 
+- Adding diff functionality as its own plugin (DiffOnTidyError), which was
+  done in 0.31, turned out to be quite problematic. As a plugin you had to
+  define which files it applied to via select & exclude, and in a large code
+  base it was easy to select files that no other plugin applied to. This meant
+  tidyall (and Test::Code::Tidyall, etc.) would include those files even
+  though they were never touched. This could make tidying and tidy tests
+  _much_ slower.
+
+  This plugin has been replaced with a new config attribute that can be
+  applied to all plugins, diff_on_tidy_error. When this is set, any plugin
+  that tidies source in --check-only mode (also used by Test::Code::Tidyall)
+  will include a diff in the error message, one diff per plugin. This has the
+  added benefit of showing if you if multiple plugins are each making changes
+  to the same file.
+
 0.32     2015-11-19
 
 - When in verbose mode we now show what plugins are being applied to each

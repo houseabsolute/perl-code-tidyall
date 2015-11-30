@@ -437,6 +437,21 @@ sub test_errors : Tests {
     throws_ok { $ct->process_paths("$other_dir/foo.txt") } qr/not underneath root dir/;
 }
 
+sub test_diff_on_tidy_error : Tests {
+    my $self = shift;
+
+    my %plugins = %UpperText;
+    $plugins{'+Code::TidyAll::Test::Plugin::UpperText'}{diff_on_tidy_error} = 1;
+    $self->tidy(
+        plugins     => \%plugins,
+        source      => { "foo.txt" => "abc" },
+        options     => { check_only => 1 },
+        desc        => 'diff on tidy error',
+        errors      => qr/needs tidying/,
+        like_output => qr/UpperText made the following change:\n.+abc\n.+ABC/s,
+    );
+}
+
 sub test_cli : Tests {
     my $self = shift;
     my $output;

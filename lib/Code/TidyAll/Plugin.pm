@@ -2,25 +2,29 @@ package Code::TidyAll::Plugin;
 
 use Code::TidyAll::Util::Zglob qw(zglobs_to_regex);
 use File::Slurp::Tiny qw(read_file write_file);
+use File::Which qw( which );
+use IPC::Run3 qw( run3 );
 use Scalar::Util qw(weaken);
 use Moo;
 
 our $VERSION = '0.33';
 
 # External
-has 'argv'         => ( is => 'ro', default => q{} );
-has 'class'        => ( is => 'ro' );
-has 'cmd'          => ( is => 'lazy' );
-has 'ignore'       => ( is => 'ro' );
-has 'is_tidier'    => ( is => 'lazy' );
-has 'is_validator' => ( is => 'lazy' );
-has 'name'         => ( is => 'ro', required => 1 );
-has 'select'       => ( is => 'ro' );
-has 'shebang'      => ( is => 'ro' );
-has 'tidyall'      => ( is => 'ro', required => 1, weak_ref => 1 );
-has 'weight'       => ( is => 'lazy' );
+has 'argv'               => ( is => 'ro', default => q{} );
+has 'class'              => ( is => 'ro' );
+has 'cmd'                => ( is => 'lazy' );
+has 'diff_on_tidy_error' => ( is => 'ro', default => 0 );
+has 'ignore'             => ( is => 'ro' );
+has 'is_tidier'          => ( is => 'lazy' );
+has 'is_validator'       => ( is => 'lazy' );
+has 'name'               => ( is => 'ro', required => 1 );
+has 'select'             => ( is => 'ro' );
+has 'shebang'            => ( is => 'ro' );
+has 'tidyall'            => ( is => 'ro', required => 1, weak_ref => 1 );
+has 'weight'             => ( is => 'lazy' );
 
 # Internal
+has '_diff_cmd'    => ( is => 'lazy' );
 has 'ignore_regex' => ( is => 'lazy' );
 has 'ignores'      => ( is => 'lazy' );
 has 'select_regex' => ( is => 'lazy' );
@@ -68,12 +72,24 @@ sub _build_weight {
     return 50;
 }
 
+sub _build__diff_cmd {
+    my $cmd = which('diff');
+    die 'Could not find a diff command in your $PATH'
+        unless $cmd;
+    return $cmd;
+}
+
 sub BUILD {
     my ( $self, $params ) = @_;
 
     # Strict constructor
     #
     $self->validate_params($params);
+
+    return unless $self->diff_on_tidy_error;
+
+    # Will die if we can't find a diff command to run later.
+    $self->_diff_cmd;
 }
 
 sub validate_params {
@@ -110,34 +126,59 @@ sub postprocess_source {
     return $_[1];
 }
 
-sub diff {
-    return $_[1];
-}
-
 sub process_source_or_file {
-    my ( $self, $source, $basename ) = @_;
+    my ( $self, $orig_source, $basename, $check_only ) = @_;
 
+    my $new_source = $orig_source;
     if ( $self->can('transform_source') ) {
         foreach my $iter ( 1 .. $self->tidyall->iterations ) {
-            $source = $self->transform_source($source);
+            $new_source = $self->transform_source($new_source);
         }
     }
     if ( $self->can('transform_file') ) {
-        my $tempfile = $self->_write_temp_file( $basename, $source );
+        my $tempfile = $self->_write_temp_file( $basename, $new_source );
         foreach my $iter ( 1 .. $self->tidyall->iterations ) {
             $self->transform_file($tempfile);
         }
-        $source = read_file($tempfile);
+        $new_source = read_file($tempfile);
     }
     if ( $self->can('validate_source') ) {
-        $self->validate_source($source);
+        $self->validate_source($new_source);
     }
     if ( $self->can('validate_file') ) {
-        my $tempfile = $self->_write_temp_file( $basename, $source );
+        my $tempfile = $self->_write_temp_file( $basename, $new_source );
         $self->validate_file($tempfile);
     }
 
-    return $source;
+    my $diff;
+    if ( $check_only && $new_source ne $orig_source ) {
+        $diff = $self->_maybe_diff( $orig_source, $new_source, $basename );
+    }
+
+    return ( $new_source, $diff );
+}
+
+sub _maybe_diff {
+    my $self = shift;
+
+    return unless $self->diff_on_tidy_error;
+
+    my $orig     = shift;
+    my $new      = shift;
+    my $basename = shift;
+
+    my $orig_file = $self->_write_temp_file( $basename . '.orig', $orig );
+    my $new_file  = $self->_write_temp_file( $basename . '.new',  $new );
+
+    my $output;
+    run3(
+        [ $self->_diff_cmd, '-u', $orig_file, $new_file ],
+        \undef,
+        \$output,
+        \$output,
+    );
+
+    return $output;
 }
 
 sub _write_temp_file {
@@ -233,6 +274,12 @@ A standard attribute for passing command line arguments.
 
 A standard attribute for specifying the name of the command to run, e.g.
 "/usr/local/bin/perlcritic".
+
+=item diff_on_tidy_error
+
+This only applies to plugins which transform source. If this is true, then when
+the plugin is run in check mode it will include a diff in the return value from
+C<process_source_or_file> when the source is not tidy.
 
 =item is_validator
 
