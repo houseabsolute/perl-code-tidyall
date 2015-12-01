@@ -1,7 +1,7 @@
 package Test::Code::TidyAll::Basic;
 
 use Cwd qw(realpath);
-use Code::TidyAll::Util qw(dirname mkpath pushd tempdir_simple);
+use Code::TidyAll::Util qw(mkpath pushd tempdir_simple);
 use Code::TidyAll;
 use Capture::Tiny qw(capture capture_stdout capture_merged);
 use File::Find qw(find);
@@ -17,52 +17,6 @@ my %CheckUpper = ( test_plugin('CheckUpper') => { select => '**/*.txt' } );
 my %AToZ       = ( test_plugin('AToZ')       => { select => '**/*.txt' } );
 
 my $cli_conf;
-
-sub create_dir {
-    my ( $self, $files ) = @_;
-
-    my $root_dir = tempdir_simple();
-    while ( my ( $path, $content ) = each(%$files) ) {
-        my $full_path = "$root_dir/$path";
-        mkpath( dirname($full_path), 0, 0775 );
-        write_file( $full_path, $content );
-    }
-    return realpath($root_dir);
-}
-
-sub tidy {
-    my ( $self, %params ) = @_;
-    my $desc = $params{desc};
-    if ( !defined($desc) ) {
-        ($desc) = ( ( caller(1) )[3] =~ /([^:]+$)/ );
-    }
-
-    my $root_dir = $self->create_dir( $params{source} );
-
-    my $options = $params{options} || {};
-    my $ct = Code::TidyAll->new(
-        plugins  => $params{plugins},
-        root_dir => $root_dir,
-        %$options
-    );
-
-    my @results;
-    my $output = capture_stdout { @results = $ct->process_all() };
-    my $error_count = grep { $_->error } @results;
-    if ( $params{errors} ) {
-        like( $output, $params{errors}, "$desc - errors" );
-        ok( $error_count > 0, "$desc - error_count > 0" );
-    }
-    else {
-        is( $error_count, 0, "$desc - error_count == 0" );
-    }
-    while ( my ( $path, $content ) = each( %{ $params{dest} } ) ) {
-        is( read_file("$root_dir/$path"), $content, "$desc - $path content" );
-    }
-    if ( my $like_output = $params{like_output} ) {
-        like( $output, $like_output, "$desc - output" );
-    }
-}
 
 sub test_basic : Tests {
     my $self = shift;
@@ -435,21 +389,6 @@ sub test_errors : Tests {
     my $other_dir = realpath( tempdir_simple() );
     write_file( "$other_dir/foo.txt", "ABC" );
     throws_ok { $ct->process_paths("$other_dir/foo.txt") } qr/not underneath root dir/;
-}
-
-sub test_diff_on_tidy_error : Tests {
-    my $self = shift;
-
-    my %plugins = %UpperText;
-    $plugins{'+Code::TidyAll::Test::Plugin::UpperText'}{diff_on_tidy_error} = 1;
-    $self->tidy(
-        plugins     => \%plugins,
-        source      => { "foo.txt" => "abc" },
-        options     => { check_only => 1 },
-        desc        => 'diff on tidy error',
-        errors      => qr/needs tidying/,
-        like_output => qr/UpperText made the following change:\n.+abc\n.+ABC/s,
-    );
 }
 
 sub test_cli : Tests {
