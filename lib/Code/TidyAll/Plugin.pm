@@ -7,7 +7,7 @@ use IPC::Run3 qw( run3 );
 use Scalar::Util qw(weaken);
 use Moo;
 
-our $VERSION = '0.36';
+our $VERSION = '0.37';
 
 # External
 has 'argv'               => ( is => 'ro', default => q{} );
