@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Updated the distro metadata to point to github for bug reports rather than
+  rt.cpan.org.
+
+
 0.35     2015-12-02
 
 - If the "files" parameter to tidyall_ok didn't include any files that matches
