@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.35     2015-12-02
+
 - If the "files" parameter to tidyall_ok didn't include any files that matches
   the tidyall config (or no files at all) this would cause an error from
   Test::Builder. This has been fixed so we now just spit out a single passing
