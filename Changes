@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.34     2015-12-02
+
 - Added a new "files" parameter that can be passed to the tidyall_ok sub
   exported by Test::Code::TidyAll. This makes it possible to use this sub to
   check just a subset of your files.

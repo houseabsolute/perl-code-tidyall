@@ -17,6 +17,7 @@ requires "Getopt::Long" => "0";
 requires "Guard" => "0";
 requires "IPC::Run3" => "0";
 requires "IPC::System::Simple" => "0";
+requires "List::Compare" => "0";
 requires "List::MoreUtils" => "0";
 requires "Log::Any" => "0";
 requires "Moo" => "0";
