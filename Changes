@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.36     2015-12-02
+
 - Updated the distro metadata to point to github for bug reports rather than
   rt.cpan.org.
 
