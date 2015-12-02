@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- Added a new "files" parameter that can be passed to the tidyall_ok sub
+  exported by Test::Code::TidyAll. This makes it possible to use this sub to
+  check just a subset of your files.
+
+
 0.33     2015-11-30 (TRIAL RELEASE)
 
 - Adding diff functionality as its own plugin (DiffOnTidyError), which was
@@ -16,6 +21,7 @@
   will include a diff in the error message, one diff per plugin. This has the
   added benefit of showing if you if multiple plugins are each making changes
   to the same file.
+
 
 0.32     2015-11-19
 

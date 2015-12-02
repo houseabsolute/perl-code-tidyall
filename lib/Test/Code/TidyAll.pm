@@ -1,6 +1,7 @@
 package Test::Code::TidyAll;
 
 use Code::TidyAll;
+use List::Compare;
 use Test::Builder;
 use Text::Diff;
 use Text::Diff::Table;
@@ -25,14 +26,24 @@ sub tidyall_ok {
     $options{quiet} = 1 unless $options{verbose};
     $test->diag("Using $conf_file for config")
         if $options{verbose};
-    my $ct = Code::TidyAll->new_from_conf_file(
+
+    my $files = delete $options{files};
+    my $ct    = Code::TidyAll->new_from_conf_file(
         $conf_file,
         check_only    => 1,
         mode          => 'test',
         msg_outputter => \&_msg_outputter,
         %options,
     );
-    my @files = $ct->find_matched_files;
+
+    my @files;
+    if ($files) {
+        @files = List::Compare->new( $files, [ $ct->find_matched_files ] )->get_intersection;
+    }
+    else {
+        @files = $ct->find_matched_files;
+    }
+
     $test->plan( tests => scalar(@files) );
     foreach my $file (@files) {
         my $desc   = $ct->_small_path($file);
@@ -78,25 +89,38 @@ __END__
 
 =head1 DESCRIPTION
 
-Uses L<tidyall --check-only|tidyall> to check that all the files in your
+Uses L<Code::TidyAll>'s C<check_only> mode to check that all the files in your
 project are in a tidied and valid state, i.e. that no plugins throw errors or
 would change the contents of the file. Does not actually modify any files.
 
-By default, looks for config file C<tidyall.ini> or C<.tidyallrc> in the
+By default, we look for the config file C<tidyall.ini> or C<.tidyallrc> in the
 current directory and parent directories, which is generally the right place if
 you are running L<prove>.
 
-Passes mode = "test" by default; see L<modes|tidyall/MODES>.
+When invoking L<Code::TidyAll>, we pass C<<mode => 'test'>> by default; see
+L<modes|tidyall/MODES>.
 
-C<tidyall_ok> is exported by default. Any options will be passed along to the
+=head1 EXPORTS
+
+This module exports one subroutine, which is exported by default:
+
+=head2 tidyall_ok(...)
+
+Most options given to this subroutine will be passed along to the
 L<Code::TidyAll> constructor. For example, if you don't want to use the tidyall
 cache and instead check all files every time:
 
-    tidyall_ok(no_cache => 1);
+    tidyall_ok( no_cache => 1 );
 
 or if you need to specify the config file:
 
-    tidyall_ok(conf_file => '/path/to/conf/file');
+    tidyall_ok( conf_file => '/path/to/conf/file' );
+
+By default, this subroutine will test every file that matches the config you
+specify. However, you can pass a C<files> parameter as an array reference to
+override this, in which case only the files you specify will be tested. These
+files are still filtered based on the C<select> and C<exclude> rules defined in
+your config.
 
 =head1 SEE ALSO
 
