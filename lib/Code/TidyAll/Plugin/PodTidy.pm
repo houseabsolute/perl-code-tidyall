@@ -5,7 +5,7 @@ use Pod::Tidy;
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.35';
+our $VERSION = '0.36';
 
 has 'columns' => ( is => 'ro' );
 

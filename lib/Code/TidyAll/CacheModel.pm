@@ -4,7 +4,7 @@ use Digest::SHA qw(sha1_hex);
 use File::Slurp::Tiny qw(read_file);
 use Moo;
 
-our $VERSION = '0.35';
+our $VERSION = '0.36';
 
 # todo, type checking?
 
