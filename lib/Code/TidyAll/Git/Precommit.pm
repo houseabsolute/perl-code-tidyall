@@ -10,7 +10,7 @@ use IPC::System::Simple qw(capturex run);
 use Moo;
 use Try::Tiny;
 
-our $VERSION = '0.34';
+our $VERSION = '0.35';
 
 # Public
 has 'conf_name'       => ( is => 'ro' );
