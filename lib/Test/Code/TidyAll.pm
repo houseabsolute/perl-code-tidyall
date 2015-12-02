@@ -44,6 +44,12 @@ sub tidyall_ok {
         @files = $ct->find_matched_files;
     }
 
+    unless (@files) {
+        $test->plan(1);
+        $test->ok( 1, 'found no matching files for tidyall_ok' );
+        return;
+    }
+
     $test->plan( tests => scalar(@files) );
     foreach my $file (@files) {
         my $desc   = $ct->_small_path($file);

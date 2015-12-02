@@ -1,5 +1,11 @@
 {{$NEXT}}
 
+- If the "files" parameter to tidyall_ok didn't include any files that matches
+  the tidyall config (or no files at all) this would cause an error from
+  Test::Builder. This has been fixed so we now just spit out a single passing
+  test.
+
+
 0.34     2015-12-02
 
 - Added a new "files" parameter that can be passed to the tidyall_ok sub
