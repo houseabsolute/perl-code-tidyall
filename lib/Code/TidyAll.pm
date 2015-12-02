@@ -18,7 +18,7 @@ use Try::Tiny;
 use strict;
 use warnings;
 
-our $VERSION = '0.33';
+our $VERSION = '0.34';
 
 sub default_conf_names { ( 'tidyall.ini', '.tidyallrc' ) }
 
@@ -299,10 +299,16 @@ sub process_source {
         $self->msg("[applying the following plugins: @plugins]");
     }
 
+    my @diffs;
     try {
         foreach my $method (qw(preprocess_source process_source_or_file postprocess_source)) {
             foreach $plugin (@plugins) {
-                $new_contents = $plugin->$method( $new_contents, $basename );
+                my $diff;
+                ( $new_contents, $diff )
+                    = $plugin->$method( $new_contents, $basename, $self->check_only );
+                if ($diff) {
+                    push @diffs, [ $plugin->name, $diff ];
+                }
             }
         }
     }
@@ -315,11 +321,11 @@ sub process_source {
     my $was_tidied = !$error && ( $new_contents ne $orig_contents );
     if ( $was_tidied && $self->check_only ) {
         $error = "*** needs tidying";
-        my $diff = q{};
-        foreach $plugin (@plugins) {
-            $diff = $plugin->diff( $diff, $orig_contents, $new_contents, $path );
+        foreach my $diff (@diffs) {
+            $error .= "\n\n";
+            $error .= "$diff->[0] made the following change:\n$diff->[1]";
         }
-        $error .= "\n\n" . $diff if length $diff;
+        $error .= "\n\n" if @diffs;
         undef $was_tidied;
     }
 
