@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Really fix an empty files parameter to tidyall_ok (Test::Code::TidyAll
+  desperately needs some tests).
+
+
 0.36     2015-12-02
 
 - Updated the distro metadata to point to github for bug reports rather than

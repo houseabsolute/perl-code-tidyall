@@ -45,7 +45,7 @@ sub tidyall_ok {
     }
 
     unless (@files) {
-        $test->plan(1);
+        $test->plan( tests => 1 );
         $test->ok( 1, 'found no matching files for tidyall_ok' );
         return;
     }
