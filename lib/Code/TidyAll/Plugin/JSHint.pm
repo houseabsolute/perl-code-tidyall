@@ -6,7 +6,7 @@ use IPC::Run3 qw(run3);
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.37';
+our $VERSION = '0.38';
 
 sub validate_params {
     my ( $self, $params ) = @_;
