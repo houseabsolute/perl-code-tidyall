@@ -32,9 +32,9 @@ Options:
    --conf-name <name>       Conf file name to search for
    --data-dir <path>        Contains metadata, defaults to root/.tidyall.d
    --iterations <count>     Number of times to repeat each transform - default is 1
-   --no-backups             Don\'t backup files before processing
+   --no-backups             Don\'t back up files before processing
    --no-cache               Don\'t cache last processed times
-   --no-cleanup             Don\'t cleanup the temporary files
+   --no-cleanup             Don\'t clean up the temporary files
    --output-suffix <suffix> Suffix to add to tidied file
    --refresh-cache          Erase any existing cache info before processing each file
    --root-dir               Specify root directory explicitly
