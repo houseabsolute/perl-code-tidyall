@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.38     2016-01-11
+
 - Tweaked the test names used by Test::Code::TidyAll so that they say
   something like "lib/Foo.pm is tidy" rather than just "lib/Foo.pm".
 
