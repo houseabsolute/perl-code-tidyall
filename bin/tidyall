@@ -8,7 +8,7 @@ use Code::TidyAll::Util qw(can_load dirname rel2abs);
 use strict;
 use warnings;
 
-our $VERSION = '0.38';
+our $VERSION = '0.39';
 
 my $usage = '
 Usage: tidyall [options] [file] ...

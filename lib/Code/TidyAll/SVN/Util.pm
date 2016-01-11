@@ -6,7 +6,7 @@ use strict;
 use warnings;
 use base qw(Exporter);
 
-our $VERSION = '0.38';
+our $VERSION = '0.39';
 
 our @EXPORT_OK = qw(svn_uncommitted_files);
 
