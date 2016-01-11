@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Tweaked the test names used by Test::Code::TidyAll so that they say
+  something like "lib/Foo.pm is tidy" rather than just "lib/Foo.pm".
+
+
 0.37     2015-12-03
 
 - Really fix an empty files parameter to tidyall_ok (Test::Code::TidyAll

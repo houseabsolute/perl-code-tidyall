@@ -54,11 +54,8 @@ sub tidyall_ok {
     foreach my $file (@files) {
         my $desc   = $ct->_small_path($file);
         my $result = $ct->process_file($file);
-        if ( $result->ok ) {
-            $test->ok( 1, $desc );
-        }
-        else {
-            $test->ok( 0, $desc );
+        $test->ok( $result->ok, "$desc is tidy" );
+        unless ( $result->ok ) {
             $test->diag( $result->error );
 
             if ( $options{verbose} ) {
