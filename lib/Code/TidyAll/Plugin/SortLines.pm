@@ -3,7 +3,7 @@ package Code::TidyAll::Plugin::SortLines;
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.39';
+our $VERSION = '0.40';
 
 sub transform_source {
     my ( $self, $source ) = @_;

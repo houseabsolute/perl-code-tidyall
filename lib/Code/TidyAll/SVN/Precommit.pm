@@ -8,7 +8,7 @@ use Moo;
 use SVN::Look;
 use Try::Tiny;
 
-our $VERSION = '0.39';
+our $VERSION = '0.40';
 
 # Public
 has 'conf_name'                => ( is => 'ro' );
