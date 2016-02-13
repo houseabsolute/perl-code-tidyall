@@ -71,6 +71,7 @@ on 'develop' => sub {
   requires "Pod::Tidy" => "0";
   requires "SVN::Look" => "0";
   requires "Test::CPAN::Changes" => "0.19";
+  requires "Test::CPAN::Meta::JSON" => "0.16";
   requires "Test::Mojibake" => "0";
   requires "Test::More" => "0.88";
   requires "Test::NoTabs" => "0";
