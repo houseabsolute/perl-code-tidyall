@@ -618,8 +618,8 @@ by default.
 
 =item check_only
 
-If this is true, then we simply check that files pass validation steps and
-that tidying them does not change the file. Any changes from tidying are not
+If this is true, then we simply check that files pass validation steps and that
+tidying them does not change the file. Any changes from tidying are not
 actually written back to the file.
 
 =item no_cleanup

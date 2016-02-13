@@ -399,17 +399,18 @@ sub test_git_files : Tests {
     # * renamed but not modified file (perltidy) -- the -> is in the filename
     # * deleted file
     # * renamed and modified file
-    my $status = qq{## git-status-porcelain\0 M lib/Code/TidyAll/Git/Util.pm\0R  perltidyrc -> xyz\0perltidyrc\0 M t/lib/Test/Code/TidyAll/Basic.pm\0D  tidyall.ini\0RM weaver.initial\0weaver.ini\0};
+    my $status
+        = qq{## git-status-porcelain\0 M lib/Code/TidyAll/Git/Util.pm\0R  perltidyrc -> xyz\0perltidyrc\0 M t/lib/Test/Code/TidyAll/Basic.pm\0D  tidyall.ini\0RM weaver.initial\0weaver.ini\0};
 
     require Code::TidyAll::Git::Util;
     my @files = Code::TidyAll::Git::Util::_relevant_files_from_status($status);
     is_deeply(
-      \@files,
-      [
-        "lib/Code/TidyAll/Git/Util.pm",
-        "t/lib/Test/Code/TidyAll/Basic.pm",
-        "weaver.initial",
-      ]
+        \@files,
+        [
+            "lib/Code/TidyAll/Git/Util.pm",
+            "t/lib/Test/Code/TidyAll/Basic.pm",
+            "weaver.initial",
+        ]
     );
 }
 
