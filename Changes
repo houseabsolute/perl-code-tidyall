@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- Don't include files not tracked by git when looking for uncommitted files.
+  (Olaf Alders)
+
 0.39     2016-02-13
 
 - Use "git status --porcelain -z" when trying to figure out what files are
