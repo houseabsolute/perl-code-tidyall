@@ -17,7 +17,7 @@ sub git_uncommitted_files {
     my $pushd = pushd( realpath($dir) );
     return
         map { rel2abs($_) }
-        _relevant_files_from_status( capturex(qw( git status --porcelain -z )) );
+        _relevant_files_from_status( capturex(qw( git status --porcelain -z -uno )) );
 }
 
 sub _relevant_files_from_status {
