@@ -3,6 +3,9 @@
 - Don't include files not tracked by git when looking for uncommitted files.
   Fixed by Olaf Alders. GitHub #51.
 
+- Use Text::Diff for all diffs instead of calling an external
+  command. Hopefully this makes this distro a little more portable.
+
 
 0.39     2016-02-13
 

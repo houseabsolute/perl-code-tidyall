@@ -5,6 +5,8 @@ use File::Slurp::Tiny qw(read_file write_file);
 use File::Which qw( which );
 use IPC::Run3 qw( run3 );
 use Scalar::Util qw(weaken);
+use Text::Diff qw( diff );
+
 use Moo;
 
 our $VERSION = '0.40';
@@ -24,7 +26,6 @@ has 'tidyall'            => ( is => 'ro', required => 1, weak_ref => 1 );
 has 'weight'             => ( is => 'lazy' );
 
 # Internal
-has '_diff_cmd'    => ( is => 'lazy' );
 has 'ignore_regex' => ( is => 'lazy' );
 has 'ignores'      => ( is => 'lazy' );
 has 'select_regex' => ( is => 'lazy' );
@@ -72,24 +73,12 @@ sub _build_weight {
     return 50;
 }
 
-sub _build__diff_cmd {
-    my $cmd = which('diff');
-    die 'Could not find a diff command in your $PATH'
-        unless $cmd;
-    return $cmd;
-}
-
 sub BUILD {
     my ( $self, $params ) = @_;
 
     # Strict constructor
     #
     $self->validate_params($params);
-
-    return unless $self->diff_on_tidy_error;
-
-    # Will die if we can't find a diff command to run later.
-    $self->_diff_cmd;
 }
 
 sub validate_params {
@@ -170,15 +159,7 @@ sub _maybe_diff {
     my $orig_file = $self->_write_temp_file( $basename . '.orig', $orig );
     my $new_file  = $self->_write_temp_file( $basename . '.new',  $new );
 
-    my $output;
-    run3(
-        [ $self->_diff_cmd, '-u', $orig_file, $new_file ],
-        \undef,
-        \$output,
-        \$output,
-    );
-
-    return $output;
+    return diff( $orig_file, $new_file, { Style => 'Unified' } );
 }
 
 sub _write_temp_file {
