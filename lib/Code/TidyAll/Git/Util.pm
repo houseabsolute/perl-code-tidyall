@@ -23,6 +23,8 @@ sub git_uncommitted_files {
 sub _relevant_files_from_status {
     my ($status) = @_;
 
+    return unless $status;
+
     my @files;
     {
         local $_ = $status;
