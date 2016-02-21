@@ -14,7 +14,7 @@ sub test_diff_on_tidy_error : Tests {
                 select             => '**/*.txt',
             },
         },
-        source  => { "foo.txt"  => "abc" },
+        source  => { 'foo.txt'  => "abc\n" },
         options => { check_only => 1 },
         desc    => 'diff on tidy error',
         errors  => qr/needs tidying/,
