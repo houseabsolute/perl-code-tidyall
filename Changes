@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.40     2016-02-21
+
 - Don't include files not tracked by git when looking for uncommitted files.
   Fixed by Olaf Alders. GitHub #51.
 
