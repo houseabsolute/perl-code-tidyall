@@ -45,7 +45,7 @@ sub test_basic : Tests {
     );
     $self->tidy(
         plugins => { %UpperText, %ReverseFoo },
-        source => {
+        source  => {
             "foo.txt" => "abc",
             "bar.txt" => "def",
             "foo.tx"  => "ghi",
@@ -77,7 +77,7 @@ sub test_multiple_plugin_instances : Tests {
             %UpperText
         },
         source => { "foo.txt" => "abc", "foo.dat" => "def", "bar.txt" => "ghi" },
-        dest => {
+        dest   => {
             "foo.txt" => scalar( "ABC" x 6 ),
             "foo.dat" => scalar( "def" x 3 ),
             "bar.txt" => scalar( "GHI" x 2 )
@@ -111,10 +111,10 @@ sub test_plugin_order_and_atomicity : Tests {
 
     $self->tidy(
         plugins => { %AToZ, %ReverseFoo, %CheckUpper },
-        options => { verbose   => 1 },
-        source  => { "foo.txt" => "abc" },
-        dest    => { "foo.txt" => "abc" },
-        errors  => qr/lowercase found/,
+        options     => { verbose   => 1 },
+        source      => { "foo.txt" => "abc" },
+        dest        => { "foo.txt" => "abc" },
+        errors      => qr/lowercase found/,
         like_output => qr/foo.txt (.*ReverseFoo, .*CheckUpper)/
     );
 
@@ -156,7 +156,7 @@ sub test_iterations : Tests {
     my $self     = shift;
     my $root_dir = $self->create_dir( { "foo.txt" => "abc" } );
     my $ct       = Code::TidyAll->new(
-        plugins => { test_plugin('RepeatFoo') => { select => '**/foo*', times => 3 } },
+        plugins    => { test_plugin('RepeatFoo') => { select => '**/foo*', times => 3 } },
         root_dir   => $root_dir,
         iterations => 2
     );
@@ -320,7 +320,7 @@ sub test_dirs : Tests {
         my @results;
         my $output = capture_merged {
             my $ct = Code::TidyAll->new(
-                plugins => { %UpperText, %ReverseFoo },
+                plugins  => { %UpperText, %ReverseFoo },
                 root_dir => $root_dir,
                 ( $recursive ? ( recursive => 1 ) : () )
             );
@@ -364,7 +364,7 @@ sub test_errors : Tests {
     throws_ok {
         Code::TidyAll->new(
             root_dir => $root_dir,
-            plugins => { 'DoesNotExist' => { select => '**/*' } }
+            plugins  => { 'DoesNotExist' => { select => '**/*' } }
         )->plugin_objects;
     }
     qr/could not load plugin class/;

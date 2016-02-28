@@ -14,10 +14,10 @@ sub test_diff_on_tidy_error : Tests {
                 select             => '**/*.txt',
             },
         },
-        source  => { 'foo.txt'  => "abc\n" },
-        options => { check_only => 1 },
-        desc    => 'diff on tidy error',
-        errors  => qr/needs tidying/,
+        source      => { 'foo.txt'  => "abc\n" },
+        options     => { check_only => 1 },
+        desc        => 'diff on tidy error',
+        errors      => qr/needs tidying/,
         like_output => qr/UpperText made the following change:\n.+abc\n.+ABC/s,
     );
 }
