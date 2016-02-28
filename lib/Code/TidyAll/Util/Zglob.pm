@@ -3,6 +3,7 @@
 package Code::TidyAll::Util::Zglob;
 
 use strict;
+use warnings;
 use Exporter;
 use vars qw/@ISA @EXPORT_OK
     $strict_leading_dot $strict_wildcard_slash/;
