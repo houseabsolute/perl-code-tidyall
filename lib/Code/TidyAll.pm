@@ -11,7 +11,7 @@ use Digest::SHA qw(sha1_hex);
 use File::Find qw(find);
 use File::Slurp::Tiny qw(read_file write_file);
 use File::Zglob;
-use List::MoreUtils qw(uniq);
+use List::SomeUtils qw(uniq);
 use Moo;
 use Time::Duration::Parse qw(parse_duration);
 use Try::Tiny;

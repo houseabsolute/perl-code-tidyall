@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- Replaced List::MoreUtils with List::SomeUtils.
+
+
 0.40     2016-02-21
 
 - Don't include files not tracked by git when looking for uncommitted files.

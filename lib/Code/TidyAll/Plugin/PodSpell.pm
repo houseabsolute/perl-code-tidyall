@@ -3,7 +3,7 @@ package Code::TidyAll::Plugin::PodSpell;
 use Capture::Tiny qw();
 use IPC::System::Simple qw();
 use IPC::Run3;
-use List::MoreUtils qw(uniq);
+use List::SomeUtils qw(uniq);
 use Pod::Spell;
 use Moo;
 use Text::ParseWords qw(shellwords);

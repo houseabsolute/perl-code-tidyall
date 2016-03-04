@@ -3,7 +3,7 @@ package Code::TidyAll::Git::Util;
 use Cwd qw(realpath);
 use Code::TidyAll::Util qw(pushd rel2abs);
 use IPC::System::Simple qw(capturex);
-use List::MoreUtils qw(uniq);
+use List::SomeUtils qw(uniq);
 use strict;
 use warnings;
 use base qw(Exporter);
