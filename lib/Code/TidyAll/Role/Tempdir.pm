@@ -5,7 +5,7 @@ use Moo::Role;
 use Cwd qw(realpath);
 use File::Temp qw(tempdir);
 
-our $VERSION = '0.41';
+our $VERSION = '0.42';
 
 has '_tempdir'   => ( is => 'ro', lazy => 1, builder => 1 );
 has 'no_cleanup' => ( is => 'ro', default => 0 );

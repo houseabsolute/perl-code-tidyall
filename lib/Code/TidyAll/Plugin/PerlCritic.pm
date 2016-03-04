@@ -4,7 +4,7 @@ use IPC::Run3 qw(run3);
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.41';
+our $VERSION = '0.42';
 
 sub _build_cmd {'perlcritic'}
 
