@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.41     2016-03-04
+
 - Replaced List::MoreUtils with List::SomeUtils.
 
 
