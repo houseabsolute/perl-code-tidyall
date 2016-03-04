@@ -5,7 +5,7 @@ use File::Slurp::Tiny qw(read_file write_file);
 use File::Which qw( which );
 use IPC::Run3 qw( run3 );
 use Scalar::Util qw(weaken);
-use Text::Diff qw( diff );
+use Text::Diff 1.44 qw( diff );
 
 use Moo;
 
