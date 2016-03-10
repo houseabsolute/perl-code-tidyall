@@ -4,7 +4,7 @@ use IPC::Run3 qw(run3);
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.42';
+our $VERSION = '0.43';
 
 sub _build_cmd {'jslint'}
 
