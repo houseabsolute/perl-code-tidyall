@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.42     2016-03-10
+
 - Specify Text::Diff version as 'v1.44' instead of '1.44'. This fixes an
   inexplicable error that the OTRS project was having with the previous
   release (GitHub #53). Fixed by Martin Gruner. GitHub #54.
