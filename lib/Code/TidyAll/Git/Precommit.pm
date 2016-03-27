@@ -2,6 +2,7 @@ package Code::TidyAll::Git::Precommit;
 
 use Capture::Tiny qw(capture_stdout capture_stderr);
 use Code::TidyAll;
+use Code::TidyAll::Git::Util qw(git_uncommitted_files);
 use Cwd qw(cwd);
 use File::Slurp::Tiny qw(write_file);
 use Guard;
@@ -44,8 +45,7 @@ sub check {
         }
 
         # Gather file paths to be committed
-        my $output = capturex( $self->git_path, "status", "--porcelain" );
-        my @files = grep {-f} ( $output =~ /^[MA]\s+(.*)/gm );
+        my @files = git_uncommitted_files($root_dir);
 
         my $tidyall = $tidyall_class->new_from_conf_file(
             $conf_file,
@@ -54,7 +54,7 @@ sub check {
             mode       => 'commit',
             %{ $self->tidyall_options },
         );
-        my @results = $tidyall->process_paths( map {"$root_dir/$_"} @files );
+        my @results = $tidyall->process_paths(@files);
 
         if ( my @error_results = grep { $_->error } @results ) {
             my $error_count = scalar(@error_results);

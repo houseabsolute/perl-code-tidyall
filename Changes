@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Use the same improved "git status" code for Code::TidyAll::Git::Precommit as
+  we do in bin/tidyall for the -g option. Patch by Finn Smith. GitHub #57.
+
+
 0.42     2016-03-10
 
 - Specify Text::Diff version as 'v1.44' instead of '1.44'. This fixes an
