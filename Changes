@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.43     2016-03-27
+
 - Use the same improved "git status" code for Code::TidyAll::Git::Precommit as
   we do in bin/tidyall for the -g option. Patch by Finn Smith. GitHub #57.
 
