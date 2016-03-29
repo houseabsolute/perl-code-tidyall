@@ -6,7 +6,7 @@ use File::Basename;
 use File::Path;
 use File::Spec::Functions qw(rel2abs);
 use File::Temp qw(tempdir);
-use Guard;
+use Scope::Guard;
 use Try::Tiny;
 use strict;
 use warnings;

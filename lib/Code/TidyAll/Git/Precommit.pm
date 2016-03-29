@@ -5,7 +5,7 @@ use Code::TidyAll;
 use Code::TidyAll::Git::Util qw(git_uncommitted_files);
 use Cwd qw(cwd);
 use File::Slurp::Tiny qw(write_file);
-use Guard;
+use Scope::Guard;
 use Log::Any qw($log);
 use IPC::System::Simple qw(capturex run);
 use Moo;
