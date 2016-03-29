@@ -57,7 +57,8 @@ sub pushd {
 
     my $cwd = realpath();
     chdir($dir);
-    return guard { chdir($cwd) };
+    my $guard = guard { chdir($cwd) };
+    return $guard;
 }
 
 sub read_dir {
