@@ -39,10 +39,12 @@ sub check {
             or die sprintf( "could not find conf file %s", join( " or ", @conf_names ) );
 
         # Store the stash, and restore it upon exiting this scope
+        # (stash restoration happens via the guard object's lifetime ending)
+        my $guard;
         unless ( $self->no_stash ) {
             run( $self->git_path, "stash", "-q", "--keep-index" );
+            $guard = guard { run( $self->git_path, "stash", "pop", "-q" ) };
         }
-        scope_guard { run( $self->git_path, "stash", "pop", "-q" ) unless $self->no_stash };
 
         # Gather file paths to be committed
         my @files = git_uncommitted_files($root_dir);
