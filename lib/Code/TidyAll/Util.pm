@@ -6,7 +6,7 @@ use File::Basename;
 use File::Path;
 use File::Spec::Functions qw(rel2abs);
 use File::Temp qw(tempdir);
-use Scope::Guard;
+use Scope::Guard qw(guard);
 use Try::Tiny;
 use strict;
 use warnings;
@@ -57,8 +57,7 @@ sub pushd {
 
     my $cwd = realpath();
     chdir($dir);
-    my $guard = guard { chdir($cwd) };
-    return $guard;
+    return guard { chdir($cwd) };
 }
 
 sub read_dir {
