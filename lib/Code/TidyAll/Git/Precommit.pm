@@ -41,8 +41,8 @@ sub check {
         # Store the stash, and restore it upon exiting this scope
         unless ( $self->no_stash ) {
             run( $self->git_path, "stash", "-q", "--keep-index" );
-            scope_guard { run( $self->git_path, "stash", "pop", "-q" ) };
         }
+        scope_guard { run( $self->git_path, "stash", "pop", "-q" ) unless $self->no_stash };
 
         # Gather file paths to be committed
         my @files = git_uncommitted_files($root_dir);
