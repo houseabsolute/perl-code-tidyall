@@ -31,6 +31,21 @@ has 'ignores'      => ( is => 'lazy' );
 has 'select_regex' => ( is => 'lazy' );
 has 'selects'      => ( is => 'lazy' );
 
+around BUILDARGS => sub {
+    my $orig  = shift;
+    my $class = shift;
+
+    my $args = $class->$orig(@_);
+
+    for my $key (qw( select ignore )) {
+        if ( defined $args->{$key} && !ref $args->{$key} ) {
+            $args->{$key} = [ $args->{$key} ];
+        }
+    }
+
+    return $args;
+};
+
 sub _build_cmd {
     die "no default cmd specified";
 }
@@ -97,13 +112,11 @@ sub validate_params {
 }
 
 sub _parse_zglob_list {
-    my ( $self, $zglob_list ) = @_;
-    $zglob_list = '' if !defined($zglob_list);
-    my @zglobs = split( /\s+/, $zglob_list );
-    if ( my ($bad_zglob) = ( grep {m{^/}} @zglobs ) ) {
+    my ( $self, $zglobs ) = @_;
+    if ( my ($bad_zglob) = ( grep {m{^/}} @{$zglobs} ) ) {
         die "zglob '$bad_zglob' should not begin with slash";
     }
-    return \@zglobs;
+    return $zglobs;
 }
 
 # No-ops by default; may be overridden in subclass

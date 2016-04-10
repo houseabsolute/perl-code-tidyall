@@ -22,8 +22,9 @@ sub test_conf_file : Tests {
         root_dir        => dirname($conf_file),
         data_dir        => "$root_dir/.tidyall.d",
         plugins         => {
-            '+Code::TidyAll::Test::Plugin::UpperText' => { select => '**/*.txt' },
-            '+Code::TidyAll::Test::Plugin::RepeatFoo' => { select => '**/foo* **/bar*', times => 3 }
+            '+Code::TidyAll::Test::Plugin::UpperText' => { select => ['**/*.txt'] },
+            '+Code::TidyAll::Test::Plugin::RepeatFoo' =>
+                { select => [ '**/foo*', '**/bar*' ], times => 3 }
         }
     );
     while ( my ( $method, $value ) = each(%expected) ) {

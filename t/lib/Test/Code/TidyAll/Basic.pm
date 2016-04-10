@@ -268,8 +268,8 @@ sub test_selects_and_ignores : Tests {
         root_dir => $root_dir,
         plugins  => {
             test_plugin('UpperText') => {
-                select => '**/*.pl **/*.pm b/bar.pm c/bar.pl',
-                ignore => 'a/foo.pl **/bar.pm c/baz.pl'
+                select => [qw( **/*.pl **/*.pm b/bar.pm c/bar.pl )],
+                ignore => [qw( a/foo.pl **/bar.pm c/baz.pl )],
             }
         }
     );
@@ -298,8 +298,8 @@ sub test_shebang : Tests {
         root_dir => $root_dir,
         plugins  => {
             test_plugin('UpperText') => {
-                select  => '**/*',
-                ignore  => '**/*.*',
+                select  => ['**/*'],
+                ignore  => ['**/*.*'],
                 shebang => 'perl perl5',
             }
         }

@@ -9,14 +9,15 @@ our $VERSION = '0.44';
 sub set_value {
     my ( $self, $name, $value ) = @_;
 
-    if ( exists( $self->{data}{ $self->current_section }{$name} ) ) {
-        die "cannot list multiple config values for '$name'"
-            unless $name =~ /select|ignore/;
-        $self->{data}{ $self->current_section }{$name} .= " " . $value;
+    if ( $name eq 'select' || $name eq 'ignore' ) {
+        push @{ $self->{data}{ $self->current_section }{$name} }, $value;
+        return;
     }
-    else {
-        $self->{data}{ $self->current_section }{$name} = $value;
-    }
+
+    die "cannot list multiple config values for '$name'"
+        if exists $self->{data}{ $self->current_section }{$name};
+
+    $self->{data}{ $self->current_section }{$name} = $value;
 }
 
 1;

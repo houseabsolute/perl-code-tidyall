@@ -17,19 +17,23 @@ sub validate_params {
 
 sub _build_cmd {'jshint'}
 
-sub BUILDARGS {
-    my ( $class, %params ) = @_;
+around BUILDARGS => sub {
+    my $orig  = shift;
+    my $class = shift;
 
-    if ( my $options_string = $params{options} ) {
+    my $args = $class->$orig(@_);
+
+    if ( my $options_string = delete $args->{options} ) {
         my @options   = split( /\s+/, $options_string );
         my $conf_dir  = tempdir_simple();
         my $conf_file = "$conf_dir/jshint.json";
         write_file( $conf_file, '{ ' . join( ",\n", map {"\"$_\": true"} @options ) . ' }' );
-        $params{argv} ||= "";
-        $params{argv} .= " --config $conf_file";
+        $args->{argv} ||= "";
+        $args->{argv} .= " --config $conf_file";
     }
-    return \%params;
-}
+
+    return $args;
+};
 
 sub validate_file {
     my ( $self, $file ) = @_;
