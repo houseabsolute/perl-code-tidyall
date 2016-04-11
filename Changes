@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.44     2016-04-10
+
 - Changed the shebang config item to actually accept multi items on different
   lines. The old method of specifying more than one item on a single line,
   separated by spaces, will continue to work, but is no longer documented.

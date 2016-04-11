@@ -4,7 +4,7 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
 # VERSION
 
-version 0.43
+version 0.44
 
 # SYNOPSIS
 
