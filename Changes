@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.45     2016-04-11
+
 - Some changes intended to be internal-only in the last release broke the
   handling of ignore and select config lines with multiple space-separated
   values. This should now work again (and is tested). Reported by Martin
