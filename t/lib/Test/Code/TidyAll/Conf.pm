@@ -5,7 +5,18 @@ use Code::TidyAll::Util qw(dirname tempdir_simple);
 use File::Slurp::Tiny qw(read_file write_file);
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 
-my $conf1;
+my $conf1 = <<'EOF';
+backup_ttl = 5m
+no_cache = 1
+
+[+Code::TidyAll::Test::Plugin::UpperText]
+select = **/*.txt
+
+[+Code::TidyAll::Test::Plugin::RepeatFoo]
+select = **/foo*
+select = **/bar*
+times = 3
+EOF
 
 sub test_conf_file : Tests {
     my $self      = shift;
@@ -39,15 +50,4 @@ sub test_conf_file : Tests {
 
 }
 
-$conf1 = '
-backup_ttl = 5m
-no_cache = 1
-
-[+Code::TidyAll::Test::Plugin::UpperText]
-select = **/*.txt
-
-[+Code::TidyAll::Test::Plugin::RepeatFoo]
-select = **/foo*
-select = **/bar*
-times = 3
-';
+1;
