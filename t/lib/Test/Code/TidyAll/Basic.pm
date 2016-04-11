@@ -306,7 +306,7 @@ sub test_shebang : Tests {
     );
     cmp_set(
         [ $ct->find_matched_files() ],
-        [ map "$root_dir/$_", qw< a/foo b/bar b/baz > ],
+        [ map {"$root_dir/$_"} qw( a/foo b/bar b/baz ) ],
     );
 }
 
