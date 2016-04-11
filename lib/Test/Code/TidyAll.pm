@@ -9,7 +9,7 @@ use strict;
 use warnings;
 use base qw(Exporter);
 
-our $VERSION = '0.44';
+our $VERSION = '0.45';
 
 my $test = Test::Builder->new;
 
