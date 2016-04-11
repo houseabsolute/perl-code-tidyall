@@ -69,13 +69,15 @@ on 'develop' => sub {
   requires "Pod::Checker" => "0";
   requires "Pod::Spell" => "0";
   requires "Pod::Tidy" => "0";
+  requires "Pod::Wordlist" => "0";
   requires "SVN::Look" => "0";
   requires "Test::CPAN::Changes" => "0.19";
   requires "Test::CPAN::Meta::JSON" => "0.16";
   requires "Test::Mojibake" => "0";
-  requires "Test::More" => "0.88";
+  requires "Test::More" => "0.96";
   requires "Test::NoTabs" => "0";
   requires "Test::Pod" => "1.41";
   requires "Test::Spelling" => "0.12";
   requires "Test::Version" => "1";
+  requires "lib" => "0";
 };
