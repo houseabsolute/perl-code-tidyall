@@ -425,8 +425,8 @@ C<select>. e.g.
 
 =item shebang
 
-One or more words on multiple lines, indicating which shebang lines to
-accept. This is optional and further filters C<select>.  e.g.
+One or more words on multiple lines, indicating which shebang lines to accept.
+This is optional and further filters C<select>.  e.g.
 
     ; All files with no extension anywhere under bin that include a "perl" or
     ; "perl5" shebang line.
