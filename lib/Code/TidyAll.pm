@@ -454,7 +454,7 @@ sub find_matched_files {
             @selected = grep { !$is_ignored{$_} } @selected;
         }
         if ( my $shebang = $plugin->shebang ) {
-            my $re = join '|', map {quotemeta} split ' ', $shebang;
+            my $re = join '|', map {quotemeta} @{$shebang};
             $re       = qr/^#!.*\b(?:$re)\b/;
             @selected = grep {
                 my $fh;

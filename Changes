@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- Changed the shebang config item to actually accept multi items on different
+  lines. The old method of specifying more than one item on a single line,
+  separated by spaces, will continue to work, but is no longer documented.
+
+
 0.43     2016-03-27
 
 - Use the same improved "git status" code for Code::TidyAll::Git::Precommit as

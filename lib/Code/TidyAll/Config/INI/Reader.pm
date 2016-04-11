@@ -6,10 +6,12 @@ use base qw(Config::INI::Reader);
 
 our $VERSION = '0.44';
 
+my %multi_value = map { $_ => 1 } qw( select ignore shebang );
+
 sub set_value {
     my ( $self, $name, $value ) = @_;
 
-    if ( $name eq 'select' || $name eq 'ignore' ) {
+    if ( $multi_value{$name} ) {
         push @{ $self->{data}{ $self->current_section }{$name} }, $value;
         return;
     }
