@@ -5,7 +5,10 @@ use Code::TidyAll::Util qw(dirname tempdir_simple);
 use File::Slurp::Tiny qw(read_file write_file);
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 
-my $conf1 = <<'EOF';
+my @tests = (
+    {
+        name   => 'valid config',
+        config => <<'EOF',
 backup_ttl = 5m
 no_cache = 1
 
@@ -17,37 +20,86 @@ select = **/foo*
 select = **/bar*
 times = 3
 EOF
+        methods => {
+            backup_ttl      => '5m',
+            backup_ttl_secs => '300',
+            no_backups      => undef,
+            no_cache        => 1,
+            plugins         => {
+                '+Code::TidyAll::Test::Plugin::UpperText' => {
+                    select => ['**/*.txt'],
+                },
+                '+Code::TidyAll::Test::Plugin::RepeatFoo' => {
+                    select => [ '**/foo*', '**/bar*' ],
+                    times  => 3,
+                },
+            },
+        },
+    },
+    {
+        name   => 'space-separate select & ignore',
+        config => <<'EOF',
+[+Code::TidyAll::Test::Plugin::RepeatFoo]
+select = **/foo* **/bar*
+ignore = buz baz
+EOF
+        methods => {
+            plugins => {
+                '+Code::TidyAll::Test::Plugin::RepeatFoo' => {
+                    select => [ '**/foo*', '**/bar*' ],
+                    ignore => [ 'buz',     'baz' ],
+                },
+            },
+        },
+    },
+);
 
-sub test_conf_file : Tests {
-    my $self      = shift;
-    my $root_dir  = tempdir_simple();
-    my $conf_file = "$root_dir/tidyall.ini";
-    write_file( $conf_file, $conf1 );
+sub test_config_file_handling : Tests {
+    my $self     = shift;
+    my $root_dir = tempdir_simple();
 
-    my $ct       = Code::TidyAll->new_from_conf_file($conf_file);
-    my %expected = (
-        backup_ttl      => '5m',
-        backup_ttl_secs => '300',
-        no_backups      => undef,
-        no_cache        => 1,
-        root_dir        => dirname($conf_file),
-        data_dir        => "$root_dir/.tidyall.d",
-        plugins         => {
-            '+Code::TidyAll::Test::Plugin::UpperText' => { select => ['**/*.txt'] },
-            '+Code::TidyAll::Test::Plugin::RepeatFoo' =>
-                { select => [ '**/foo*', '**/bar*' ], times => 3 }
-        }
-    );
-    while ( my ( $method, $value ) = each(%expected) ) {
-        cmp_deeply( $ct->$method, $value, "$method" );
+    for my $test (@tests) {
+        subtest(
+            $test->{name},
+            sub {
+                my $conf_file = "$root_dir/tidyall.ini";
+                write_file( $conf_file, $test->{config} );
+
+                my $ct = Code::TidyAll->new_from_conf_file($conf_file);
+                for my $method ( sort keys %{ $test->{methods} } ) {
+                    cmp_deeply(
+                        $ct->$method,
+                        $test->{methods}{$method},
+                        $method
+                    );
+                }
+
+                is(
+                    $ct->root_dir,
+                    $root_dir,
+                    'root_dir comes from config file path'
+                );
+
+                is(
+                    $ct->data_dir,
+                    "$root_dir/.tidyall.d",
+                    'data dir is below root dir'
+                );
+            }
+        );
     }
+}
 
-    my $conf2 = $conf1;
-    $conf2 =~ s/times/timez/;
-    write_file( $conf_file, $conf2 );
+sub test_bad_config : Tests {
+    my $self     = shift;
+    my $root_dir = tempdir_simple();
+
+    my $conf_file = "$root_dir/tidyall.ini";
+    ( my $config = $tests[0]{config} ) =~ s/times/timez/;
+    write_file( $conf_file, $config );
+
     throws_ok { my $ct = Code::TidyAll->new_from_conf_file($conf_file)->plugin_objects }
     qr/unknown option 'timez'/;
-
 }
 
 1;

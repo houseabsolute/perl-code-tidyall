@@ -300,7 +300,7 @@ sub test_shebang : Tests {
             test_plugin('UpperText') => {
                 select  => ['**/*'],
                 ignore  => ['**/*.*'],
-                shebang => 'perl perl5',
+                shebang => [ 'perl', 'perl5' ],
             }
         }
     );

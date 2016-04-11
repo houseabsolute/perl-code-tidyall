@@ -6,13 +6,14 @@ use base qw(Config::INI::Reader);
 
 our $VERSION = '0.45';
 
-my %multi_value = map { $_ => 1 } qw( select ignore shebang );
+my %multi_value = map { $_ => 1 } qw( ignore select shebang );
 
 sub set_value {
     my ( $self, $name, $value ) = @_;
 
     if ( $multi_value{$name} ) {
-        push @{ $self->{data}{ $self->current_section }{$name} }, $value;
+        $value =~ s/^\s+|\s+$//g;
+        push @{ $self->{data}{ $self->current_section }{$name} }, split /\s+/, $value;
         return;
     }
 

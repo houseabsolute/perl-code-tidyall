@@ -37,13 +37,7 @@ around BUILDARGS => sub {
 
     my $args = $class->$orig(@_);
 
-    # When the feature was first released it was documented as accepting a
-    # space separated list, and we want that to still work.
-    if ( defined $args->{shebang} && !ref $args->{shebang} ) {
-        $args->{shebang} = [ split /\s+/, $args->{shebang} ];
-    }
-
-    for my $key (qw( select ignore )) {
+    for my $key (qw( ignore select shebang )) {
         if ( defined $args->{$key} && !ref $args->{$key} ) {
             $args->{$key} = [ $args->{$key} ];
         }

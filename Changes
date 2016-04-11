@@ -1,5 +1,11 @@
 {{$NEXT}}
 
+- Some changes intended to be internal-only in the last release broke the
+  handling of ignore and select config lines with multiple space-separated
+  values. This should now work again (and is tested). Reported by Martin
+  Gruner. GitHub #44.
+
+
 0.44     2016-04-10
 
 - Changed the shebang config item to actually accept multi items on different
