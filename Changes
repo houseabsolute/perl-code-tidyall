@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- Fix a use line which specified the required version of Text::Diff as
+  "v1.44". This caused weirdness to cascade in the Makefile.PL. Reported by
+  Olaf Alders. GitHub #60.
+
+
 0.45     2016-04-11
 
 - Some changes intended to be internal-only in the last release broke the
