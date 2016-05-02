@@ -8,7 +8,7 @@ use strict;
 use warnings;
 use base qw(Exporter);
 
-our $VERSION = '0.47';
+our $VERSION = '0.48';
 
 our @EXPORT_OK = qw(git_files_to_commit git_modified_files);
 

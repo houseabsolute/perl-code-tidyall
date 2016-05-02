@@ -5,7 +5,7 @@ use Code::TidyAll::Util qw(dirname mkpath);
 use File::Slurp::Tiny qw(read_file write_file);
 use Moo;
 
-our $VERSION = '0.47';
+our $VERSION = '0.48';
 
 has 'cache_dir' => ( is => 'ro', required => 1 );
 
