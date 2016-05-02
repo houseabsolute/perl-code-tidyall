@@ -2,7 +2,7 @@ package Code::TidyAll::Git::Precommit;
 
 use Capture::Tiny qw(capture_stdout capture_stderr);
 use Code::TidyAll;
-use Code::TidyAll::Git::Util qw(git_uncommitted_files);
+use Code::TidyAll::Git::Util qw(git_files_to_commit);
 use Cwd qw(cwd);
 use File::Slurp::Tiny qw(write_file);
 use Guard;
@@ -45,7 +45,7 @@ sub check {
         }
 
         # Gather file paths to be committed
-        my @files = git_uncommitted_files($root_dir);
+        my @files = git_files_to_commit($root_dir);
 
         my $tidyall = $tidyall_class->new_from_conf_file(
             $conf_file,

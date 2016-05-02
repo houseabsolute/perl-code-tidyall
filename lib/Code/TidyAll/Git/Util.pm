@@ -10,13 +10,21 @@ use base qw(Exporter);
 
 our $VERSION = '0.47';
 
-our @EXPORT_OK = qw(git_uncommitted_files);
+our @EXPORT_OK = qw(git_files_to_commit git_modified_files);
 
-sub git_uncommitted_files {
+sub git_files_to_commit {
+    my ($dir) = @_;
+    my $pushd = pushd( realpath($dir) );
+    return map { rel2abs( $_->{name} ) }
+        grep   { $_->{in_index} }
+        _relevant_files_from_status( capturex(qw( git status --porcelain -z -uno )) );
+}
+
+sub git_modified_files {
     my ($dir) = @_;
     my $pushd = pushd( realpath($dir) );
     return
-        map { rel2abs($_) }
+        map { rel2abs( $_->{name} ) }
         _relevant_files_from_status( capturex(qw( git status --porcelain -z -uno )) );
 }
 
@@ -50,7 +58,10 @@ sub _relevant_files_from_status {
             # deletions and renames don't cause tidying
             next unless $mode =~ /[MAC]/;
 
-            push @files, $name;
+            push @files, {
+                name     => $name,
+                in_index => $mode =~ /^ / ? 0 : 1,
+            };
         }
     }
 

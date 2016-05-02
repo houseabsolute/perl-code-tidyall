@@ -407,9 +407,18 @@ sub test_git_files : Tests {
     is_deeply(
         \@files,
         [
-            "lib/Code/TidyAll/Git/Util.pm",
-            "t/lib/Test/Code/TidyAll/Basic.pm",
-            "weaver.initial",
+            {
+                name     => 'lib/Code/TidyAll/Git/Util.pm',
+                in_index => 0,
+            },
+            {
+                name     => 't/lib/Test/Code/TidyAll/Basic.pm',
+                in_index => 0,
+            },
+            {
+                name     => 'weaver.initial',
+                in_index => 1,
+            },
         ]
     );
 }

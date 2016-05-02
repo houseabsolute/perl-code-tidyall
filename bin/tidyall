@@ -119,7 +119,7 @@ elsif ( ( $all_files || $svn_files || $git_files ) ) {
     }
     elsif ($git_files) {
         require Code::TidyAll::Git::Util;
-        @paths = Code::TidyAll::Git::Util::git_uncommitted_files( $ct->root_dir );
+        @paths = Code::TidyAll::Git::Util::git_modified_files( $ct->root_dir );
     }
 }
 elsif ( @paths = @ARGV ) {

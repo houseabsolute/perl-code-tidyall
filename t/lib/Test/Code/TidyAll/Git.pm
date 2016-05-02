@@ -1,7 +1,7 @@
 package Test::Code::TidyAll::Git;
 
 use Capture::Tiny qw(capture_stdout capture_stderr capture);
-use Code::TidyAll::Git::Util qw(git_uncommitted_files);
+use Code::TidyAll::Git::Util qw(git_files_to_commit git_modified_files);
 use Code::TidyAll::Util qw(dirname mkpath pushd realpath tempdir_simple);
 use Code::TidyAll;
 use File::Slurp::Tiny qw(read_file write_file);
@@ -47,19 +47,19 @@ sub test_git : Tests {
     write_file( "$work_dir/tidyall.ini", sprintf($tidyall_ini_template) );
     write_file( "$work_dir/.gitignore",  ".tidyall.d" );
     run( "git", "add", "tidyall.ini", ".gitignore" );
-    run( "git", "commit", "-m", "added", "tidyall.ini", ".gitignore" );
+    run( "git", "commit", "-q", "-m", "added", "tidyall.ini", ".gitignore" );
 
     # Add foo.txt, which needs tidying
     #
     write_file( "$work_dir/foo.txt", "abc\n" );
-    cmp_deeply( [ git_uncommitted_files($work_dir) ], [], "no uncommitted files" );
+    cmp_deeply( [ git_files_to_commit($work_dir) ], [], "no files to commit" );
 
     # git add foo.txt and make sure it is now in uncommitted list
     #
     run( "git", "add", "foo.txt" );
     cmp_deeply(
-        [ git_uncommitted_files($work_dir) ],
-        ["$work_dir/foo.txt"], "one uncommitted file"
+        [ git_files_to_commit($work_dir) ],
+        ["$work_dir/foo.txt"], "one file to commit"
     );
 
     # Add pre-commit hook
@@ -82,6 +82,18 @@ sub test_git : Tests {
     $output = capture_stderr { run( "git", "commit", "-m", "changed", "-a" ) };
     like( $output, qr/\[checked\] foo\.txt/, "checked foo.txt" );
     $committed->();
+
+    write_file( "$work_dir/bar.txt", "ABC" );
+    run( "git", "add", "bar.txt" );
+    run( "git", "commit", "-q", "-m", "bar.txt" );
+
+    write_file( "$work_dir/bar.txt", "def" );
+    cmp_deeply( [ git_files_to_commit($work_dir) ], [], "no files to commit" );
+    cmp_deeply(
+        [ git_modified_files($work_dir) ],
+        ["$work_dir/bar.txt"],
+        "one file was modified"
+    );
 
     # Create a bare shared repo, then a clone of that
     #

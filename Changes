@@ -1,5 +1,11 @@
 {{$NEXT}}
 
+- The Git pre-commit hook now only looks at the files that are staged for
+  committing, rather than everything in the git repo that has been
+  modified. Note that this does not change the tidyall script's "-g" flag,
+  which still operates on all modified files in the repo.
+
+
 0.46     2016-04-17
 
 - Fix a use line which specified the required version of Text::Diff as
