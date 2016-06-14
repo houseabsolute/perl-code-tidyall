@@ -17,12 +17,13 @@ sub transform_file {
         my $cmd = join( " ", $self->cmd, $self->argv, $file );
 
         my $output;
-        run3( $cmd, \undef, \$output, \$output );
+        my $exit = run3( $cmd, \undef, \$output, \$output );
+        die "exited with $?\n" if $?;
         write_file( $file, $output );
     }
     catch {
         die sprintf(
-            "%s exited with error - possibly bad arg list '%s'\n    $_", $self->cmd,
+            "%s failed - possibly bad arg list '%s'\n    $_", $self->cmd,
             $self->argv
         );
     };
