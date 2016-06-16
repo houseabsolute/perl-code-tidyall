@@ -59,6 +59,7 @@ on 'develop' => sub {
   requires "CHI" => "0";
   requires "Code::TidyAll" => "0";
   requires "Code::TidyAll::Plugin::Perl::AlignMooseAttributes" => "0";
+  requires "Code::TidyAll::Plugin::Test::Vars" => "0.02";
   requires "JSON::MaybeXS" => "0";
   requires "Mason::Tidy" => "0";
   requires "Mason::Tidy::App" => "0";
@@ -78,6 +79,7 @@ on 'develop' => sub {
   requires "Test::NoTabs" => "0";
   requires "Test::Pod" => "1.41";
   requires "Test::Spelling" => "0.12";
+  requires "Test::Vars" => "0.009";
   requires "Test::Version" => "1";
   requires "lib" => "0";
 };

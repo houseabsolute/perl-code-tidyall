@@ -4,7 +4,7 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
 # VERSION
 
-version 0.47
+version 0.48
 
 # SYNOPSIS
 
@@ -155,25 +155,26 @@ I am also usually active on IRC as 'drolsky' on `irc://irc.perl.org`.
 
 # AUTHORS
 
-- Jonathan Swartz &lt;swartz@pobox.com>
-- Dave Rolsky &lt;autarch@urth.org>
+- Jonathan Swartz <swartz@pobox.com>
+- Dave Rolsky <autarch@urth.org>
 
 # CONTRIBUTORS
 
-- Andy Jack &lt;andyjack@cpan.org>
-- Finn Smith &lt;finn@timeghost.net>
-- George Hartzell &lt;georgewh@gene.com>
-- Gregory Oschwald &lt;goschwald@maxmind.com>
-- Joe Crotty &lt;joe.crotty@returnpath.net>
-- Mark Fowler &lt;mark@twoshortplanks.com>
-- Mark Grimes &lt;mgrimes@cpan.org>
-- Martin Gruner &lt;martin.gruner@otrs.com>
-- Mohammad S Anwar &lt;mohammad.anwar@yahoo.com>
-- Olaf Alders &lt;olaf@wundersolutions.com>
-- Pedro Melo &lt;melo@simplicidade.org>
-- Ricardo Signes &lt;rjbs@cpan.org>
-- Sergey Romanov &lt;sromanov-dev@yandex.ru>
-- timgimyee &lt;tim.gim.yee@gmail.com>
+- Andy Jack <andyjack@cpan.org>
+- Finn Smith <finn@timeghost.net>
+- George Hartzell <georgewh@gene.com>
+- Graham Knop <haarg@haarg.org>
+- Gregory Oschwald <goschwald@maxmind.com>
+- Joe Crotty <joe.crotty@returnpath.net>
+- Mark Fowler <mark@twoshortplanks.com>
+- Mark Grimes <mgrimes@cpan.org>
+- Martin Gruner <martin.gruner@otrs.com>
+- Mohammad S Anwar <mohammad.anwar@yahoo.com>
+- Olaf Alders <olaf@wundersolutions.com>
+- Pedro Melo <melo@simplicidade.org>
+- Ricardo Signes <rjbs@cpan.org>
+- Sergey Romanov <sromanov-dev@yandex.ru>
+- timgimyee <tim.gim.yee@gmail.com>
 
 # COPYRIGHT AND LICENCE
 

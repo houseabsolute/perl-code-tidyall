@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.48     2016-06-16
+
 - The Git pre-commit hook now only looks at the files that are staged for
   committing, rather than everything in the git repo that has been
   modified. Note that this does not change the tidyall script's "-g" flag,
