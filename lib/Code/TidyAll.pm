@@ -296,7 +296,8 @@ sub process_source {
     my $plugin;
 
     if ( $self->verbose ) {
-        $self->msg("[applying the following plugins: @plugins]");
+        my @names = map { $_->name } @plugins;
+        $self->msg("[applying the following plugins: @names]");
     }
 
     my @diffs;
