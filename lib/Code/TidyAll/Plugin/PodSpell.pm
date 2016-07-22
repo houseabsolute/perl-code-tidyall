@@ -9,7 +9,7 @@ use Moo;
 use Text::ParseWords qw(shellwords);
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.49';
+our $VERSION = '0.50';
 
 has 'ispell_argv' => ( is => 'ro', default => q{} );
 has 'ispell_cmd'  => ( is => 'ro', default => 'ispell' );
