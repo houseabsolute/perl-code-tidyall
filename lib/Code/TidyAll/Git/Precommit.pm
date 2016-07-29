@@ -5,7 +5,7 @@ use Code::TidyAll;
 use Code::TidyAll::Git::Util qw(git_files_to_commit);
 use Cwd qw(cwd);
 use File::Slurp::Tiny qw(write_file);
-use Guard;
+use Scope::Guard qw(guard);
 use Log::Any qw($log);
 use IPC::System::Simple qw(capturex run);
 use Moo;
@@ -39,9 +39,11 @@ sub check {
             or die sprintf( "could not find conf file %s", join( " or ", @conf_names ) );
 
         # Store the stash, and restore it upon exiting this scope
+        # (stash restoration happens via the guard object's lifetime ending)
+        my $guard;
         unless ( $self->no_stash ) {
             run( $self->git_path, "stash", "-q", "--keep-index" );
-            scope_guard { run( $self->git_path, "stash", "pop", "-q" ) };
+            $guard = guard { run( $self->git_path, "stash", "pop", "-q" ) };
         }
 
         # Gather file paths to be committed
