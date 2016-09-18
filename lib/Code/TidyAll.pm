@@ -278,7 +278,7 @@ sub process_file {
 
     if ( $self->list_only ) {
         if ( my @plugins = $self->plugins_for_path($path) ) {
-            printf( "%s (%s)\n", $path, join( ", ", map { $_->name } @plugins ) );
+            $self->msg( "%s (%s)", $path, join( ", ", map { $_->name } @plugins ) );
         }
         return Code::TidyAll::Result->new( path => $path, state => 'checked' );
     }
