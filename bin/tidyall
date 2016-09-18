@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 use Config;
 use Cwd qw(cwd realpath);
 use Getopt::Long;
