@@ -36,4 +36,20 @@ env:
 before_install:
   - git config --global user.email "test@example.com"
   - git config --global user.name "Test User"
-  - eval $(curl https://travis-perl.github.io/init) --auto
+  - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
+  - source ~/travis-perl-helpers/init
+  - build-perl
+  - perl -V
+  - build-dist
+  - cd $BUILD_DIR
+  - cat META.json
+install:
+  - cpan-install --deps
+  - cpan-install --coverage
+  - cpan-install Test::Warnings # for some reason travis-perl started dropping this with the dev & blead perl
+before_script:
+  - coverage-setup
+script:
+  - prove -l -j$(test-jobs) $(test-files)
+after_success:
+  - coverage-report
