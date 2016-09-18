@@ -1,10 +1,11 @@
 #!/usr/bin/env perl
+use Capture::Tiny qw(capture_merged);
+use Code::TidyAll::Util qw(can_load dirname);
+use Code::TidyAll;
 use Config;
 use Cwd qw(cwd realpath);
+use File::Spec::Functions qw(rel2abs);
 use Getopt::Long;
-use Capture::Tiny qw(capture_merged);
-use Code::TidyAll;
-use Code::TidyAll::Util qw(can_load dirname rel2abs);
 use strict;
 use warnings;
 

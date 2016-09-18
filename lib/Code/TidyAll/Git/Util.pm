@@ -1,7 +1,8 @@
 package Code::TidyAll::Git::Util;
 
 use Cwd qw(realpath);
-use Code::TidyAll::Util qw(pushd rel2abs);
+use Code::TidyAll::Util qw(pushd);
+use File::Spec::Functions qw(rel2abs);
 use IPC::System::Simple qw(capturex);
 use List::SomeUtils qw(uniq);
 use strict;

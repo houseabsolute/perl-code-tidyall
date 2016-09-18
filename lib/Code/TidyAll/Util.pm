@@ -4,7 +4,6 @@ use Cwd qw(realpath);
 use Data::Dumper;
 use File::Basename;
 use File::Path;
-use File::Spec::Functions qw(rel2abs);
 use File::Temp qw(tempdir);
 use Guard;
 use Try::Tiny;
@@ -15,7 +14,7 @@ use base qw(Exporter);
 our $VERSION = '0.50';
 
 our @EXPORT_OK
-    = qw(basename can_load dirname dump_one_line mkpath pushd read_dir realpath rel2abs tempdir_simple);
+    = qw(basename can_load dirname dump_one_line mkpath pushd read_dir realpath tempdir_simple);
 
 sub can_load {
 
