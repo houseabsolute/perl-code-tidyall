@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- Added support for tidying in multiple parallel jobs at once. You can pass a
+  "--jobs" argument to tidyall or pass a "jobs" param to
+  Code::TidyAll->new. This requires that you install Parallel::ForkManager.
+
+
 0.49     2016-07-22
 
 - The verbose output now just shows the plugin name in the "applying the

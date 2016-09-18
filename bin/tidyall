@@ -80,6 +80,7 @@ GetOptions(
     'm|mode=s'        => \$params{mode},
     'p|pipe=s'        => \$pipe,
     'r|recursive'     => \$params{recursive},
+    'j|jobs=i'        => \$params{jobs},
     's|svn'           => \$svn_files,
     'q|quiet'         => \$params{quiet},
     'v|verbose'       => \$params{verbose},

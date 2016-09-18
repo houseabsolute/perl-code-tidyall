@@ -29,6 +29,7 @@ has 'cache_model_class' => ( is => 'ro', default => 'Code::TidyAll::CacheModel' 
 has 'check_only'        => ( is => 'ro' );
 has 'data_dir'          => ( is => 'lazy' );
 has 'iterations'        => ( is => 'ro', default => 1 );
+has 'jobs'              => ( is => 'ro', default => 1 );
 has 'list_only'         => ( is => 'ro' );
 has 'mode'              => ( is => 'ro', default => 'cli' );
 has 'msg_outputter'     => ( is => 'ro', builder => '_build_msg_outputter' );
@@ -202,7 +203,52 @@ sub process_all {
 sub process_paths {
     my ( $self, @paths ) = @_;
 
-    return map { $self->process_path( realpath($_) || rel2abs($_) ) } @paths;
+    @paths = map { realpath($_) || rel2abs($_) } @paths;
+
+    if ( $self->jobs > 1 && @paths > 1 ) {
+        return $self->_process_parallel(@paths);
+    }
+    else {
+        return map { $self->process_path($_) } @paths;
+    }
+}
+
+sub _process_parallel {
+    my ( $self, @paths ) = @_;
+
+    unless ( eval { require Parallel::ForkManager; 1; } ) {
+        die 'Running Code::TidyAll with multiple jobs requires Parallel::ForkManager';
+    }
+
+    my @results;
+    my %path_to_pid;
+
+    my $pm = Parallel::ForkManager->new( $self->jobs );
+    $pm->run_on_finish(
+        sub {
+            my ( $pid, $code, $result ) = @_[ 0, 1, 5 ];
+
+            if ($code) {
+                warn "Error running tidyall on $path_to_pid{$pid}. Got exit status of $code.";
+            }
+            else {
+                push @results, $result;
+            }
+        }
+    );
+
+    for my $path (@paths) {
+        if ( my $pid = $pm->start ) {
+            $path_to_pid{$path} = $pid;
+            next;
+        }
+
+        $pm->finish( 0, $self->process_path($path) );
+    }
+
+    $pm->wait_all_children;
+
+    return @results;
 }
 
 sub process_path {
