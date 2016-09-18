@@ -16,7 +16,17 @@ my %RepeatFoo  = ( test_plugin('RepeatFoo')  => { select => '**/foo*' } );
 my %CheckUpper = ( test_plugin('CheckUpper') => { select => '**/*.txt' } );
 my %AToZ       = ( test_plugin('AToZ')       => { select => '**/*.txt' } );
 
-my $cli_conf;
+my $cli_conf = <<'EOF';
+backup_ttl = 15m
+verbose = 1
+
+[+Code::TidyAll::Test::Plugin::UpperText]
+select = **/*.txt
+
+[+Code::TidyAll::Test::Plugin::RepeatFoo]
+select = **/foo*
+times = 3
+EOF
 
 sub test_basic : Tests {
     my $self = shift;
@@ -512,17 +522,5 @@ sub test_cli : Tests {
         );
     }
 }
-
-$cli_conf = '
-backup_ttl = 15m
-verbose = 1
-
-[+Code::TidyAll::Test::Plugin::UpperText]
-select = **/*.txt
-
-[+Code::TidyAll::Test::Plugin::RepeatFoo]
-select = **/foo*
-times = 3
-';
 
 1;
