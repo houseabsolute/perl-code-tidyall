@@ -42,7 +42,6 @@ before_install:
   - perl -V
   - build-dist
   - cd $BUILD_DIR
-  - cat META.json
 install:
   - cpan-install --deps
   - cpan-install --coverage
