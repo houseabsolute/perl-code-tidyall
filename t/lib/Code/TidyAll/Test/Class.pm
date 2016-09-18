@@ -53,8 +53,13 @@ sub tidy {
     my $output = capture_stdout { @results = $ct->process_all() };
     my $error_count = grep { $_->error } @results;
     if ( $params{errors} ) {
-        like( $output, $params{errors}, "$desc - errors" );
         ok( $error_count > 0, "$desc - error_count > 0" );
+        if ( eval { @{ $params{errors} } } ) {
+            like( $output, $_, "$desc - errors" ) for @{ $params{errors} };
+        }
+        else {
+            like( $output, $params{errors}, "$desc - errors" );
+        }
     }
     else {
         is( $error_count, 0, "$desc - error_count == 0" );

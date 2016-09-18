@@ -1,6 +1,8 @@
 package Code::TidyAll::Plugin;
 
 use Code::TidyAll::Util::Zglob qw(zglobs_to_regex);
+use File::Basename qw(dirname);
+use File::Path qw(mkpath);
 use File::Slurp::Tiny qw(read_file write_file);
 use File::Which qw( which );
 use IPC::Run3 qw( run3 );
@@ -129,7 +131,7 @@ sub postprocess_source {
 }
 
 sub process_source_or_file {
-    my ( $self, $orig_source, $basename, $check_only ) = @_;
+    my ( $self, $orig_source, $rel_path, $check_only ) = @_;
 
     my $new_source = $orig_source;
     if ( $self->can('transform_source') ) {
@@ -138,7 +140,7 @@ sub process_source_or_file {
         }
     }
     if ( $self->can('transform_file') ) {
-        my $tempfile = $self->_write_temp_file( $basename, $new_source );
+        my $tempfile = $self->_write_temp_file( $rel_path, $new_source );
         foreach my $iter ( 1 .. $self->tidyall->iterations ) {
             $self->transform_file($tempfile);
         }
@@ -148,13 +150,13 @@ sub process_source_or_file {
         $self->validate_source($new_source);
     }
     if ( $self->can('validate_file') ) {
-        my $tempfile = $self->_write_temp_file( $basename, $new_source );
+        my $tempfile = $self->_write_temp_file( $rel_path, $new_source );
         $self->validate_file($tempfile);
     }
 
     my $diff;
     if ( $check_only && $new_source ne $orig_source ) {
-        $diff = $self->_maybe_diff( $orig_source, $new_source, $basename );
+        $diff = $self->_maybe_diff( $orig_source, $new_source, $rel_path );
     }
 
     return ( $new_source, $diff );
@@ -167,18 +169,19 @@ sub _maybe_diff {
 
     my $orig     = shift;
     my $new      = shift;
-    my $basename = shift;
+    my $rel_path = shift;
 
-    my $orig_file = $self->_write_temp_file( $basename . '.orig', $orig );
-    my $new_file  = $self->_write_temp_file( $basename . '.new',  $new );
+    my $orig_file = $self->_write_temp_file( $rel_path . '.orig', $orig );
+    my $new_file  = $self->_write_temp_file( $rel_path . '.new',  $new );
 
     return diff( $orig_file, $new_file, { Style => 'Unified' } );
 }
 
 sub _write_temp_file {
-    my ( $self, $basename, $source ) = @_;
+    my ( $self, $rel_path, $source ) = @_;
 
-    my $tempfile = join( "/", $self->tidyall->_tempdir(), $basename );
+    my $tempfile = join( "/", $self->tidyall->_tempdir(), $rel_path );
+    mkpath( dirname($tempfile), 0, 0755 );
     write_file( $tempfile, $source );
     return $tempfile;
 }

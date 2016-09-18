@@ -336,24 +336,21 @@ sub process_source {
         return Code::TidyAll::Result->new( path => $path, state => 'no_match' );
     }
 
-    my $basename = basename($path);
-    my $error;
-
-    my $new_contents = my $orig_contents = $contents;
-    my $plugin;
-
     if ( $self->verbose ) {
         my @names = map { $_->name } @plugins;
         $self->msg("[applying the following plugins: @names]");
     }
 
+    my $new_contents = my $orig_contents = $contents;
+    my $plugin;
+    my $error;
     my @diffs;
     try {
         foreach my $method (qw(preprocess_source process_source_or_file postprocess_source)) {
             foreach $plugin (@plugins) {
                 my $diff;
                 ( $new_contents, $diff )
-                    = $plugin->$method( $new_contents, $basename, $self->check_only );
+                    = $plugin->$method( $new_contents, $path, $self->check_only );
                 if ($diff) {
                     push @diffs, [ $plugin->name, $diff ];
                 }

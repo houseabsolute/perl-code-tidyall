@@ -354,6 +354,27 @@ sub test_dirs : Tests {
     }
 }
 
+sub test_paths_in_messages : Tests {
+    my $self = shift;
+
+    $self->tidy(
+        plugins => {
+            test_plugin('UpperText') => { select => '**/*.txt' },
+        },
+        options => { check_only => 1 },
+        source  => {
+            'path/to/file1.txt'        => "abc\n",
+            'path/to/longer/file2.txt' => "abc\n",
+            'top.txt'                  => "abc\n",
+        },
+        errors => [
+            qr{\[checked\] +path/to/file1\.txt},
+            qr{\[checked\] +path/to/longer/file2\.txt},
+            qr{\[checked\] +top\.txt},
+        ],
+    );
+}
+
 sub test_errors : Tests {
     my $self = shift;
 

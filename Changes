@@ -3,6 +3,9 @@
 - Added support for tidying in multiple parallel jobs at once. You can pass a
   "--jobs" argument to tidyall or pass a "jobs" param to
   Code::TidyAll->new. This requires that you install Parallel::ForkManager.
+- Paths in error messages now include the full relative path to the file being
+  tidied. Previously this would just be something like "Foo.pm", now it will
+  be "lib/My/Package/Foo.pm".
 
 
 0.49     2016-07-22
