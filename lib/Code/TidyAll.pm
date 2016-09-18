@@ -225,6 +225,7 @@ sub _process_parallel {
     my %path_to_pid;
 
     my $pm = Parallel::ForkManager->new( $self->jobs );
+    $pm->set_waitpid_blocking_sleep(0.01);
     $pm->run_on_finish(
         sub {
             my ( $pid, $code, $result ) = @_[ 0, 1, 5 ];
