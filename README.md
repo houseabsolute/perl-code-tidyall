@@ -4,7 +4,7 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
 # VERSION
 
-version 0.49
+version 0.50
 
 # SYNOPSIS
 
@@ -148,7 +148,7 @@ You can call this API from your own program instead of executing `tidyall`.
 
 # SUPPORT
 
-bugs may be submitted through
+Bugs may be submitted through
 [https://github.com/houseabsolute/perl-code-tidyall/issues](https://github.com/houseabsolute/perl-code-tidyall/issues).
 
 I am also usually active on IRC as 'drolsky' on `irc://irc.perl.org`.
@@ -176,7 +176,7 @@ I am also usually active on IRC as 'drolsky' on `irc://irc.perl.org`.
 - Sergey Romanov <sromanov-dev@yandex.ru>
 - timgimyee <tim.gim.yee@gmail.com>
 
-# COPYRIGHT AND LICENCE
+# COPYRIGHT AND LICENSE
 
 This software is copyright (c) 2011 - 2016 by Jonathan Swartz.
 

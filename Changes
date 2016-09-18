@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.50     2016-09-18
+
 [BACKWARDS INCOMPATIBILITIES]
 
 - Converted (almost) all file handling to use Path::Tiny. This should help
