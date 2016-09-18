@@ -4,7 +4,7 @@ use Digest::SHA qw(sha1_hex);
 use Path::Tiny qw(path);
 use Moo;
 
-our $VERSION = '0.50';
+our $VERSION = '0.51';
 
 has 'cache_dir' => ( is => 'ro', required => 1 );
 

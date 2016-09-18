@@ -9,7 +9,7 @@ use Path::Tiny qw(path);
 use SVN::Look;
 use Try::Tiny;
 
-our $VERSION = '0.50';
+our $VERSION = '0.51';
 
 # Public
 has 'conf_name'                => ( is => 'ro' );

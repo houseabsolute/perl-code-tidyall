@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use base qw(Config::INI::Reader);
 
-our $VERSION = '0.50';
+our $VERSION = '0.51';
 
 my %multi_value = map { $_ => 1 } qw( ignore select shebang );
 
