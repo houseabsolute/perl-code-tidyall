@@ -50,7 +50,7 @@ install:
 before_script:
   - coverage-setup
 script:
-  - perl Makefile.PL
+  - perl Makefile.PL # makes node_modules/.bin symlinks
   - prove -l -j$(test-jobs) $(test-files)
 after_success:
   - coverage-report
