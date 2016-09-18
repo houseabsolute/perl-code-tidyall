@@ -2,9 +2,9 @@ package Code::TidyAll::Test::Class;
 
 use Capture::Tiny qw(capture_stdout);
 use Code::TidyAll;
-use Code::TidyAll::Util qw(dirname mkpath realpath tempdir_simple);
-use File::Slurp::Tiny qw(read_file write_file);
-use File::Which qw( which );
+use Code::TidyAll::Util qw(tempdir_simple);
+use File::Which qw(which);
+use Path::Tiny qw(path);
 use Test::Class::Most;
 use strict;
 use warnings;
@@ -26,11 +26,11 @@ sub create_dir {
 
     my $root_dir = tempdir_simple();
     while ( my ( $path, $content ) = each(%$files) ) {
-        my $full_path = "$root_dir/$path";
-        mkpath( dirname($full_path), 0, 0775 );
-        write_file( $full_path, $content );
+        my $full_path = $root_dir->child($path);
+        $full_path->parent->mkpath( { mode => 0755 } );
+        $full_path->spew($content);
     }
-    return realpath($root_dir);
+    return $root_dir;
 }
 
 sub tidy {
@@ -65,7 +65,7 @@ sub tidy {
         is( $error_count, 0, "$desc - error_count == 0" );
     }
     while ( my ( $path, $content ) = each( %{ $params{dest} } ) ) {
-        is( read_file("$root_dir/$path"), $content, "$desc - $path content" );
+        is( $root_dir->child($path)->slurp, $content, "$desc - $path content" );
     }
     if ( my $like_output = $params{like_output} ) {
         like( $output, $like_output, "$desc - output" );

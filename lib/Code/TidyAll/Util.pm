@@ -1,11 +1,7 @@
 package Code::TidyAll::Util;
 
-use Cwd qw(realpath);
-use Data::Dumper;
-use File::Basename;
-use File::Path;
-use File::Temp qw(tempdir);
 use Guard;
+use Path::Tiny qw(cwd tempdir);
 use Try::Tiny;
 use strict;
 use warnings;
@@ -13,8 +9,7 @@ use base qw(Exporter);
 
 our $VERSION = '0.50';
 
-our @EXPORT_OK
-    = qw(basename can_load dirname dump_one_line mkpath pushd read_dir realpath tempdir_simple);
+our @EXPORT_OK = qw(can_load pushd tempdir_simple);
 
 sub can_load {
 
@@ -42,28 +37,15 @@ sub can_load {
 
 sub tempdir_simple {
     my $template = shift || 'Code-TidyAll-XXXX';
-    return realpath( tempdir( $template, TMPDIR => 1, CLEANUP => 1 ) );
-}
-
-sub dump_one_line {
-    my ($value) = @_;
-
-    return Data::Dumper->new( [$value] )->Indent(0)->Sortkeys(1)->Quotekeys(0)->Terse(1)->Dump();
+    return tempdir( $template, CLEANUP => 1 );
 }
 
 sub pushd {
     my ($dir) = @_;
 
-    my $cwd = realpath();
+    my $cwd = cwd();
     chdir($dir);
     return guard { chdir($cwd) };
-}
-
-sub read_dir {
-    my ($dir) = @_;
-    opendir( my $dirh, $dir ) or die "could not open $dir: $!";
-    my @dir_entries = grep { $_ ne "." && $_ ne ".." } readdir($dirh);
-    return @dir_entries;
 }
 
 1;

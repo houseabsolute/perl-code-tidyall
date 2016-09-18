@@ -1,10 +1,8 @@
 #!/usr/bin/env perl
 use Capture::Tiny qw(capture_merged);
-use Code::TidyAll::Util qw(can_load dirname);
 use Code::TidyAll;
 use Config;
-use Cwd qw(cwd realpath);
-use File::Spec::Functions qw(rel2abs);
+use Path::Tiny qw(cwd path);
 use Getopt::Long;
 use strict;
 use warnings;
@@ -94,8 +92,11 @@ usage()   if $help;
 unshift( @INC, split( /\s*,\s*/, $inc_dirs ) ) if defined($inc_dirs);
 
 %params = map { ( $_, $params{$_} ) } grep { defined( $params{$_} ) } keys(%params);
+for my $key (qw( data_dir root_dir )) {
+    $params{$key} = path( $params{$key} ) if exists $params{$key};
+}
 
-($conf_file) = ( grep {-f} map {"$params{root_dir}/$_"} @conf_names )
+($conf_file) = ( grep { $_->is_file } map { $params{root_dir}->child($_) } @conf_names )
     if $params{root_dir} && !$conf_file;
 
 my $tidyall_class = $params{tidyall_class} || 'Code::TidyAll';
@@ -103,7 +104,7 @@ my $tidyall_class = $params{tidyall_class} || 'Code::TidyAll';
 my ( $ct, @paths );
 
 if ($pipe) {
-    my $status = handle_pipe($pipe);
+    my $status = handle_pipe( path($pipe) );
     exit($status);
 }
 elsif ( ( $all_files || $svn_files || $git_files ) ) {
@@ -124,8 +125,8 @@ elsif ( ( $all_files || $svn_files || $git_files ) ) {
         @paths = Code::TidyAll::Git::Util::git_modified_files( $ct->root_dir );
     }
 }
-elsif ( @paths = @ARGV ) {
-    $conf_file ||= $tidyall_class->find_conf_file( \@conf_names, dirname( $paths[0] ) );
+elsif ( @paths = map { path($_) } @ARGV ) {
+    $conf_file ||= $tidyall_class->find_conf_file( \@conf_names, $paths[0]->parent );
     $ct = $tidyall_class->new_from_conf_file( $conf_file, %params );
 }
 else {
@@ -143,7 +144,7 @@ sub handle_pipe {
     $params{$_} = 1 for ( 'no_backups', 'no_cache', 'quiet' );
     $params{$_} = 0 for ('verbose');
 
-    $conf_file ||= $tidyall_class->find_conf_file( \@conf_names, dirname($pipe_filename) );
+    $conf_file ||= $tidyall_class->find_conf_file( \@conf_names, $pipe_filename->parent );
     my $ct       = $tidyall_class->new_from_conf_file( $conf_file, %params );
     my $root_dir = $ct->root_dir;
     my $source   = do { local $/; <STDIN> };
@@ -153,7 +154,7 @@ sub handle_pipe {
     #
     my $result;
     my $output = capture_merged {
-        $result = $ct->process_source( $source, $ct->_small_path( rel2abs($pipe_filename) ) );
+        $result = $ct->process_source( $source, $ct->_small_path( $pipe_filename->absolute ) );
     };
     print STDERR $output;
 

@@ -2,9 +2,10 @@ package Code::TidyAll::SVN::Precommit;
 
 use Capture::Tiny qw(capture_stdout capture_stderr);
 use Code::TidyAll;
-use Code::TidyAll::Util qw(basename dirname mkpath tempdir_simple write_file);
+use Code::TidyAll::Util qw(tempdir_simple);
 use Log::Any qw($log);
 use Moo;
+use Path::Tiny qw(path);
 use SVN::Look;
 use Try::Tiny;
 
@@ -58,7 +59,7 @@ sub check {
         my %conf_files;
         foreach my $file (@files) {
             if ( my $conf_file = $self->find_conf_for_file($file) ) {
-                my $root = dirname($conf_file);
+                my $root = $conf_file->parent;
                 my $rel_file = substr( $file, length($root) + 1 );
                 $conf_files{$conf_file}->{$rel_file}++;
             }
@@ -70,29 +71,31 @@ sub check {
         }
 
         my @results;
-        while ( my ( $conf_file, $file_map ) = each(%conf_files) ) {
-            my $root      = dirname($conf_file);
-            my $conf_name = basename($conf_file);
+        for my $conf_file ( map { path($_) } keys %conf_files ) {
+            my $file_map = $conf_files{$conf_file};
+
+            my $root      = $conf_file->parent;
+            my $conf_name = $conf_file->basename;
             $log->error("$root, $conf_file");
             my $tempdir = tempdir_simple();
             my @files   = keys(%$file_map);
             foreach my $rel_file ( $conf_name, @{ $self->extra_conf_files }, @files ) {
 
                 # TODO: what if cat fails
-                my $contents  = $self->cat_file("$root/$rel_file");
-                my $full_path = "$tempdir/$rel_file";
-                mkpath( dirname($full_path), 0, 0775 );
-                write_file( $full_path, $contents );
+                my $contents  = $self->cat_file( $root->child($rel_file) );
+                my $full_path = $tempdir->child($rel_file);
+                $full_path->parent->mkpath( { mode => 0755 } );
+                $full_path->spew($contents);
             }
             my $tidyall = $self->tidyall_class->new_from_conf_file(
-                join( "/", $tempdir, $conf_name ),
+                $tempdir->child($conf_name),
                 no_cache   => 1,
                 check_only => 1,
                 mode       => 'commit',
                 %{ $self->tidyall_options },
             );
             my $stdout = capture_stdout {
-                push( @results, $tidyall->process_paths( map {"$tempdir/$_"} @files ) );
+                push( @results, $tidyall->process_paths( map { $tempdir->child($_) } @files ) );
             };
             if ($stdout) {
                 chomp($stdout);
@@ -124,19 +127,18 @@ sub find_conf_for_file {
     my ( $self, $file ) = @_;
 
     my @conf_names = $self->conf_name ? ( $self->conf_name ) : Code::TidyAll->default_conf_names;
-    my $search_dir = dirname($file);
-    $search_dir =~ s{/+$}{};
-    my $cnt = 0;
+    my $search_dir = $file->parent;
+    my $cnt        = 0;
     while (1) {
         foreach my $conf_name (@conf_names) {
-            my $conf_file = "$search_dir/$conf_name";
+            my $conf_file = $search_dir->child($conf_name);
             return $conf_file if ( $self->cat_file($conf_file) );
         }
         if ( $search_dir eq '/' || $search_dir eq '' || $search_dir eq '.' ) {
             return undef;
         }
         else {
-            $search_dir = dirname($search_dir);
+            $search_dir = $search_dir->parent;
         }
         die "inf loop!" if ++$cnt > 100;
     }

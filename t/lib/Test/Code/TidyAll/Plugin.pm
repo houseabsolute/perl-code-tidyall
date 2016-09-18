@@ -1,12 +1,15 @@
 package Test::Code::TidyAll::Plugin;
 
+use strict;
+use warnings;
+use autodie;
+
 use Capture::Tiny qw(capture);
 use Code::TidyAll::Util qw(pushd tempdir_simple);
 use Code::TidyAll;
-use File::Slurp::Tiny qw(read_file);
+use Path::Tiny qw(path);
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 use Test::Differences qw( eq_or_diff );
-use autodie;
 
 __PACKAGE__->SKIP_CLASS("Virtual base class");
 
@@ -75,7 +78,7 @@ sub tidyall {
         is( $result->state, 'checked', "state=checked [$desc]" );
         is( $result->error, undef,     "no error [$desc]" );
         if ( $result->new_contents ) {
-            $source ||= read_file( $p{source_file} );
+            $source ||= path( $p{source_file} )->slurp;
             is( $result->new_contents, $source, "same contents [$desc]" );
         }
     }

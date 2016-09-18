@@ -1,8 +1,7 @@
 package Test::Code::TidyAll::Conf;
 
 use Code::TidyAll;
-use Code::TidyAll::Util qw(dirname tempdir_simple);
-use File::Slurp::Tiny qw(read_file write_file);
+use Code::TidyAll::Util qw(tempdir_simple);
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 
 my @tests = (
@@ -62,8 +61,8 @@ sub test_config_file_handling : Tests {
         subtest(
             $test->{name},
             sub {
-                my $conf_file = "$root_dir/tidyall.ini";
-                write_file( $conf_file, $test->{config} );
+                my $conf_file = $root_dir->child('tidyall.ini');
+                $conf_file->spew( $test->{config} );
 
                 my $ct = Code::TidyAll->new_from_conf_file($conf_file);
                 for my $method ( sort keys %{ $test->{methods} } ) {
@@ -94,9 +93,9 @@ sub test_bad_config : Tests {
     my $self     = shift;
     my $root_dir = tempdir_simple();
 
-    my $conf_file = "$root_dir/tidyall.ini";
+    my $conf_file = $root_dir->child('tidyall.ini');
     ( my $config = $tests[0]{config} ) =~ s/times/timez/;
-    write_file( $conf_file, $config );
+    $conf_file->spew($config);
 
     throws_ok { my $ct = Code::TidyAll->new_from_conf_file($conf_file)->plugin_objects }
     qr/unknown option 'timez'/;

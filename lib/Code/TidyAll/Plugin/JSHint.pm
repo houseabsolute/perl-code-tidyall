@@ -6,45 +6,38 @@ use IPC::Run3 qw(run3);
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
+has 'options' => ( is => 'ro', predicate => '_has_options' );
+
+with 'Code::TidyAll::Role::Tempdir';
+
 our $VERSION = '0.50';
 
-sub validate_params {
-    my ( $self, $params ) = @_;
-
-    delete( $params->{options} );
-    return $self->SUPER::validate_params($params);
-}
-
 sub _build_cmd {'jshint'}
-
-around BUILDARGS => sub {
-    my $orig  = shift;
-    my $class = shift;
-
-    my $args = $class->$orig(@_);
-
-    if ( my $options_string = delete $args->{options} ) {
-        my @options   = split( /\s+/, $options_string );
-        my $conf_dir  = tempdir_simple();
-        my $conf_file = "$conf_dir/jshint.json";
-        write_file( $conf_file, '{ ' . join( ",\n", map {"\"$_\": true"} @options ) . ' }' );
-        $args->{argv} ||= "";
-        $args->{argv} .= " --config $conf_file";
-    }
-
-    return $args;
-};
 
 sub validate_file {
     my ( $self, $file ) = @_;
 
-    my $cmd = sprintf( "%s %s %s", $self->cmd, $self->argv, $file );
+    my $argv = $self->argv || q{};
+    if ( $self->_has_options ) {
+        $argv .= q{ } . $self->_config_file_argv;
+    }
+
+    my $cmd = sprintf( "%s %s %s", $self->cmd, $argv, $file );
     my $output;
     run3( $cmd, \undef, \$output, \$output );
     if ( $output =~ /\S/ ) {
         $output =~ s/^$file:\s*//gm;
         die "$output\n";
     }
+}
+
+sub _config_file_argv {
+    my $self = shift;
+
+    my $conf_file = $self->_tempdir->child('jshint.json');
+    $conf_file->spew(
+        '{ ' . join( ",\n", map {qq["$_": true]} split /\s+/, $self->options ) . ' }' );
+    return "--config $conf_file";
 }
 
 1;

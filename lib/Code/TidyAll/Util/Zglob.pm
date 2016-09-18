@@ -5,16 +5,14 @@ package Code::TidyAll::Util::Zglob;
 use strict;
 use warnings;
 
-use Exporter;
-use vars qw/@ISA @EXPORT_OK
-    $strict_leading_dot $strict_wildcard_slash/;
-@ISA       = 'Exporter';
-@EXPORT_OK = qw( zglobs_to_regex zglob_to_regex );
-
 our $VERSION = '0.50';
 
-$strict_leading_dot    = 1;
-$strict_wildcard_slash = 1;
+use Exporter qw(import);
+
+our @EXPORT_OK = qw( zglobs_to_regex zglob_to_regex );
+
+our $strict_leading_dot    = 1;
+our $strict_wildcard_slash = 1;
 
 use constant debug => 0;
 

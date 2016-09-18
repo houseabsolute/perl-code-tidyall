@@ -1,9 +1,6 @@
 package Code::TidyAll::Plugin;
 
 use Code::TidyAll::Util::Zglob qw(zglobs_to_regex);
-use File::Basename qw(dirname);
-use File::Path qw(mkpath);
-use File::Slurp::Tiny qw(read_file write_file);
 use File::Which qw( which );
 use IPC::Run3 qw( run3 );
 use Scalar::Util qw(weaken);
@@ -144,7 +141,7 @@ sub process_source_or_file {
         foreach my $iter ( 1 .. $self->tidyall->iterations ) {
             $self->transform_file($tempfile);
         }
-        $new_source = read_file($tempfile);
+        $new_source = $tempfile->slurp;
     }
     if ( $self->can('validate_source') ) {
         $self->validate_source($new_source);
@@ -174,15 +171,15 @@ sub _maybe_diff {
     my $orig_file = $self->_write_temp_file( $rel_path . '.orig', $orig );
     my $new_file  = $self->_write_temp_file( $rel_path . '.new',  $new );
 
-    return diff( $orig_file, $new_file, { Style => 'Unified' } );
+    return diff( $orig_file->stringify, $new_file->stringify, { Style => 'Unified' } );
 }
 
 sub _write_temp_file {
     my ( $self, $rel_path, $source ) = @_;
 
-    my $tempfile = join( "/", $self->tidyall->_tempdir(), $rel_path );
-    mkpath( dirname($tempfile), 0, 0755 );
-    write_file( $tempfile, $source );
+    my $tempfile = $self->tidyall->_tempdir->child($rel_path);
+    $tempfile->parent->mkpath( { mode => 0755 } );
+    $tempfile->spew($source);
     return $tempfile;
 }
 

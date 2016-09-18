@@ -1,19 +1,19 @@
 package Code::TidyAll;
 
-use Cwd qw(realpath);
 use Code::TidyAll::Config::INI::Reader;
 use Code::TidyAll::Cache;
 use Code::TidyAll::CacheModel;
-use Code::TidyAll::Util qw(basename can_load dirname dump_one_line mkpath read_dir);
+use Code::TidyAll::Util qw(can_load);
 use Code::TidyAll::Result;
+use Data::Dumper;
 use Date::Format;
 use Digest::SHA qw(sha1_hex);
 use File::Find qw(find);
-use File::Slurp::Tiny qw(read_file write_file);
-use File::Spec::Functions qw(rel2abs);
 use File::Zglob;
 use List::SomeUtils qw(uniq);
+use Path::Tiny qw(path);
 use Moo;
+use Scalar::Util qw(blessed);
 use Time::Duration::Parse qw(parse_duration);
 use Try::Tiny;
 use strict;
@@ -55,7 +55,7 @@ with 'Code::TidyAll::Role::Tempdir';
 
 sub _build_backup_dir {
     my $self = shift;
-    return $self->data_dir . "/backups";
+    return $self->data_dir->child('backups');
 }
 
 sub _build_backup_ttl_secs {
@@ -71,12 +71,12 @@ sub _build_base_sig {
 
 sub _build_cache {
     my $self = shift;
-    return Code::TidyAll::Cache->new( cache_dir => $self->data_dir . "/cache" );
+    return Code::TidyAll::Cache->new( cache_dir => $self->data_dir->child('cache') );
 }
 
 sub _build_data_dir {
     my $self = shift;
-    return $self->root_dir . "/.tidyall.d";
+    return $self->root_dir->child('/.tidyall.d');
 }
 
 sub _build_plugins_for_mode {
@@ -117,11 +117,11 @@ sub BUILD {
         );
     }
 
-    $self->{root_dir}         = realpath( $self->{root_dir} );
+    $self->{root_dir}         = path( $self->{root_dir} )->realpath;
     $self->{plugins_for_path} = {};
 
     unless ( $self->no_backups ) {
-        mkpath( $self->backup_dir, 0, 0775 );
+        $self->backup_dir->mkpath( { mode => 0775 } );
         $self->_purge_backups_periodically();
     }
 }
@@ -129,12 +129,14 @@ sub BUILD {
 sub new_from_conf_file {
     my ( $class, $conf_file, %params ) = @_;
 
-    die "no such file '$conf_file'" unless -f $conf_file;
+    $conf_file = path($conf_file);
+
+    die "no such file '$conf_file'" unless $conf_file->is_file;
     my $conf_params = $class->_read_conf_file($conf_file);
     my $main_params = delete( $conf_params->{'_'} ) || {};
     %params = (
         plugins  => $conf_params,
-        root_dir => realpath( dirname($conf_file) ),
+        root_dir => path($conf_file)->realpath->parent,
         %$main_params, %params
     );
 
@@ -149,11 +151,48 @@ sub new_from_conf_file {
         my $msg_outputter = $params{msg_outputter} || $class->_build_msg_outputter();
         $msg_outputter->(
             "constructing %s with these params: %s", $class,
-            dump_one_line( \%params )
+            _dump_params( \%params )
         );
     }
 
     return $class->new(%params);
+}
+
+sub _dump_params {
+    my $p = shift;
+
+    return Data::Dumper->new( [ _recurse_dump($p) ] )->Indent(0)->Sortkeys(1)->Quotekeys(0)
+        ->Terse(1)->Dump;
+}
+
+# This is all ridiculous workaround the fact that there is no good way to tell
+# Data::Dumper how to serialize a Path::Tiny object.
+sub _recurse_dump {
+    my ($p) = @_;
+
+    my %dump;
+    for my $k ( keys %{$p} ) {
+        my $v = $p->{$k};
+        if ( blessed $v ) {
+            if ( $v->isa('Path::Tiny') ) {
+                $dump{$k} = $v . q{};
+            }
+            else {
+                die 'Cannot dump ' . ref($v) . ' object';
+            }
+        }
+        elsif ( ref $v eq 'HASH' ) {
+            $dump{$k} = _recurse_dump( $p->{$v} );
+        }
+        elsif ( ref $v eq 'ARRAY' ) {
+            $dump{$k} = [ map { _recurse_dump($_) } @{ $p->{$v} } ];
+        }
+        else {
+            $dump{$k} = $v;
+        }
+    }
+
+    return \%dump;
 }
 
 sub _load_plugin {
@@ -204,7 +243,10 @@ sub process_all {
 sub process_paths {
     my ( $self, @paths ) = @_;
 
-    @paths = map { realpath($_) || rel2abs($_) } @paths;
+    @paths = map {
+        try { $_->realpath }
+            || $_->absolute
+    } map { path($_) } @paths;
 
     if ( $self->jobs > 1 && @paths > 1 ) {
         return $self->_process_parallel(@paths);
@@ -256,15 +298,15 @@ sub _process_parallel {
 sub process_path {
     my ( $self, $path ) = @_;
 
-    if ( -d $path ) {
+    if ( $path->is_dir ) {
         if ( $self->recursive ) {
-            return $self->process_paths( map {"$path/$_"} read_dir($path) );
+            return $self->process_paths( $path->children );
         }
         else {
             return ( $self->_error_result( "$path: is a directory (try -r/--recursive)", $path ) );
         }
     }
-    elsif ( -f $path ) {
+    elsif ( $path->is_file ) {
         return ( $self->process_file($path) );
     }
     else {
@@ -274,7 +316,9 @@ sub process_path {
 
 sub process_file {
     my ( $self, $full_path ) = @_;
-    die "$full_path is not a file" unless -f $full_path;
+
+    $full_path = path($full_path);
+    die "$full_path is not a file" unless $full_path->is_file;
 
     my $path = $self->_small_path($full_path);
 
@@ -294,7 +338,7 @@ sub process_file {
         return Code::TidyAll::Result->new( path => $path, state => 'cached' );
     }
 
-    my $contents = $cache_model->file_contents || read_file($full_path);
+    my $contents = $cache_model->file_contents || $full_path->slurp;
     my $result = $self->process_source( $contents, $path );
 
     if ( $result->state eq 'tidied' ) {
@@ -304,7 +348,7 @@ sub process_file {
 
         # write new contents out to disk
         $contents = $result->new_contents;
-        write_file( join( '', $full_path, $self->output_suffix ), $contents );
+        path( $full_path . $self->output_suffix )->spew($contents);
 
         # change the in memory contents of the cache (but don't update yet)
         $cache_model->file_contents($contents) unless $self->output_suffix;
@@ -400,8 +444,8 @@ sub process_source {
 
 sub _read_conf_file {
     my ( $class, $conf_file ) = @_;
-    my $conf_string = read_file($conf_file);
-    my $root_dir    = dirname($conf_file);
+    my $conf_string = $conf_file->slurp_utf8;
+    my $root_dir    = $conf_file->parent;
     $conf_string =~ s/\$ROOT/$root_dir/g;
     my $conf_hash = Code::TidyAll::Config::INI::Reader->read_string($conf_string);
     die "'$conf_file' did not evaluate to a hash"
@@ -412,16 +456,16 @@ sub _read_conf_file {
 sub _backup_file {
     my ( $self, $path, $contents ) = @_;
     unless ( $self->no_backups ) {
-        my $backup_file = join( "/", $self->backup_dir, $self->_backup_filename($path) );
-        mkpath( dirname($backup_file), 0, 0775 );
-        write_file( $backup_file, $contents );
+        my $backup_file = $self->backup_dir->child( $self->_backup_filename($path) );
+        $backup_file->parent->mkpath( { mode => 0775 } );
+        $backup_file->spew($contents);
     }
 }
 
 sub _backup_filename {
     my ( $self, $path ) = @_;
 
-    return join( "", $path, "-", time2str( "%Y%m%d-%H%M%S", time ), ".bak" );
+    return join( q{}, $path, '-', time2str( "%Y%m%d-%H%M%S", time ), '.bak' );
 }
 
 sub _purge_backups_periodically {
@@ -452,8 +496,9 @@ sub _purge_backups {
 sub find_conf_file {
     my ( $class, $conf_names, $start_dir ) = @_;
 
-    my $path1     = rel2abs($start_dir);
-    my $path2     = realpath($start_dir);
+    $start_dir = path($start_dir);
+    my $path1     = $start_dir->absolute;
+    my $path2     = $start_dir->realpath;
     my $conf_file = $class->_find_conf_file_upward( $conf_names, $path1 )
         || $class->_find_conf_file_upward( $conf_names, $path2 );
     unless ( defined $conf_file ) {
@@ -469,19 +514,17 @@ sub find_conf_file {
 sub _find_conf_file_upward {
     my ( $class, $conf_names, $search_dir ) = @_;
 
-    $search_dir =~ s{/+$}{};
-
     my $cnt = 0;
     while (1) {
         foreach my $conf_name (@$conf_names) {
-            my $try_path = "$search_dir/$conf_name";
-            return $try_path if ( -f $try_path );
+            my $try_path = $search_dir->child($conf_name);
+            return $try_path if $try_path->is_file;
         }
         if ( $search_dir eq '/' ) {
             return undef;
         }
         else {
-            $search_dir = dirname($search_dir);
+            $search_dir = $search_dir->parent;
         }
         die "inf loop!" if ++$cnt > 100;
     }
@@ -514,7 +557,8 @@ sub find_matched_files {
             push( @{ $plugins_for_path->{$path} }, $plugin );
         }
     }
-    return sort( uniq(@matched_files) );
+
+    return map { path($_) } sort( uniq(@matched_files) );
 }
 
 sub plugins_for_path {
@@ -545,7 +589,7 @@ sub _small_path {
     my ( $self, $path ) = @_;
     die sprintf( "'%s' is not underneath root dir '%s'!", $path, $self->root_dir )
         unless index( $path, $self->root_dir ) == 0;
-    return substr( $path, length( $self->root_dir ) + 1 );
+    return path( substr( $path . q{}, length( $self->root_dir ) + 1 ) );
 }
 
 sub _sig {

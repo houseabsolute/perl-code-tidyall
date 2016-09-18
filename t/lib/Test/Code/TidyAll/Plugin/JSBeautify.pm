@@ -1,7 +1,6 @@
 package Test::Code::TidyAll::Plugin::JSBeautify;
 
 use Encode qw(encode);
-use File::Slurp::Tiny qw(write_file);
 use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
 use Test::Warnings qw(warnings);
 
@@ -47,8 +46,8 @@ sub test_utf8 : Tests {
         'no warnings tidying UTF-8 source'
     );
 
-    my $file = $self->{root_dir} . '/test.js';
-    write_file( $file, $contents );
+    my $file = $self->{root_dir}->child('test.js');
+    $file->spew($contents);
 
     is_deeply(
         [

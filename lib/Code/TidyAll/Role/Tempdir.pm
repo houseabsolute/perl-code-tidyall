@@ -2,8 +2,7 @@ package Code::TidyAll::Role::Tempdir;
 
 use Moo::Role;
 
-use Cwd qw(realpath);
-use File::Temp qw(tempdir);
+use Path::Tiny qw(tempdir);
 
 our $VERSION = '0.50';
 
@@ -12,12 +11,9 @@ has 'no_cleanup' => ( is => 'ro', default => 0 );
 
 sub _build__tempdir {
     my ($self) = @_;
-    return realpath(
-        tempdir(
-            'Code-TidyAll-XXXX',
-            TMPDIR  => 1,
-            CLEANUP => !$self->no_cleanup,
-        )
+    return tempdir(
+        'Code-TidyAll-XXXX',
+        CLEANUP => !$self->no_cleanup,
     );
 }
 

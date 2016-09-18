@@ -3,12 +3,11 @@ package Code::TidyAll::Git::Precommit;
 use Capture::Tiny qw(capture_stdout capture_stderr);
 use Code::TidyAll;
 use Code::TidyAll::Git::Util qw(git_files_to_commit);
-use Cwd qw(cwd);
-use File::Slurp::Tiny qw(write_file);
 use Guard;
 use Log::Any qw($log);
 use IPC::System::Simple qw(capturex run);
 use Moo;
+use Path::Tiny qw(path);
 use Try::Tiny;
 
 our $VERSION = '0.50';
@@ -33,9 +32,11 @@ sub check {
         # Find conf file at git root
         my $root_dir = capturex( $self->git_path, "rev-parse", "--show-toplevel" );
         chomp($root_dir);
+        $root_dir = path($root_dir);
+
         my @conf_names
             = $self->conf_name ? ( $self->conf_name ) : Code::TidyAll->default_conf_names;
-        my ($conf_file) = grep {-f} map { join( "/", $root_dir, $_ ) } @conf_names
+        my ($conf_file) = grep { $_->is_file } map { $root_dir->child($_) } @conf_names
             or die sprintf( "could not find conf file %s", join( " or ", @conf_names ) );
 
         # Store the stash, and restore it upon exiting this scope

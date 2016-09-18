@@ -16,7 +16,7 @@ sub validate_file {
     my $checker = Pod::Checker->new(%options);
     my $output;
     open my $fh, '>', \$output;
-    $checker->parse_from_file( $file, $fh );
+    $checker->parse_from_file( $file->stringify, $fh );
     die $output
         if $checker->num_errors > 0
         || ( $self->warnings && $checker->num_warnings > 0 );

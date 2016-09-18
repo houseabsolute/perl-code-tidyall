@@ -14,7 +14,7 @@ sub transform_file {
 
     my $output = capture_merged {
         Pod::Tidy::tidy_files(
-            files    => [$file],
+            files    => [ $file->stringify ],
             inplace  => 1,
             nobackup => 1,
             verbose  => 1,

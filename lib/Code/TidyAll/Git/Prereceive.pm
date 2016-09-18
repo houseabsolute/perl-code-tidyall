@@ -1,12 +1,12 @@
 package Code::TidyAll::Git::Prereceive;
 
 use Code::TidyAll;
-use Code::TidyAll::Util qw(dirname realpath tempdir_simple);
+use Code::TidyAll::Util qw(tempdir_simple);
 use Capture::Tiny qw(capture);
 use Digest::SHA qw(sha1_hex);
-use File::Slurp::Tiny qw(read_file write_file);
 use IPC::System::Simple qw(capturex run);
 use Moo;
+use Path::Tiny qw(cwd path);
 use Try::Tiny;
 
 our $VERSION = '0.50';
@@ -27,7 +27,7 @@ sub check {
     try {
         my $self = $class->new(%params);
 
-        my $root_dir = realpath();
+        my $root_dir = cwd();
         local $ENV{GIT_DIR} = $root_dir;
 
         my $input = do { local $/; <STDIN> };
@@ -90,7 +90,7 @@ sub create_tidyall {
     foreach my $rel_file ( $conf_file, @{ $self->extra_conf_files } ) {
         my $contents = $self->get_file_contents( $rel_file, $commit )
             or die sprintf( "could not find file '%s' in repo root", $rel_file );
-        write_file( "$temp_dir/$rel_file", $contents );
+        $temp_dir->child($rel_file)->spew($contents);
     }
     my $tidyall = $self->tidyall_class->new_from_conf_file(
         "$temp_dir/" . $conf_file,
@@ -119,28 +119,31 @@ sub get_file_contents {
 
 sub check_repeated_push {
     my ( $self, $input ) = @_;
-    if ( defined( my $allow = $self->allow_repeated_push ) ) {
-        my $cwd            = dirname( realpath($0) );
-        my $last_push_file = "$cwd/.prereceive_lastpush";
-        if ( -w $cwd || -w $last_push_file ) {
-            my $push_sig = sha1_hex($input);
-            if ( -f $last_push_file ) {
-                my ( $last_push_sig, $count ) = split( /\s+/, read_file($last_push_file) );
-                if ( $last_push_sig eq $push_sig ) {
-                    ++$count;
-                    print STDERR "*** Identical push seen $count times\n";
-                    if ( $count >= $allow ) {
-                        print STDERR "*** Allowing push to proceed despite errors\n";
-                        unlink($last_push_file);
-                        return 1;
-                    }
-                    write_file( $last_push_file, join( " ", $push_sig, $count ) );
-                    return 0;
+
+    my $allow = $self->allow_repeated_push;
+    return 0 unless defined $allow;
+
+    my $cwd            = path($0)->realpath->parent;
+    my $last_push_file = $cwd->child('.prereceive_lastpush');
+    if ( -w $cwd || -w $last_push_file ) {
+        my $push_sig = sha1_hex($input);
+        if ( -f $last_push_file ) {
+            my ( $last_push_sig, $count ) = split( /\s+/, $last_push_file->slurp );
+            if ( $last_push_sig eq $push_sig ) {
+                ++$count;
+                print STDERR "*** Identical push seen $count times\n";
+                if ( $count >= $allow ) {
+                    print STDERR "*** Allowing push to proceed despite errors\n";
+                    unlink($last_push_file);
+                    return 1;
                 }
+                $last_push_file->spew( join( q{ }, $push_sig, $count ) );
+                return 0;
             }
-            write_file( $last_push_file, join( " ", $push_sig, 1 ) );
         }
+        $last_push_file->spew( join( q{ }, $push_sig, 1 ) );
     }
+
     return 0;
 }
 

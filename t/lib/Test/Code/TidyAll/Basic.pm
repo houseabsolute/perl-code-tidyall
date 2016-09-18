@@ -1,13 +1,13 @@
 package Test::Code::TidyAll::Basic;
 
-use Cwd qw(realpath);
-use Code::TidyAll::Util qw(mkpath pushd tempdir_simple);
-use Code::TidyAll;
 use Capture::Tiny qw(capture capture_stdout capture_merged);
-use File::Find qw(find);
-use File::Slurp::Tiny qw(read_file write_file);
-use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 use Code::TidyAll::CacheModel::Shared;
+use Code::TidyAll::Util qw(pushd tempdir_simple);
+use Code::TidyAll;
+use File::Find qw(find);
+use Path::Tiny qw(cwd path);
+
+use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 
 sub test_plugin {"+Code::TidyAll::Test::Plugin::$_[0]"}
 my %UpperText  = ( test_plugin('UpperText')  => { select => '**/*.txt' } );
@@ -170,9 +170,9 @@ sub test_iterations : Tests {
         root_dir   => $root_dir,
         iterations => 2
     );
-    my $file = "$root_dir/foo.txt";
+    my $file = $root_dir->child('foo.txt');
     $ct->process_paths($file);
-    is( read_file($file), scalar( "abc" x 9 ), "3^2 = 9" );
+    is( $file->slurp, scalar( "abc" x 9 ), "3^2 = 9" );
 }
 
 sub test_caching_and_backups : Tests {
@@ -204,13 +204,13 @@ sub test_caching_and_backups : Tests {
                         ( $chi        ? ( cache      => _chi() ) : () ),
                     );
                     my $output;
-                    my $file = "$root_dir/foo.txt";
-                    my $go   = sub {
+                    my $file = path( $root_dir, 'foo.txt' );
+                    my $go = sub {
                         $output = capture_stdout { $ct->process_paths($file) };
                     };
 
                     $go->();
-                    is( read_file($file), "ABC", "first file change $desc" );
+                    is( $file->slurp, "ABC", "first file change $desc" );
                     is( $output, "[tidied]  foo.txt\n", "first output $desc" );
 
                     $go->();
@@ -221,17 +221,17 @@ sub test_caching_and_backups : Tests {
                         is( $output, '', "second output $desc" );
                     }
 
-                    write_file( $file, "ABCD" );
+                    $file->spew("ABCD");
                     $go->();
                     is( $output, "[checked] foo.txt\n", "third output $desc" );
 
-                    write_file( $file, "def" );
+                    $file->spew("def");
                     $go->();
-                    is( read_file($file), "DEF", "fourth file change $desc" );
+                    is( $file->slurp, "DEF", "fourth file change $desc" );
                     is( $output, "[tidied]  foo.txt\n", "fourth output $desc" );
 
-                    my $backup_dir = $ct->data_dir . "/backups";
-                    mkpath( $backup_dir, 0, 0775 );
+                    my $backup_dir = $ct->data_dir->child('backups');
+                    $backup_dir->mkpath( { mode => 0775 } );
                     my @files;
                     find(
                         {
@@ -283,7 +283,10 @@ sub test_selects_and_ignores : Tests {
             }
         }
     );
-    cmp_set( [ $ct->find_matched_files() ], [ "$root_dir/a/foo.pm", "$root_dir/b/foo.pl" ] );
+    cmp_set(
+        [ map { $_->stringify } $ct->find_matched_files() ],
+        [ "$root_dir/a/foo.pm", "$root_dir/b/foo.pl" ]
+    );
     cmp_deeply(
         [ map { $_->name } $ct->plugins_for_path("a/foo.pm") ],
         [ test_plugin('UpperText') ]
@@ -315,7 +318,7 @@ sub test_shebang : Tests {
         }
     );
     cmp_set(
-        [ $ct->find_matched_files() ],
+        [ map { $_->stringify } $ct->find_matched_files() ],
         [ map {"$root_dir/$_"} qw( a/foo b/bar b/baz ) ],
     );
 }
@@ -341,10 +344,10 @@ sub test_dirs : Tests {
             is( scalar( grep { $_->state eq 'tidied' } @results ), 2, "2 tidied" );
             like( $output, qr/\[tidied\]  a\/foo.txt/ );
             like( $output, qr/\[tidied\]  a\/bar.txt/ );
-            is( read_file("$root_dir/a/foo.txt"), "IH" );
-            is( read_file("$root_dir/a/bar.txt"), "HI" );
-            is( read_file("$root_dir/a/bar.pl"),  "hi" );
-            is( read_file("$root_dir/b/foo.txt"), "hi" );
+            is( path( $root_dir, 'a', 'foo.txt' )->slurp, "IH" );
+            is( path( $root_dir, 'a', 'bar.txt' )->slurp, "HI" );
+            is( path( $root_dir, 'a', 'bar.pl' )->slurp,  "hi" );
+            is( path( $root_dir, 'b', 'foo.txt' )->slurp, "hi" );
         }
         else {
             is( @results,           1,       "1 result" );
@@ -416,9 +419,9 @@ sub test_errors : Tests {
 
     $output = capture_stdout { $ct->process_paths("$root_dir/foo/bar.txt") };
     is( $output, "[tidied]  foo/bar.txt\n", "filename output" );
-    is( read_file("$root_dir/foo/bar.txt"), "ABC", "tidied" );
-    my $other_dir = realpath( tempdir_simple() );
-    write_file( "$other_dir/foo.txt", "ABC" );
+    is( path( $root_dir, 'foo', 'bar.txt' )->slurp, "ABC", "tidied" );
+    my $other_dir = tempdir_simple();
+    $other_dir->child('foo.txt')->spew("ABC");
     throws_ok { $ct->process_paths("$other_dir/foo.txt") } qr/not underneath root dir/;
 }
 
@@ -434,22 +437,13 @@ sub test_git_files : Tests {
         = qq{## git-status-porcelain\0 M lib/Code/TidyAll/Git/Util.pm\0R  perltidyrc -> xyz\0perltidyrc\0 M t/lib/Test/Code/TidyAll/Basic.pm\0D  tidyall.ini\0RM weaver.initial\0weaver.ini\0};
 
     require Code::TidyAll::Git::Util;
-    my @files = Code::TidyAll::Git::Util::_relevant_files_from_status($status);
+    my @files = Code::TidyAll::Git::Util::_parse_status($status);
     is_deeply(
         \@files,
         [
-            {
-                name     => 'lib/Code/TidyAll/Git/Util.pm',
-                in_index => 0,
-            },
-            {
-                name     => 't/lib/Test/Code/TidyAll/Basic.pm',
-                in_index => 0,
-            },
-            {
-                name     => 'weaver.initial',
-                in_index => 1,
-            },
+            'lib/Code/TidyAll/Git/Util.pm',
+            't/lib/Test/Code/TidyAll/Basic.pm',
+            'weaver.initial',
         ]
     );
 }
@@ -475,12 +469,12 @@ sub test_cli : Tests {
             "conf at $conf_name",
             sub {
                 my $root_dir  = $self->create_dir();
-                my $conf_file = "$root_dir/$conf_name";
-                write_file( $conf_file, $cli_conf );
+                my $conf_file = $root_dir->child($conf_name);
+                $conf_file->spew($cli_conf);
 
-                write_file( "$root_dir/foo.txt", "hello" );
+                $root_dir->child('foo.txt')->spew("hello");
                 my $output = capture_stdout {
-                    $run->( "$root_dir/foo.txt", "-v" );
+                    $run->( $root_dir->child('foo.txt'), "-v" );
                 };
 
                 my ($params_msg)
@@ -498,24 +492,26 @@ sub test_cli : Tests {
                     'foo.txt'
                 );
                 is(
-                    read_file("$root_dir/foo.txt"), "HELLOHELLOHELLO",
+                    $root_dir->child('foo.txt')->slurp, "HELLOHELLOHELLO",
                     "tidied"
                 );
 
-                mkpath( "$root_dir/subdir", 0, 0775 );
-                write_file( "$root_dir/subdir/foo.txt",  "bye" );
-                write_file( "$root_dir/subdir/foo2.txt", "bye" );
-                my $cwd = realpath();
+                my $subdir = $root_dir->child('subdir');
+                $subdir->mkpath( { mode => 0775 } );
+                $subdir->child('foo.txt')->spew('bye');
+                $subdir->child('foo2.txt')->spew('bye');
+
+                my $cwd = cwd();
                 capture_stdout {
-                    my $dir = pushd "$root_dir/subdir";
+                    my $pushed = pushd($subdir);
                     system( $^X, "-I$cwd/lib", "-I$cwd/t/lib", "$cwd/bin/tidyall", 'foo.txt' );
                 };
                 is(
-                    read_file("$root_dir/subdir/foo.txt"), "BYEBYEBYE",
+                    $root_dir->child( 'subdir', 'foo.txt' )->slurp, "BYEBYEBYE",
                     "foo.txt tidied"
                 );
                 is(
-                    read_file("$root_dir/subdir/foo2.txt"), "bye",
+                    $root_dir->child( 'subdir', 'foo2.txt' )->slurp, "bye",
                     "foo2.txt not tidied"
                 );
 
@@ -524,7 +520,7 @@ sub test_cli : Tests {
                 my ( $stdout, $stderr ) = capture {
                     open(
                         my $fh, "|-", @cmd, "-p",
-                        "$root_dir/does_not_exist/foo.txt"
+                        $root_dir->child(qw( does_not_exist foo.txt ))
                     );
                     print $fh "echo";
                 };
@@ -534,7 +530,7 @@ sub test_cli : Tests {
                 # -p / --pipe error
                 #
                 ( $stdout, $stderr ) = capture {
-                    open( my $fh, "|-", @cmd, "--pipe", "$root_dir/foo.txt" );
+                    open( my $fh, "|-", @cmd, "--pipe", $root_dir->child('foo.txt') );
                     print $fh "abc1";
                 };
                 is( $stdout, "abc1", "pipe: stdin mirrored to stdout" );

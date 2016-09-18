@@ -18,7 +18,8 @@ has 'suggest'     => ( is => 'ro' );
 sub validate_file {
     my ( $self, $file ) = @_;
 
-    my ( $text, $error ) = Capture::Tiny::capture { Pod::Spell->new->parse_from_file($file) };
+    my ( $text, $error )
+        = Capture::Tiny::capture { Pod::Spell->new->parse_from_file( $file->stringify ) };
     die $error if $error;
 
     my ($output);

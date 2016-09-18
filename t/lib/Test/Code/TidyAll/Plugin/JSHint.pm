@@ -1,6 +1,5 @@
 package Test::Code::TidyAll::Plugin::JSHint;
 
-use File::Slurp::Tiny qw(write_file);
 use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
 
 sub test_filename {'foo.js'}
@@ -48,8 +47,8 @@ sub test_main : Tests {
         desc         => 'error - curly - options=camelcase,curly',
     );
 
-    my $rc_file = $self->{root_dir} . "/jshint.json";
-    write_file( $rc_file, '{"camelcase": true}' );
+    my $rc_file = $self->{root_dir}->child('jshint.json');
+    $rc_file->spew('{"camelcase": true}');
 
     $self->tidyall(
         source       => 'var my_object = {};',

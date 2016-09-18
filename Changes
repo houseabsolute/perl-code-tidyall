@@ -1,5 +1,14 @@
 {{$NEXT}}
 
+[BACKWARDS INCOMPATIBILITIES]
+
+- Converted (almost) all file handling to use Path::Tiny. This should help
+  make the code and tests more cross-platform, and simplifies various bits of
+  internal code. Note that plugins now receive paths as Path::Tiny objects,
+  which could break code that checks if what it receives is a plain scalar.
+
+[ENHANCEMENTS]
+
 - Added support for tidying in multiple parallel jobs at once. You can pass a
   "--jobs" argument to tidyall or pass a "jobs" param to
   Code::TidyAll->new. This requires that you install Parallel::ForkManager.
