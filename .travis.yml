@@ -50,6 +50,7 @@ install:
 before_script:
   - coverage-setup
 script:
+  - perl Makefile.PL
   - prove -l -j$(test-jobs) $(test-files)
 after_success:
   - coverage-report
