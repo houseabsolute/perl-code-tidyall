@@ -1,6 +1,5 @@
 package Code::TidyAll::Test::Plugin::RepeatFoo;
 
-use File::Slurp::Tiny qw(read_file write_file);
 use Moo;
 extends 'Code::TidyAll::Plugin';
 

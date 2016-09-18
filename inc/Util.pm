@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Exporter qw(import);
-use File::Path qw(mkpath);
+use Path::Tiny qw(path);
 
 our @EXPORT_OK = qw(make_node_symlinks);
 
@@ -24,8 +24,8 @@ sub make_node_symlinks {
         'jslint'        => '../jslint/bin/jslint.js',
     );
 
-    my $bin = 'node_modules/.bin';
-    mkpath( $bin, 0, 0755 );
+    my $bin = path('node_modules/.bin');
+    $bin->mkpath( { mode => 0755 } );
     chdir $bin or die "Cannot chdir to $bin: $!";
 
     for my $from ( keys %links ) {

@@ -2,9 +2,7 @@
 use lib 't/lib';
 use Code::TidyAll::Util qw(tempdir_simple);
 use Code::TidyAll;
-use File::Basename;
-use File::Path;
-use File::Slurp::Tiny qw(read_file write_file);
+use Path::Tiny qw(path);
 use Test::More;
 use Capture::Tiny qw(capture_merged);
 
@@ -12,9 +10,9 @@ my $root_dir = tempdir_simple('Code-TidyAll-XXXX');
 
 sub make {
     my ( $file, $content ) = @_;
-    $file = "$root_dir/$file";
-    mkpath( dirname($file), 0, 0775 );
-    write_file( $file, $content );
+    $file = $root_dir->child($file);
+    $file->parent->mkpath( { mode => 0755 } );
+    $file->spew($content);
 }
 
 make(
@@ -40,13 +38,15 @@ my $ct = Code::TidyAll->new(
 my $output;
 $output = capture_merged { $ct->process_all() };
 like( $output, qr/Code before strictures are enabled./ );
-is( read_file("$root_dir/lib/Foo.pm"), "package Foo;\nuse strict;\n1;\n" );
-is( read_file("$root_dir/lib/Foo.pod"),
-        "=over\n\n=item a\n\n"
-      . join( " ", ("Blah") x 16 ) . "\n"
-      . join( " ", ("Blah") x 9 )
-      . "\n\n=back\n" );
-is( read_file("$root_dir/data/baz.txt"), "    34" );
+is( $root_dir->child(qw(lib Foo.pm))->slurp, "package Foo;\nuse strict;\n1;\n" );
+is(
+    $root_dir->child(qw(lib Foo.pod))->slurp,
+    "=over\n\n=item a\n\n"
+        . join( " ", ("Blah") x 16 ) . "\n"
+        . join( " ", ("Blah") x 9 )
+        . "\n\n=back\n"
+);
+is( $root_dir->child(qw(data baz.txt))->slurp, "    34" );
 
 $output = capture_merged { $ct->process_all() };
 like( $output, qr/Code before strictures are enabled./ );
@@ -55,6 +55,6 @@ unlike( $output, qr/Foo\.pm/ );
 make( "bin/bar.pl", "#!/usr/bin/perl\nuse strict;\n  \$d = 5;" );
 $output = capture_merged { $ct->process_all() };
 like( $output, qr/.*bar\.pl/ );
-is( read_file("$root_dir/bin/bar.pl"), "#!/usr/bin/perl\nuse strict;\n\$d = 5;\n" );
+is( $root_dir->child(qw(bin bar.pl))->slurp, "#!/usr/bin/perl\nuse strict;\n\$d = 5;\n" );
 
 done_testing();

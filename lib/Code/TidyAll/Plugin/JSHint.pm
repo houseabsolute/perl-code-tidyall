@@ -1,7 +1,6 @@
 package Code::TidyAll::Plugin::JSHint;
 
 use Code::TidyAll::Util qw(tempdir_simple);
-use File::Slurp::Tiny qw(write_file);
 use IPC::Run3 qw(run3);
 use Moo;
 extends 'Code::TidyAll::Plugin';

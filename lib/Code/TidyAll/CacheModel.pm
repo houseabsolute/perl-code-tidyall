@@ -1,7 +1,7 @@
 package Code::TidyAll::CacheModel;
 
 use Digest::SHA qw(sha1_hex);
-use File::Slurp::Tiny qw(read_file);
+use Path::Tiny ();
 use Moo;
 
 our $VERSION = '0.50';
@@ -19,7 +19,7 @@ has 'path'          => ( is => 'ro', required => 1 );
 
 sub _build_file_contents {
     my ($self) = @_;
-    return read_file( $self->full_path );
+    return Path::Tiny::path( $self->full_path )->slurp;
 }
 
 sub _trigger_file_contents {

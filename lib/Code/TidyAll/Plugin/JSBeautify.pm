@@ -1,6 +1,5 @@
 package Code::TidyAll::Plugin::JSBeautify;
 
-use File::Slurp::Tiny qw(write_file);
 use IPC::Run3 qw(run3);
 use Moo;
 use Try::Tiny;
@@ -19,7 +18,7 @@ sub transform_file {
         my $output;
         my $exit = run3( $cmd, \undef, \$output, \$output );
         die "exited with $?\n" if $?;
-        write_file( $file, $output );
+        $file->spew($output);
     }
     catch {
         die sprintf(
