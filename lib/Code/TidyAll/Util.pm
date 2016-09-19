@@ -1,5 +1,11 @@
 package Code::TidyAll::Util;
 
+# These are loaded aned exported purely for backwards compat since some of Jon
+# Swartz's plugins use these in their tests :(
+use File::Basename qw(dirname);
+use File::Path qw(mkpath);
+use File::Slurp::Tiny qw(read_file write_file);
+
 use Guard;
 use Path::Tiny qw(cwd tempdir);
 use Try::Tiny;
@@ -9,7 +15,7 @@ use base qw(Exporter);
 
 our $VERSION = '0.51';
 
-our @EXPORT_OK = qw(can_load pushd tempdir_simple);
+our @EXPORT_OK = qw(can_load pushd tempdir_simple dirname mkpath read_file write_file);
 
 sub can_load {
 

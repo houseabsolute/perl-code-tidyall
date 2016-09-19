@@ -1,5 +1,11 @@
 {{$NEXT}}
 
+[BUG FIXES]
+
+- Restored some exports to Code::TidyAll::Util for backwards
+  compatibility. Some other plugins are using these exports.
+
+
 0.50     2016-09-18
 
 [BACKWARDS INCOMPATIBILITIES]
