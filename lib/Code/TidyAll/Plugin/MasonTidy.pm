@@ -6,7 +6,7 @@ use Moo;
 use Text::ParseWords qw(shellwords);
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.51';
+our $VERSION = '0.52';
 
 sub _build_cmd {'masontidy'}
 

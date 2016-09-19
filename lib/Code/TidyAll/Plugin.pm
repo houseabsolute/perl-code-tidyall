@@ -8,7 +8,7 @@ use Text::Diff 1.44 qw( diff );
 
 use Moo;
 
-our $VERSION = '0.51';
+our $VERSION = '0.52';
 
 # External
 has 'argv'               => ( is => 'ro', default => q{} );

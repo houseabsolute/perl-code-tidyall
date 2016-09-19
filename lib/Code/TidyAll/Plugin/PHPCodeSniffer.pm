@@ -4,7 +4,7 @@ use IPC::Run3;
 use Moo;
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.51';
+our $VERSION = '0.52';
 
 sub _build_cmd {'phpcs'}
 
