@@ -4,7 +4,7 @@ use Digest::SHA qw(sha1_hex);
 use Path::Tiny ();
 use Moo;
 
-our $VERSION = '0.52';
+our $VERSION = '0.53';
 
 # todo, type checking?
 

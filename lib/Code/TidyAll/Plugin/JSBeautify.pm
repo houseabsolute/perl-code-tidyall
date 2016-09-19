@@ -5,7 +5,7 @@ use Moo;
 use Try::Tiny;
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.52';
+our $VERSION = '0.53';
 
 sub _build_cmd {'js-beautify'}
 

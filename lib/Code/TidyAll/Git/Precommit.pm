@@ -10,7 +10,7 @@ use Moo;
 use Path::Tiny qw(path);
 use Try::Tiny;
 
-our $VERSION = '0.52';
+our $VERSION = '0.53';
 
 # Public
 has 'conf_name'       => ( is => 'ro' );

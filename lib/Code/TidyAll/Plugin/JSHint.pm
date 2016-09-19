@@ -9,7 +9,7 @@ has 'options' => ( is => 'ro', predicate => '_has_options' );
 
 with 'Code::TidyAll::Role::Tempdir';
 
-our $VERSION = '0.52';
+our $VERSION = '0.53';
 
 sub _build_cmd {'jshint'}
 

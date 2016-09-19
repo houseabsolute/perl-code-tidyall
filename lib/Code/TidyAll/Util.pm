@@ -13,7 +13,7 @@ use strict;
 use warnings;
 use base qw(Exporter);
 
-our $VERSION = '0.52';
+our $VERSION = '0.53';
 
 our @EXPORT_OK = qw(can_load pushd tempdir_simple dirname mkpath read_file write_file);
 
