@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.51     2016-09-18
+
 [BUG FIXES]
 
 - Restored some exports to Code::TidyAll::Util for backwards
