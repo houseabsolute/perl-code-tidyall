@@ -1,5 +1,12 @@
 {{$NEXT}}
 
+[BUG FIXES]
+
+- The 0.50 release added an implicit configure phase prereq on Path::Tiny
+  without declaring it. That bit of code has been reverted to use just core
+  modules.
+
+
 0.51     2016-09-18
 
 [BUG FIXES]

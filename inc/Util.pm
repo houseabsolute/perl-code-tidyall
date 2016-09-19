@@ -4,7 +4,11 @@ use strict;
 use warnings;
 
 use Exporter qw(import);
-use Path::Tiny qw(path);
+
+# We don't want to use Path::Tiny in here since that would require a
+# configure-time prereq, which is more trouble than it's worth. This module
+# should only use things in the Perl core for simplicit.y
+use File::Path qw(mkpath);
 
 our @EXPORT_OK = qw(make_node_symlinks);
 
@@ -24,8 +28,8 @@ sub make_node_symlinks {
         'jslint'        => '../jslint/bin/jslint.js',
     );
 
-    my $bin = path('node_modules/.bin');
-    $bin->mkpath( { mode => 0755 } );
+    my $bin = 'node_modules/.bin';
+    mkpath( $bin, 0, 0755 );
     chdir $bin or die "Cannot chdir to $bin: $!";
 
     for my $from ( keys %links ) {
