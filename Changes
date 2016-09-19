@@ -6,6 +6,9 @@
   without declaring it. That bit of code has been reverted to use just core
   modules.
 
+- Change tidyall shbang line to "#!perl". I had changed it to "#!/usr/bin/env
+  perl" but MakeMaker does not rewrite this on install.
+
 
 0.51     2016-09-18
 
