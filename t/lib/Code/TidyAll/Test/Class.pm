@@ -25,12 +25,20 @@ sub create_dir {
     my ( $self, $files ) = @_;
 
     my $root_dir = tempdir_simple();
+
+    # This is a terrible hack to work around the fact that calling ->realpath
+    # loses the File::Temp::Dir object stored in the $root_dir object. We
+    # stick it back in $real_dir so it doesn't get garbage collected, which
+    # deletes the temp dir.
+    my $real_dir = $root_dir->realpath;
+    $real_dir->[5] = $root_dir->[5];
+
     while ( my ( $path, $content ) = each(%$files) ) {
-        my $full_path = $root_dir->child($path);
+        my $full_path = $real_dir->child($path);
         $full_path->parent->mkpath( { mode => 0755 } );
         $full_path->spew($content);
     }
-    return $root_dir;
+    return $real_dir;
 }
 
 sub tidy {
