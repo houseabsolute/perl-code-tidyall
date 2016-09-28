@@ -45,7 +45,7 @@ has 'root_dir'          => ( is => 'ro', required => 1 );
 has 'verbose'           => ( is => 'ro' );
 
 # Internal
-has 'backup_dir'       => ( is => 'lazy', init_arg => undef, trigger => 1 );
+has 'backup_dir'       => ( is => 'lazy', init_arg => undef );
 has 'backup_ttl_secs'  => ( is => 'lazy', init_arg => undef );
 has 'base_sig'         => ( is => 'lazy', init_arg => undef );
 has 'plugin_objects'   => ( is => 'lazy', init_arg => undef );
