@@ -6,6 +6,7 @@ use File::Basename qw(dirname);
 use File::Path qw(mkpath);
 use File::Slurp::Tiny qw(read_file write_file);
 
+use File::Spec;
 use File::Temp qw(tempdir);
 use Guard;
 use Path::Tiny qw(cwd path);
@@ -47,7 +48,13 @@ sub tempdir_simple {
 
     # If we use tempdir() from Path::Tiny we cannot easily turn that into a
     # realpath because of https://github.com/dagolden/Path-Tiny/issues/183.
-    return path( tempdir( $template, CLEANUP => 1 ) )->realpath;
+    return path(
+        tempdir(
+            $template,
+            DIR     => File::Spec->tmpdir,
+            CLEANUP => 1
+        )
+    )->realpath;
 }
 
 sub pushd {
