@@ -1,5 +1,11 @@
 {{$NEXT}}
 
+[BUG FIXES}
+
+- Added a somewhat gross hack to fix failing tests on OSX. Reported by Martin
+  Gruner. GH #65.
+
+
 0.52     2016-09-19
 
 [BUG FIXES]

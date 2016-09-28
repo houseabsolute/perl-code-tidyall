@@ -25,6 +25,7 @@ sub create_dir {
     my ( $self, $files ) = @_;
 
     my $root_dir = tempdir_simple();
+
     while ( my ( $path, $content ) = each(%$files) ) {
         my $full_path = $root_dir->child($path);
         $full_path->parent->mkpath( { mode => 0755 } );
