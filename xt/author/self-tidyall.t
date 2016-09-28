@@ -7,6 +7,6 @@ use Test::More;
 plan skip_all => 'This plugin requires Perl 5.10+'
     unless $] >= 5.010;
 
-tidyall_ok();
+tidyall_ok( verbose => 1 );
 
 done_testing();
