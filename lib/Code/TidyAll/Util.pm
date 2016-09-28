@@ -43,7 +43,16 @@ sub can_load {
 
 sub tempdir_simple {
     my $template = shift || 'Code-TidyAll-XXXX';
-    return tempdir( $template, CLEANUP => 1 );
+    my $tempdir = tempdir( $template, CLEANUP => 1 );
+
+    # This is a terrible hack to work around the fact that calling ->realpath
+    # loses the File::Temp::Dir object stored in the $root_dir object. We
+    # stick it back in $real_dir so it doesn't get garbage collected, which
+    # deletes the temp dir.
+    my $real_dir = $tempdir->realpath;
+    $real_dir->[5] = $tempdir->[5];
+
+    return $real_dir;
 }
 
 sub pushd {
