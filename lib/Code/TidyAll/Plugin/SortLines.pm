@@ -1,6 +1,10 @@
 package Code::TidyAll::Plugin::SortLines;
 
+use strict;
+use warnings;
+
 use Moo;
+
 extends 'Code::TidyAll::Plugin';
 
 our $VERSION = '0.53';

@@ -1,10 +1,12 @@
 package Code::TidyAll::SVN::Util;
 
-use Cwd qw(realpath);
-use IPC::System::Simple qw(capturex);
 use strict;
 use warnings;
-use base qw(Exporter);
+
+use Cwd qw(realpath);
+use IPC::System::Simple qw(capturex);
+
+use Exporter qw(import);
 
 our $VERSION = '0.53';
 

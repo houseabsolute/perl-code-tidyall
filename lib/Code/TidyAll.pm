@@ -1,10 +1,13 @@
 package Code::TidyAll;
 
-use Code::TidyAll::Config::INI::Reader;
+use strict;
+use warnings;
+
 use Code::TidyAll::Cache;
 use Code::TidyAll::CacheModel;
-use Code::TidyAll::Util qw(can_load);
+use Code::TidyAll::Config::INI::Reader;
 use Code::TidyAll::Result;
+use Code::TidyAll::Util qw(can_load);
 use Data::Dumper;
 use Date::Format;
 use Digest::SHA qw(sha1_hex);
@@ -12,12 +15,11 @@ use File::Find qw(find);
 use File::Zglob;
 use List::SomeUtils qw(uniq);
 use Path::Tiny qw(path);
-use Moo;
 use Scalar::Util qw(blessed);
 use Time::Duration::Parse qw(parse_duration);
 use Try::Tiny;
-use strict;
-use warnings;
+
+use Moo;
 
 our $VERSION = '0.53';
 

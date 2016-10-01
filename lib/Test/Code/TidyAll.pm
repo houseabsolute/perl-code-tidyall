@@ -1,13 +1,17 @@
 package Test::Code::TidyAll;
 
+use strict;
+use warnings;
+
 use Code::TidyAll;
 use List::Compare;
 use Test::Builder;
+
+# Text::Diff has to be loaded before ::Table
 use Text::Diff;
 use Text::Diff::Table;
-use strict;
-use warnings;
-use base qw(Exporter);
+
+use Exporter qw(import);
 
 our $VERSION = '0.53';
 

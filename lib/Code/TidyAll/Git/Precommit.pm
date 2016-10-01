@@ -1,14 +1,18 @@
 package Code::TidyAll::Git::Precommit;
 
+use strict;
+use warnings;
+
 use Capture::Tiny qw(capture_stdout capture_stderr);
-use Code::TidyAll;
 use Code::TidyAll::Git::Util qw(git_files_to_commit);
+use Code::TidyAll;
 use Guard;
-use Log::Any qw($log);
 use IPC::System::Simple qw(capturex run);
-use Moo;
+use Log::Any qw($log);
 use Path::Tiny qw(path);
 use Try::Tiny;
+
+use Moo;
 
 our $VERSION = '0.53';
 

@@ -1,7 +1,12 @@
 package Code::TidyAll::Plugin::CSSUnminifier;
 
+use strict;
+use warnings;
+
 use IPC::System::Simple qw(run);
+
 use Moo;
+
 extends 'Code::TidyAll::Plugin';
 
 our $VERSION = '0.53';

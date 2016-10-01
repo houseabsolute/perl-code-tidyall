@@ -1,7 +1,11 @@
 package Code::TidyAll::Cache;
 
+use strict;
+use warnings;
+
 use Digest::SHA qw(sha1_hex);
 use Path::Tiny qw(path);
+
 use Moo;
 
 our $VERSION = '0.53';

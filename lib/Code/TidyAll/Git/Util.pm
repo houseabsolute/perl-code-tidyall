@@ -1,12 +1,14 @@
 package Code::TidyAll::Git::Util;
 
+use strict;
+use warnings;
+
 use Code::TidyAll::Util qw(pushd);
 use IPC::System::Simple qw(capturex);
 use List::SomeUtils qw(uniq);
 use Path::Tiny qw(path);
-use strict;
-use warnings;
-use base qw(Exporter);
+
+use Exporter qw(import);
 
 our $VERSION = '0.53';
 

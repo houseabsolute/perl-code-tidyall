@@ -1,8 +1,13 @@
 package Code::TidyAll::Plugin::JSHint;
 
+use strict;
+use warnings;
+
 use Code::TidyAll::Util qw(tempdir_simple);
 use IPC::Run3 qw(run3);
+
 use Moo;
+
 extends 'Code::TidyAll::Plugin';
 
 has 'options' => ( is => 'ro', predicate => '_has_options' );

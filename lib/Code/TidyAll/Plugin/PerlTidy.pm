@@ -1,8 +1,13 @@
 package Code::TidyAll::Plugin::PerlTidy;
 
+use strict;
+use warnings;
+
 use Capture::Tiny qw(capture_merged);
 use Perl::Tidy;
+
 use Moo;
+
 extends 'Code::TidyAll::Plugin';
 
 our $VERSION = '0.53';

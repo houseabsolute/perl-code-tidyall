@@ -1,9 +1,14 @@
 package Code::TidyAll::Plugin::MasonTidy;
 
+use strict;
+use warnings;
+
 use Mason::Tidy;
 use Mason::Tidy::App;
-use Moo;
 use Text::ParseWords qw(shellwords);
+
+use Moo;
+
 extends 'Code::TidyAll::Plugin';
 
 our $VERSION = '0.53';

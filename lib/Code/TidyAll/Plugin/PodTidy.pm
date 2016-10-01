@@ -1,8 +1,13 @@
 package Code::TidyAll::Plugin::PodTidy;
 
+use strict;
+use warnings;
+
 use Capture::Tiny qw(capture_merged);
 use Pod::Tidy;
+
 use Moo;
+
 extends 'Code::TidyAll::Plugin';
 
 our $VERSION = '0.53';

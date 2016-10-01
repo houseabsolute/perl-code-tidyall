@@ -2,6 +2,7 @@ package Code::TidyAll::Config::INI::Reader;
 
 use strict;
 use warnings;
+
 use base qw(Config::INI::Reader);
 
 our $VERSION = '0.53';

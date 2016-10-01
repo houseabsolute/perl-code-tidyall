@@ -1,5 +1,8 @@
 package Code::TidyAll::Util;
 
+use strict;
+use warnings;
+
 # These are loaded aned exported purely for backwards compat since some of Jon
 # Swartz's plugins use these in their tests :(
 use File::Basename qw(dirname);
@@ -11,9 +14,8 @@ use File::Temp qw(tempdir);
 use Guard;
 use Path::Tiny qw(cwd path);
 use Try::Tiny;
-use strict;
-use warnings;
-use base qw(Exporter);
+
+use Exporter qw(import);
 
 our $VERSION = '0.53';
 

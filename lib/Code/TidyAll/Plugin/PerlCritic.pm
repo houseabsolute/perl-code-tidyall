@@ -1,7 +1,12 @@
 package Code::TidyAll::Plugin::PerlCritic;
 
+use strict;
+use warnings;
+
 use IPC::Run3 qw(run3);
+
 use Moo;
+
 extends 'Code::TidyAll::Plugin';
 
 our $VERSION = '0.53';

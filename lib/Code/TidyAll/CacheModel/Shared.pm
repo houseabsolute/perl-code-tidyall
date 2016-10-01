@@ -1,6 +1,10 @@
 package Code::TidyAll::CacheModel::Shared;
 
+use strict;
+use warnings;
+
 use Moo;
+
 extends 'Code::TidyAll::CacheModel';
 
 our $VERSION = '0.53';

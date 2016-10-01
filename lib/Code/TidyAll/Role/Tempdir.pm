@@ -1,5 +1,8 @@
 package Code::TidyAll::Role::Tempdir;
 
+use strict;
+use warnings;
+
 use Moo::Role;
 
 use Path::Tiny qw(tempdir);

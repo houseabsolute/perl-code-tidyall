@@ -1,7 +1,11 @@
 package Code::TidyAll::CacheModel;
 
+use strict;
+use warnings;
+
 use Digest::SHA qw(sha1_hex);
 use Path::Tiny ();
+
 use Moo;
 
 our $VERSION = '0.53';

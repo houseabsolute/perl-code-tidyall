@@ -1,7 +1,12 @@
 package Code::TidyAll::Plugin::PodChecker;
 
+use strict;
+use warnings;
+
 use Pod::Checker;
+
 use Moo;
+
 extends 'Code::TidyAll::Plugin';
 
 our $VERSION = '0.53';

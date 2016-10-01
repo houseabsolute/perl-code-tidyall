@@ -1,12 +1,16 @@
 package Code::TidyAll::Plugin::PodSpell;
 
+use strict;
+use warnings;
+
 use Capture::Tiny qw();
-use IPC::System::Simple qw();
 use IPC::Run3;
 use List::SomeUtils qw(uniq);
 use Pod::Spell;
-use Moo;
 use Text::ParseWords qw(shellwords);
+
+use Moo;
+
 extends 'Code::TidyAll::Plugin';
 
 our $VERSION = '0.53';
