@@ -78,6 +78,20 @@ sub test_basic : Tests {
     );
 }
 
+sub test_filemode : Tests {
+    my $self     = shift;
+    my $root_dir = $self->create_dir( { "foo.txt" => "abc" } );
+    my $file     = $root_dir->child('foo.txt');
+    $file->chmod('0755');
+    my $ct = Code::TidyAll->new(
+        plugins  => { test_plugin('UpperText') => { select => '**/foo*' } },
+        root_dir => $root_dir,
+    );
+    $ct->process_paths($file);
+    is( $file->slurp,      "ABC" );
+    is( $file->stat->mode, 0100755 );
+}
+
 sub test_multiple_plugin_instances : Tests {
     my $self = shift;
     $self->tidy(

@@ -350,7 +350,7 @@ sub process_file {
 
         # write new contents out to disk
         $contents = $result->new_contents;
-        path( $full_path . $self->output_suffix )->spew($contents);
+        path( $full_path . $self->output_suffix )->append( { truncate => 1 }, $contents );
 
         # change the in memory contents of the cache (but don't update yet)
         $cache_model->file_contents($contents) unless $self->output_suffix;
