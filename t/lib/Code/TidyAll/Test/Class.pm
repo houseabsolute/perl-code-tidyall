@@ -4,7 +4,6 @@ use Capture::Tiny qw(capture_stdout);
 use Code::TidyAll;
 use Code::TidyAll::Util qw(tempdir_simple);
 use File::Which qw(which);
-use Path::Tiny qw(path);
 use Test::Class::Most;
 use strict;
 use warnings;
