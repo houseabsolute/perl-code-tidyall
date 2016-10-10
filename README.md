@@ -4,7 +4,7 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
 # VERSION
 
-version 0.52
+version 0.53
 
 # SYNOPSIS
 
@@ -160,6 +160,7 @@ I am also usually active on IRC as 'drolsky' on `irc://irc.perl.org`.
 
 # CONTRIBUTORS
 
+- Adam Herzog <adam@adamherzog.com>
 - Andy Jack <andyjack@cpan.org>
 - Finn Smith <finn@timeghost.net>
 - George Hartzell <georgewh@gene.com>
