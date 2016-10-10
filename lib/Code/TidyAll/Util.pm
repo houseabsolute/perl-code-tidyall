@@ -10,9 +10,8 @@ use File::Path qw(mkpath);
 use File::Slurp::Tiny qw(read_file write_file);
 
 use File::Spec;
-use File::Temp qw(tempdir);
 use Guard;
-use Path::Tiny qw(cwd path);
+use Path::Tiny 0.098 qw(cwd path tempdir);
 use Try::Tiny;
 
 use Exporter qw(import);
@@ -48,15 +47,11 @@ sub can_load {
 sub tempdir_simple {
     my $template = shift || 'Code-TidyAll-XXXX';
 
-    # If we use tempdir() from Path::Tiny we cannot easily turn that into a
-    # realpath because of https://github.com/dagolden/Path-Tiny/issues/183.
-    return path(
-        tempdir(
-            $template,
-            DIR     => File::Spec->tmpdir,
-            CLEANUP => 1
-        )
-    )->realpath;
+    return tempdir(
+        { realpath => 1 },
+        TEMPLATE => $template,
+        CLEANUP  => 1
+    );
 }
 
 sub pushd {
