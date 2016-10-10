@@ -6,6 +6,7 @@ use warnings;
 use Code::TidyAll::Cache;
 use Code::TidyAll::CacheModel;
 use Code::TidyAll::Config::INI::Reader;
+use Code::TidyAll::Plugin;
 use Code::TidyAll::Result;
 use Code::TidyAll::Util qw(can_load);
 use Data::Dumper;
@@ -16,6 +17,12 @@ use File::Zglob;
 use List::SomeUtils qw(uniq);
 use Path::Tiny qw(path);
 use Scalar::Util qw(blessed);
+use Specio 0.30;
+use Specio::Declare;
+use Specio::Library::Builtins;
+use Specio::Library::Numeric;
+use Specio::Library::Path::Tiny;
+use Specio::Library::String;
 use Time::Duration::Parse qw(parse_duration);
 use Try::Tiny;
 
@@ -26,32 +33,142 @@ our $VERSION = '0.54';
 sub default_conf_names { ( 'tidyall.ini', '.tidyallrc' ) }
 
 # External
-has 'backup_ttl'        => ( is => 'ro', default => '1 hour' );
-has 'cache'             => ( is => 'lazy' );
-has 'cache_model_class' => ( is => 'ro', default => 'Code::TidyAll::CacheModel' );
-has 'check_only'        => ( is => 'ro' );
-has 'data_dir'          => ( is => 'lazy' );
-has 'iterations'        => ( is => 'ro', default => 1 );
-has 'jobs'              => ( is => 'ro', default => 1 );
-has 'list_only'         => ( is => 'ro' );
-has 'mode'              => ( is => 'ro', default => 'cli' );
-has 'msg_outputter'     => ( is => 'ro', builder => '_build_msg_outputter' );
-has 'no_backups'        => ( is => 'ro' );
-has 'no_cache'          => ( is => 'ro' );
-has 'output_suffix'     => ( is => 'ro', default => q{} );
-has 'plugins'           => ( is => 'ro', required => 1 );
-has 'quiet'             => ( is => 'ro' );
-has 'recursive'         => ( is => 'ro' );
-has 'refresh_cache'     => ( is => 'ro' );
-has 'root_dir'          => ( is => 'ro', required => 1 );
-has 'verbose'           => ( is => 'ro' );
+has 'backup_ttl' => (
+    is      => 'ro',
+    isa     => t('NonEmptyStr'),
+    default => '1 hour',
+);
+
+has 'cache' => (
+    is  => 'lazy',
+    isa => object_can_type( methods => [qw( get set )] ),
+);
+
+has 'cache_model_class' => (
+    is      => 'ro',
+    isa     => t('ClassName'),
+    default => 'Code::TidyAll::CacheModel',
+);
+
+has 'check_only' => (
+    is  => 'ro',
+    isa => t('Bool'),
+);
+
+has 'data_dir' => (
+    is     => 'lazy',
+    isa    => t('Path'),
+    coerce => t('Path')->coercion_sub,
+);
+
+has 'iterations' => (
+    is      => 'ro',
+    isa     => t('PositiveInt'),
+    default => 1,
+);
+
+has 'jobs' => (
+    is      => 'ro',
+    isa     => t('Int'),
+    default => 1,
+);
+
+has 'list_only' => (
+    is  => 'ro',
+    isa => t('Bool'),
+);
+
+has 'mode' => (
+    is      => 'ro',
+    isa     => t('NonEmptyStr'),
+    default => 'cli',
+);
+
+has 'msg_outputter' => (
+    is      => 'ro',
+    isa     => t('CodeRef'),
+    builder => '_build_msg_outputter',
+);
+
+has 'no_backups' => (
+    is  => 'ro',
+    isa => t('Bool'),
+);
+
+has 'no_cache' => (
+    is  => 'ro',
+    isa => t('Bool'),
+);
+
+has 'output_suffix' => (
+    is      => 'ro',
+    isa     => t('Str'),
+    default => q{},
+);
+
+has 'plugins' => (
+    is       => 'ro',
+    ias      => t('HashRef'),
+    required => 1,
+);
+
+has 'quiet' => (
+    is  => 'ro',
+    isa => t('Bool'),
+);
+has 'recursive' => (
+    is  => 'ro',
+    isa => t('Bool'),
+);
+
+has 'refresh_cache' => (
+    is  => 'ro',
+    isa => t('Bool'),
+);
+
+has 'root_dir' => (
+    is       => 'ro',
+    isa      => t('RealDir')->_subify,
+    coerce   => t('RealDir')->coercion_sub,
+    required => 1
+);
+
+has 'verbose' => (
+    is      => 'ro',
+    isa     => t('Bool'),
+    default => 0,
+);
 
 # Internal
-has 'backup_dir'       => ( is => 'lazy', init_arg => undef );
-has 'backup_ttl_secs'  => ( is => 'lazy', init_arg => undef );
-has 'base_sig'         => ( is => 'lazy', init_arg => undef );
-has 'plugin_objects'   => ( is => 'lazy', init_arg => undef );
-has 'plugins_for_mode' => ( is => 'lazy', init_arg => undef );
+has 'backup_dir' => (
+    is       => 'lazy',
+    isa      => t('Path'),
+    init_arg => undef,
+);
+
+has 'backup_ttl_secs' => (
+    is       => 'lazy',
+    isa      => t('Int'),
+    init_arg => undef,
+);
+
+has 'base_sig' => (
+    is       => 'lazy',
+    isa      => t('NonEmptyStr'),
+    init_arg => undef,
+);
+
+has 'plugin_objects' => (
+    is       => 'lazy',
+    isa      => t( 'ArrayRef', of => object_isa_type('Code::TidyAll::Plugin') ),
+    init_arg => undef,
+);
+
+has 'plugins_for_mode' => (
+    is       => 'lazy',
+    isa      => t( 'HashRef', of => t('HashRef') ),
+    init_arg => undef,
+);
 
 with 'Code::TidyAll::Role::Tempdir';
 
@@ -119,7 +236,6 @@ sub BUILD {
         );
     }
 
-    $self->{root_dir}         = path( $self->{root_dir} )->realpath;
     $self->{plugins_for_path} = {};
 
     unless ( $self->no_backups ) {
