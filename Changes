@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- Fixed error when passing in paths as a string to the Code::TidyAll
+  constructor. These are now coerced to Path::Tiny objects. Reported by Martin
+  Gruner. GH #66.
+
+
 0.53     2016-10-10
 
 [BUG FIXES]
