@@ -21,7 +21,7 @@ use Specio 0.30;
 use Specio::Declare;
 use Specio::Library::Builtins;
 use Specio::Library::Numeric;
-use Specio::Library::Path::Tiny;
+use Specio::Library::Path::Tiny 0.04;
 use Specio::Library::String;
 use Time::Duration::Parse qw(parse_duration);
 use Try::Tiny;
