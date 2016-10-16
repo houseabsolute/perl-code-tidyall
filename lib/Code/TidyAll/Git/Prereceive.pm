@@ -13,7 +13,7 @@ use Try::Tiny;
 
 use Moo;
 
-our $VERSION = '0.54';
+our $VERSION = '0.55';
 
 # Public
 has 'allow_repeated_push' => ( is => 'ro', default => 3 );
