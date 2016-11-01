@@ -26,7 +26,7 @@ use Specio::Library::String;
 use Time::Duration::Parse qw(parse_duration);
 use Try::Tiny;
 
-use Moo;
+use Moo 2.000000;
 
 our $VERSION = '0.55';
 

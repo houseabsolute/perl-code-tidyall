@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- Require Moo 2.000000 or greater.
+
+
 0.54     2016-10-15
 
 - Fixed error when passing in paths as a string to the Code::TidyAll
