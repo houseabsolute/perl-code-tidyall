@@ -14,7 +14,7 @@ has 'options' => ( is => 'ro', predicate => '_has_options' );
 
 with 'Code::TidyAll::Role::Tempdir';
 
-our $VERSION = '0.55';
+our $VERSION = '0.56';
 
 sub _build_cmd {'jshint'}
 
