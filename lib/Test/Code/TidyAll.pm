@@ -104,7 +104,7 @@ By default, we look for the config file C<tidyall.ini> or C<.tidyallrc> in the
 current directory and parent directories, which is generally the right place if
 you are running L<prove>.
 
-When invoking L<Code::TidyAll>, we pass C<<mode => 'test'>> by default; see
+When invoking L<Code::TidyAll>, we pass C<< mode => 'test' >> by default; see
 L<modes|tidyall/MODES>.
 
 =head1 EXPORTS
