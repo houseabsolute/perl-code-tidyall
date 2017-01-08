@@ -7,7 +7,6 @@ addons:
       - aspell-en
       - iamerican
       - ispell
-      - ispell-dictionary
       - nodejs
       - php5-cli
 language: perl
