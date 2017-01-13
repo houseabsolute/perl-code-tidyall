@@ -15,6 +15,7 @@ See https://metacpan.org/module/tidyall for full documentation.
 
 Options:
    -a, --all                Process all files in project
+   -i, --ignore             Ignore matching files (zglob syntax)
    -g, --git                Process all added/modified files according to git
    -h, --help               Print help message
    -l, --list               List each file along with the plugins it matches
@@ -73,6 +74,7 @@ GetOptions(
     'tidyall-class=s' => \$params{tidyall_class},
     'version'         => \$version,
     'a|all'           => \$all_files,
+    'i|ignore=s@'     => \$params{ignore},
     'g|git'           => \$git_files,
     'h|help'          => \$help,
     'l|list'          => \$params{list_only},
@@ -321,8 +323,10 @@ You can also pass --conf-name to change the name that is searched for, or
 
 =head1 CONFIGURATION
 
-The config file (C<tidyall.ini> or C<.tidyallrc>) is in L<Config::INI> format. 
+The config file (C<tidyall.ini> or C<.tidyallrc>) is in L<Config::INI> format.
 Here's a sample:
+
+    ignore = **/*.bak
 
     [PerlTidy]
     select = **/*.{pl,pm,t}
@@ -336,9 +340,13 @@ Here's a sample:
     [PodTidy]
     select = lib/**/*.{pm,pod}
 
-In order, the three sections declare:
+In order, the four sections declare:
 
 =over
+
+=item *
+
+Always ignore C<*.bak> files.
 
 =item *
 
@@ -426,6 +434,10 @@ C<select>. e.g.
     select = bin/**/*.pl
     ignore = bin/awful.pl bin/tmp/**/*.pl
 
+Ignore patterns can also specified at the beginning of the file before any
+plugin section was started, thus making them global. These ignores will be
+applied for all plugins.
+
 =item shebang
 
 One or more words on multiple lines, indicating which shebang lines to accept.
@@ -492,6 +504,11 @@ during the application of any plugin, the file is not modified at all.
 Process all files. Does a recursive search for all files in the project
 hierarchy, starting at the root, and processes any file that matches at least
 one plugin in the configuration.
+
+=item -i, --ignore
+
+Ignore matching files. This uses zglob syntax. You can pass this option more
+than once.
 
 =item -g, --git
 

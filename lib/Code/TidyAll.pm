@@ -108,7 +108,7 @@ has 'output_suffix' => (
 
 has 'plugins' => (
     is       => 'ro',
-    ias      => t('HashRef'),
+    isa      => t('HashRef'),
     required => 1,
 );
 
@@ -170,7 +170,7 @@ has 'plugins_for_mode' => (
     init_arg => undef,
 );
 
-with 'Code::TidyAll::Role::Tempdir';
+with qw( Code::TidyAll::Role::HasIgnore Code::TidyAll::Role::Tempdir );
 
 sub _build_backup_dir {
     my $self = shift;
@@ -252,6 +252,7 @@ sub new_from_conf_file {
     die "no such file '$conf_file'" unless $conf_file->is_file;
     my $conf_params = $class->_read_conf_file($conf_file);
     my $main_params = delete( $conf_params->{'_'} ) || {};
+
     %params = (
         plugins  => $conf_params,
         root_dir => path($conf_file)->realpath->parent,
@@ -288,29 +289,56 @@ sub _dump_params {
 sub _recurse_dump {
     my ($p) = @_;
 
-    my %dump;
-    for my $k ( keys %{$p} ) {
-        my $v = $p->{$k};
-        if ( blessed $v ) {
-            if ( $v->isa('Path::Tiny') ) {
-                $dump{$k} = $v . q{};
+    if ( ref $p eq 'HASH' ) {
+        my %dump;
+        for my $k ( keys %{$p} ) {
+            my $v = $p->{$k};
+            if ( blessed $v ) {
+                if ( $v->isa('Path::Tiny') ) {
+                    $dump{$k} = $v . q{};
+                }
+                else {
+                    die 'Cannot dump ' . ref($v) . ' object';
+                }
+            }
+            elsif ( ref $v eq 'HASH' ) {
+                $dump{$k} = _recurse_dump($v);
+            }
+            elsif ( ref $v eq 'ARRAY' ) {
+                $dump{$k} = [ map { _recurse_dump($_) } @{$v} ];
             }
             else {
-                die 'Cannot dump ' . ref($v) . ' object';
+                $dump{$k} = $v;
             }
         }
-        elsif ( ref $v eq 'HASH' ) {
-            $dump{$k} = _recurse_dump( $p->{$v} );
+        return \%dump;
+    }
+    elsif ( ref $p eq 'ARRAY' ) {
+        my @dump;
+        for my $v ( @{$p} ) {
+            if ( blessed $v ) {
+                if ( $v->isa('Path::Tiny') ) {
+                    push @dump, $v . q{};
+                }
+                else {
+                    die 'Cannot dump ' . ref($v) . ' object';
+                }
+            }
+            elsif ( ref $v eq 'HASH' ) {
+                push @dump, _recurse_dump($v);
+            }
+            elsif ( ref $v eq 'ARRAY' ) {
+                push @dump, [ map { _recurse_dump($_) } @{ $p->{$v} } ];
+            }
+            else {
+                push @dump, $v;
+            }
         }
-        elsif ( ref $v eq 'ARRAY' ) {
-            $dump{$k} = [ map { _recurse_dump($_) } @{ $p->{$v} } ];
-        }
-        else {
-            $dump{$k} = $v;
-        }
+        return \@dump;
     }
 
-    return \%dump;
+    return;
+    die '_recurse_dump was called with a value that is neither a hashref nor an arrayref';
 }
 
 sub _load_plugin {
@@ -659,8 +687,9 @@ sub find_matched_files {
     my $root_length      = length( $self->root_dir );
     foreach my $plugin ( @{ $self->plugin_objects } ) {
         my @selected = grep { -f && !-l } $self->_zglob( $plugin->selects );
-        if ( @{ $plugin->ignores } ) {
-            my %is_ignored = map { ( $_, 1 ) } $self->_zglob( $plugin->ignores );
+        my @ignores = ( @{ $self->ignores || [] }, @{ $plugin->ignores || [] } );
+        if (@ignores) {
+            my %is_ignored = map { ( $_, 1 ) } $self->_zglob( \@ignores );
             @selected = grep { !$is_ignored{$_} } @selected;
         }
         if ( my $shebang = $plugin->shebang ) {
@@ -688,6 +717,14 @@ sub plugins_for_path {
     $self->{plugins_for_path}->{$path}
         ||= [ grep { $_->matches_path($path) } @{ $self->plugin_objects } ];
     return @{ $self->{plugins_for_path}->{$path} };
+}
+
+sub _parse_zglob_list {
+    my ( $self, $zglobs ) = @_;
+    if ( my ($bad_zglob) = ( grep {m{^/}} @{$zglobs} ) ) {
+        die "zglob '$bad_zglob' should not begin with slash";
+    }
+    return $zglobs;
 }
 
 sub _zglob {
@@ -853,6 +890,8 @@ Defaults to false.
 =item quiet
 
 =item root_dir
+
+=item ignore
 
 =item verbose
 

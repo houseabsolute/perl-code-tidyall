@@ -2,6 +2,11 @@
 
 - Fixed Win32 test failures. Reported by Christian Walde. GH #72.
 
+- Added a global ignore feature. You can now provide ignore configuration at
+  the top level of your tidyall config file and/or pass an --ignore flag on
+  the command line. Any ignores specified this way will be ignore for all
+  plugins. Based on GH #73 from Martin Guner.
+
 
 0.55     2016-10-31
 

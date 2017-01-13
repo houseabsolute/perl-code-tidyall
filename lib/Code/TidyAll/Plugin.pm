@@ -27,11 +27,7 @@ has 'shebang'            => ( is => 'ro' );
 has 'tidyall'            => ( is => 'ro', required => 1, weak_ref => 1 );
 has 'weight'             => ( is => 'lazy' );
 
-# Internal
-has 'ignore_regex' => ( is => 'lazy' );
-has 'ignores'      => ( is => 'lazy' );
-has 'select_regex' => ( is => 'lazy' );
-has 'selects'      => ( is => 'lazy' );
+with 'Code::TidyAll::Role::HasIgnore';
 
 around BUILDARGS => sub {
     my $orig  = shift;
@@ -61,16 +57,6 @@ sub _build_selects {
 sub _build_select_regex {
     my ($self) = @_;
     return zglobs_to_regex( @{ $self->selects } );
-}
-
-sub _build_ignores {
-    my ($self) = @_;
-    return $self->_parse_zglob_list( $self->ignore );
-}
-
-sub _build_ignore_regex {
-    my ($self) = @_;
-    return zglobs_to_regex( @{ $self->ignores } );
 }
 
 sub _build_is_tidier {
@@ -111,14 +97,6 @@ sub validate_params {
             $self->name
         );
     }
-}
-
-sub _parse_zglob_list {
-    my ( $self, $zglobs ) = @_;
-    if ( my ($bad_zglob) = ( grep {m{^/}} @{$zglobs} ) ) {
-        die "zglob '$bad_zglob' should not begin with slash";
-    }
-    return $zglobs;
 }
 
 # No-ops by default; may be overridden in subclass
@@ -188,7 +166,11 @@ sub _write_temp_file {
 
 sub matches_path {
     my ( $self, $path ) = @_;
-    return $path =~ $self->select_regex && $path !~ $self->ignore_regex;
+
+    return
+           $path =~ $self->select_regex
+        && $path !~ $self->tidyall->ignore_regex
+        && $path !~ $self->ignore_regex;
 }
 
 1;
