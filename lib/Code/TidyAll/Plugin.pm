@@ -28,10 +28,12 @@ has 'tidyall'            => ( is => 'ro', required => 1, weak_ref => 1 );
 has 'weight'             => ( is => 'lazy' );
 
 # Internal
-has 'ignore_regex' => ( is => 'lazy' );
-has 'ignores'      => ( is => 'lazy' );
-has 'select_regex' => ( is => 'lazy' );
-has 'selects'      => ( is => 'lazy' );
+has 'global_ignore_regex' => ( is => 'lazy' );
+has 'global_ignores'      => ( is => 'lazy' );
+has 'ignore_regex'        => ( is => 'lazy' );
+has 'ignores'             => ( is => 'lazy' );
+has 'select_regex'        => ( is => 'lazy' );
+has 'selects'             => ( is => 'lazy' );
 
 around BUILDARGS => sub {
     my $orig  = shift;
@@ -71,6 +73,16 @@ sub _build_ignores {
 sub _build_ignore_regex {
     my ($self) = @_;
     return zglobs_to_regex( @{ $self->ignores } );
+}
+
+sub _build_global_ignores {
+    my ($self) = @_;
+    return $self->_parse_zglob_list( $self->tidyall->global_ignore );
+}
+
+sub _build_global_ignore_regex {
+    my ($self) = @_;
+    return zglobs_to_regex( @{ $self->global_ignores } );
 }
 
 sub _build_is_tidier {
@@ -188,7 +200,8 @@ sub _write_temp_file {
 
 sub matches_path {
     my ( $self, $path ) = @_;
-    return $path =~ $self->select_regex && $path !~ $self->ignore_regex;
+
+    return $path =~ $self->select_regex && $path !~ $self->global_ignore_regex && $path !~ $self->ignore_regex;
 }
 
 1;

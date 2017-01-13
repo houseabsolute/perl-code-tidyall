@@ -112,6 +112,12 @@ has 'plugins' => (
     required => 1,
 );
 
+has 'global_ignore' => (
+    is       => 'ro',
+    ias      => t('ArrayRef'),
+    required => 0,
+);
+
 has 'quiet' => (
     is  => 'ro',
     isa => t('Bool'),
@@ -252,10 +258,10 @@ sub new_from_conf_file {
     die "no such file '$conf_file'" unless $conf_file->is_file;
     my $conf_params = $class->_read_conf_file($conf_file);
     my $main_params = delete( $conf_params->{'_'} ) || {};
-    my $global_ignores = delete $main_params->{'ignore'} || [];
-    for my $plugin_name (keys %{ $conf_params }) {
-        push @{ $conf_params->{$plugin_name}->{'ignore'} || []}, @$global_ignores;
+    if ($main_params->{'ignore'}) {
+        $main_params->{global_ignore} = delete $main_params->{'ignore'} || [];
     }
+
     %params = (
         plugins  => $conf_params,
         root_dir => path($conf_file)->realpath->parent,
@@ -663,6 +669,10 @@ sub find_matched_files {
     my $root_length      = length( $self->root_dir );
     foreach my $plugin ( @{ $self->plugin_objects } ) {
         my @selected = grep { -f && !-l } $self->_zglob( $plugin->selects );
+        if ( @{ $self->global_ignore || [] } ) {
+            my %is_ignored = map { ( $_, 1 ) } $self->_zglob( $self->global_ignore );
+            @selected = grep { !$is_ignored{$_} } @selected;
+        }
         if ( @{ $plugin->ignores } ) {
             my %is_ignored = map { ( $_, 1 ) } $self->_zglob( $plugin->ignores );
             @selected = grep { !$is_ignored{$_} } @selected;
