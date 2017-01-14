@@ -108,13 +108,13 @@ has 'output_suffix' => (
 
 has 'plugins' => (
     is       => 'ro',
-    ias      => t('HashRef'),
+    isa      => t('HashRef'),
     required => 1,
 );
 
 has 'global_ignore' => (
     is       => 'ro',
-    ias      => t('ArrayRef'),
+    isa      => t('ArrayRef'),
     required => 0,
 );
 
