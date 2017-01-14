@@ -40,7 +40,7 @@ has 'backup_ttl' => (
 );
 
 has 'cache' => (
-    is => 'lazy',
+    is  => 'lazy',
     isa => object_can_type( methods => [qw( get set )] ),
 );
 
