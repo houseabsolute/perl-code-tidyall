@@ -40,7 +40,7 @@ has 'backup_ttl' => (
 );
 
 has 'cache' => (
-    is  => 'lazy',
+    is => 'lazy',
     isa => object_can_type( methods => [qw( get set )] ),
 );
 
@@ -258,7 +258,7 @@ sub new_from_conf_file {
     die "no such file '$conf_file'" unless $conf_file->is_file;
     my $conf_params = $class->_read_conf_file($conf_file);
     my $main_params = delete( $conf_params->{'_'} ) || {};
-    if ($main_params->{'ignore'}) {
+    if ( $main_params->{'ignore'} ) {
         $main_params->{global_ignore} = delete $main_params->{'ignore'} || [];
     }
 

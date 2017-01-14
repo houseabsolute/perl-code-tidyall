@@ -201,7 +201,10 @@ sub _write_temp_file {
 sub matches_path {
     my ( $self, $path ) = @_;
 
-    return $path =~ $self->select_regex && $path !~ $self->global_ignore_regex && $path !~ $self->ignore_regex;
+    return
+           $path =~ $self->select_regex
+        && $path !~ $self->global_ignore_regex
+        && $path !~ $self->ignore_regex;
 }
 
 1;
