@@ -305,6 +305,7 @@ sub _dump_params {
     my $p = shift;
 
     # Clone to avoid changing the original data structure.
+    $Storable::forgive_me = 1;
     $p = dclone($p);
 
     return Data::Dumper->new( [ _recurse_dump($p) ] )->Indent(0)->Sortkeys(1)->Quotekeys(0)
