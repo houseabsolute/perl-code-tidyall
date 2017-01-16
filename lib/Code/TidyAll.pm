@@ -24,7 +24,6 @@ use Specio::Library::Builtins;
 use Specio::Library::Numeric;
 use Specio::Library::Path::Tiny 0.04;
 use Specio::Library::String;
-use Storable qw(dclone);
 use Time::Duration::Parse qw(parse_duration);
 use Try::Tiny;
 
@@ -304,10 +303,6 @@ sub new_from_conf_file {
 sub _dump_params {
     my $p = shift;
 
-    # Clone to avoid changing the original data structure.
-    $Storable::forgive_me = 1;
-    $p = dclone($p);
-
     return Data::Dumper->new( [ _recurse_dump($p) ] )->Indent(0)->Sortkeys(1)->Quotekeys(0)
         ->Terse(1)->Dump;
 }
@@ -317,29 +312,54 @@ sub _dump_params {
 sub _recurse_dump {
     my ($p) = @_;
 
-    my %dump;
-    for my $k ( keys %{$p} ) {
-        my $v = $p->{$k};
-        if ( blessed $v ) {
-            if ( $v->isa('Path::Tiny') ) {
-                $dump{$k} = $v . q{};
+    if (ref $p eq 'HASH') {
+        my %dump;
+        for my $k ( keys %{$p} ) {
+            my $v = $p->{$k};
+            if ( blessed $v ) {
+                if ( $v->isa('Path::Tiny') ) {
+                    $dump{$k} = $v . q{};
+                }
+                else {
+                    die 'Cannot dump ' . ref($v) . ' object';
+                }
+            }
+            elsif ( ref $v eq 'HASH' ) {
+                $dump{$k} = _recurse_dump( $v );
+            }
+            elsif ( ref $v eq 'ARRAY' ) {
+                $dump{$k} = [ map { _recurse_dump($_) } @{ $v } ];
             }
             else {
-                die 'Cannot dump ' . ref($v) . ' object';
+                $dump{$k} = $v;
             }
         }
-        elsif ( ref $v eq 'HASH' ) {
-            $dump{$k} = _recurse_dump( $p->{$v} );
-        }
-        elsif ( ref $v eq 'ARRAY' ) {
-            $dump{$k} = [ map { _recurse_dump($_) } @{ $p->{$v} } ];
-        }
-        else {
-            $dump{$k} = $v;
-        }
+        return \%dump;
     }
-
-    return \%dump;
+    elsif (ref $p eq 'ARRAY') {
+        my @dump;
+        for my $v ( @{$p} ) {
+            if ( blessed $v ) {
+                if ( $v->isa('Path::Tiny') ) {
+                    push @dump, $v . q{};
+                }
+                else {
+                    die 'Cannot dump ' . ref($v) . ' object';
+                }
+            }
+            elsif ( ref $v eq 'HASH' ) {
+                push @dump, _recurse_dump( $v );
+            }
+            elsif ( ref $v eq 'ARRAY' ) {
+                push @dump, [ map { _recurse_dump($_) } @{ $p->{$v} } ];
+            }
+            else {
+                push @dump, $v;
+            }
+        }
+        return \@dump;
+    }
+    return;
 }
 
 sub _load_plugin {
