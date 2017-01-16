@@ -24,6 +24,7 @@ use Specio::Library::Builtins;
 use Specio::Library::Numeric;
 use Specio::Library::Path::Tiny 0.04;
 use Specio::Library::String;
+use Storable qw(dclone);
 use Time::Duration::Parse qw(parse_duration);
 use Try::Tiny;
 
@@ -302,6 +303,9 @@ sub new_from_conf_file {
 
 sub _dump_params {
     my $p = shift;
+
+    # Clone to avoid changing the original data structure.
+    $p = dclone($p);
 
     return Data::Dumper->new( [ _recurse_dump($p) ] )->Indent(0)->Sortkeys(1)->Quotekeys(0)
         ->Terse(1)->Dump;
