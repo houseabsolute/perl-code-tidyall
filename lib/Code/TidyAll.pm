@@ -887,6 +887,8 @@ Defaults to false.
 
 =item root_dir
 
+=item global_ignore
+
 =item verbose
 
 These options are the same as the equivalent C<tidyall> command-line options,
