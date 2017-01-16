@@ -9,6 +9,7 @@ use Code::TidyAll::Config::INI::Reader;
 use Code::TidyAll::Plugin;
 use Code::TidyAll::Result;
 use Code::TidyAll::Util qw(can_load);
+use Code::TidyAll::Util::Zglob qw(zglobs_to_regex);
 use Data::Dumper;
 use Date::Format;
 use Digest::SHA qw(sha1_hex);
@@ -118,6 +119,9 @@ has 'global_ignore' => (
     required => 0,
 );
 
+has 'global_ignore_regex' => ( is => 'lazy' );
+has 'global_ignores'      => ( is => 'lazy' );
+
 has 'quiet' => (
     is  => 'ro',
     isa => t('Bool'),
@@ -214,6 +218,16 @@ sub _build_plugins_for_mode {
         };
     }
     return $plugins;
+}
+
+sub _build_global_ignores {
+    my ($self) = @_;
+    return $self->_parse_zglob_list( $self->global_ignore );
+}
+
+sub _build_global_ignore_regex {
+    my ($self) = @_;
+    return zglobs_to_regex( @{ $self->global_ignores } );
 }
 
 sub _build_plugin_objects {
@@ -669,12 +683,9 @@ sub find_matched_files {
     my $root_length      = length( $self->root_dir );
     foreach my $plugin ( @{ $self->plugin_objects } ) {
         my @selected = grep { -f && !-l } $self->_zglob( $plugin->selects );
-        if ( @{ $self->global_ignore || [] } ) {
-            my %is_ignored = map { ( $_, 1 ) } $self->_zglob( $self->global_ignore );
-            @selected = grep { !$is_ignored{$_} } @selected;
-        }
-        if ( @{ $plugin->ignores } ) {
-            my %is_ignored = map { ( $_, 1 ) } $self->_zglob( $plugin->ignores );
+        my @ignores  = ( @{ $self->global_ignores || [] }, @{ $plugin->ignores || [] } );
+        if (@ignores) {
+            my %is_ignored = map { ( $_, 1 ) } $self->_zglob( \@ignores );
             @selected = grep { !$is_ignored{$_} } @selected;
         }
         if ( my $shebang = $plugin->shebang ) {
@@ -702,6 +713,14 @@ sub plugins_for_path {
     $self->{plugins_for_path}->{$path}
         ||= [ grep { $_->matches_path($path) } @{ $self->plugin_objects } ];
     return @{ $self->{plugins_for_path}->{$path} };
+}
+
+sub _parse_zglob_list {
+    my ( $self, $zglobs ) = @_;
+    if ( my ($bad_zglob) = ( grep {m{^/}} @{$zglobs} ) ) {
+        die "zglob '$bad_zglob' should not begin with slash";
+    }
+    return $zglobs;
 }
 
 sub _zglob {
