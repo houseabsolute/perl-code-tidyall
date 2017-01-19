@@ -10,7 +10,8 @@ use Path::Tiny qw(cwd path);
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 
 sub test_plugin {"+Code::TidyAll::Test::Plugin::$_[0]"}
-my %UpperText  = ( test_plugin('UpperText')  => { select => '**/*.txt', ignore => 'plugin_ignore/*' } );
+my %UpperText
+    = ( test_plugin('UpperText') => { select => '**/*.txt', ignore => 'plugin_ignore/*' } );
 my %ReverseFoo = ( test_plugin('ReverseFoo') => { select => '**/foo*' } );
 my %RepeatFoo  = ( test_plugin('RepeatFoo')  => { select => '**/foo*' } );
 my %CheckUpper = ( test_plugin('CheckUpper') => { select => '**/*.txt' } );
@@ -79,11 +80,11 @@ sub test_basic : Tests {
         errors  => qr/non-alpha content/
     );
     $self->tidy(
-        plugins => { %UpperText },
+        plugins => {%UpperText},
         options => {
-            global_ignore => [ 'global_ignore/*' ],
+            global_ignore => ['global_ignore/*'],
         },
-        source  => {
+        source => {
             "global_ignore/foo.txt" => "abc",
             "plugin_ignore/bar.txt" => "def",
         },
@@ -555,7 +556,9 @@ sub test_cli : Tests {
                 $cwd = cwd();
                 capture_stdout {
                     my $pushed = pushd($root_dir);
-                    system( $^X, "-I$cwd/lib", "-I$cwd/t/lib", "$cwd/bin/tidyall", 'global_ignore/bar.txt' );
+                    system( $^X, "-I$cwd/lib", "-I$cwd/t/lib", "$cwd/bin/tidyall",
+                        'global_ignore/bar.txt'
+                    );
                 };
                 is(
                     $root_dir->child( 'global_ignore', 'bar.txt' )->slurp, "bye",
@@ -571,7 +574,9 @@ sub test_cli : Tests {
                 $cwd = cwd();
                 capture_stdout {
                     my $pushed = pushd($root_dir);
-                    system( $^X, "-I$cwd/lib", "-I$cwd/t/lib", "$cwd/bin/tidyall", 'plugin_ignore/bar.txt' );
+                    system( $^X, "-I$cwd/lib", "-I$cwd/t/lib", "$cwd/bin/tidyall",
+                        'plugin_ignore/bar.txt'
+                    );
                 };
                 is(
                     $root_dir->child( 'global_ignore', 'bar.txt' )->slurp, "bye",

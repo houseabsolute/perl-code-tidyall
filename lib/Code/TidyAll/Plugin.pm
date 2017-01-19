@@ -28,10 +28,10 @@ has 'tidyall'            => ( is => 'ro', required => 1, weak_ref => 1 );
 has 'weight'             => ( is => 'lazy' );
 
 # Internal
-has 'ignore_regex'        => ( is => 'lazy' );
-has 'ignores'             => ( is => 'lazy' );
-has 'select_regex'        => ( is => 'lazy' );
-has 'selects'             => ( is => 'lazy' );
+has 'ignore_regex' => ( is => 'lazy' );
+has 'ignores'      => ( is => 'lazy' );
+has 'select_regex' => ( is => 'lazy' );
+has 'selects'      => ( is => 'lazy' );
 
 around BUILDARGS => sub {
     my $orig  = shift;

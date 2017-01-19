@@ -433,8 +433,8 @@ C<select>. e.g.
     ignore = bin/awful.pl bin/tmp/**/*.pl
 
 Ignore patterns can also specified at the beginning of the file before any
-plugin section was started, thus making them global. These ignores will be applied
-for all plugins.
+plugin section was started, thus making them global. These ignores will be
+applied for all plugins.
 
 =item shebang
 

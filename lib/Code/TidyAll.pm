@@ -312,7 +312,7 @@ sub _dump_params {
 sub _recurse_dump {
     my ($p) = @_;
 
-    if (ref $p eq 'HASH') {
+    if ( ref $p eq 'HASH' ) {
         my %dump;
         for my $k ( keys %{$p} ) {
             my $v = $p->{$k};
@@ -325,10 +325,10 @@ sub _recurse_dump {
                 }
             }
             elsif ( ref $v eq 'HASH' ) {
-                $dump{$k} = _recurse_dump( $v );
+                $dump{$k} = _recurse_dump($v);
             }
             elsif ( ref $v eq 'ARRAY' ) {
-                $dump{$k} = [ map { _recurse_dump($_) } @{ $v } ];
+                $dump{$k} = [ map { _recurse_dump($_) } @{$v} ];
             }
             else {
                 $dump{$k} = $v;
@@ -336,7 +336,7 @@ sub _recurse_dump {
         }
         return \%dump;
     }
-    elsif (ref $p eq 'ARRAY') {
+    elsif ( ref $p eq 'ARRAY' ) {
         my @dump;
         for my $v ( @{$p} ) {
             if ( blessed $v ) {
@@ -348,7 +348,7 @@ sub _recurse_dump {
                 }
             }
             elsif ( ref $v eq 'HASH' ) {
-                push @dump, _recurse_dump( $v );
+                push @dump, _recurse_dump($v);
             }
             elsif ( ref $v eq 'ARRAY' ) {
                 push @dump, [ map { _recurse_dump($_) } @{ $p->{$v} } ];
@@ -708,7 +708,7 @@ sub find_matched_files {
     my $root_length      = length( $self->root_dir );
     foreach my $plugin ( @{ $self->plugin_objects } ) {
         my @selected = grep { -f && !-l } $self->_zglob( $plugin->selects );
-        my @ignores  = ( @{ $self->global_ignores || [] }, @{ $plugin->ignores || [] } );
+        my @ignores = ( @{ $self->global_ignores || [] }, @{ $plugin->ignores || [] } );
         if (@ignores) {
             my %is_ignored = map { ( $_, 1 ) } $self->_zglob( \@ignores );
             @selected = grep { !$is_ignored{$_} } @selected;
