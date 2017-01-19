@@ -321,8 +321,10 @@ You can also pass --conf-name to change the name that is searched for, or
 
 =head1 CONFIGURATION
 
-The config file (C<tidyall.ini> or C<.tidyallrc>) is in L<Config::INI> format. 
+The config file (C<tidyall.ini> or C<.tidyallrc>) is in L<Config::INI> format.
 Here's a sample:
+
+    ignore = **/*.bak
 
     [PerlTidy]
     select = **/*.{pl,pm,t}
@@ -336,9 +338,13 @@ Here's a sample:
     [PodTidy]
     select = lib/**/*.{pm,pod}
 
-In order, the three sections declare:
+In order, the four sections declare:
 
 =over
+
+=item *
+
+Always ignore C<*.bak> files.
 
 =item *
 
@@ -425,6 +431,10 @@ C<select>. e.g.
     ;
     select = bin/**/*.pl
     ignore = bin/awful.pl bin/tmp/**/*.pl
+
+Ignore patterns can also specified at the beginning of the file before any
+plugin section was started, thus making them global. These ignores will be
+applied for all plugins.
 
 =item shebang
 

@@ -10,7 +10,8 @@ use Path::Tiny qw(cwd path);
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 
 sub test_plugin {"+Code::TidyAll::Test::Plugin::$_[0]"}
-my %UpperText  = ( test_plugin('UpperText')  => { select => '**/*.txt' } );
+my %UpperText
+    = ( test_plugin('UpperText') => { select => '**/*.txt', ignore => 'plugin_ignore/*' } );
 my %ReverseFoo = ( test_plugin('ReverseFoo') => { select => '**/foo*' } );
 my %RepeatFoo  = ( test_plugin('RepeatFoo')  => { select => '**/foo*' } );
 my %CheckUpper = ( test_plugin('CheckUpper') => { select => '**/*.txt' } );
@@ -19,9 +20,11 @@ my %AToZ       = ( test_plugin('AToZ')       => { select => '**/*.txt' } );
 my $cli_conf = <<'EOF';
 backup_ttl = 15m
 verbose = 1
+ignore  = global_ignore/*
 
 [+Code::TidyAll::Test::Plugin::UpperText]
 select = **/*.txt
+ignore = plugin_ignore/*
 
 [+Code::TidyAll::Test::Plugin::RepeatFoo]
 select = **/foo*
@@ -75,6 +78,21 @@ sub test_basic : Tests {
         dest    => { "foo.txt" => "abc1" },
         desc    => 'one file UpperText errors',
         errors  => qr/non-alpha content/
+    );
+    $self->tidy(
+        plugins => {%UpperText},
+        options => {
+            global_ignore => ['global_ignore/*'],
+        },
+        source => {
+            "global_ignore/foo.txt" => "abc",
+            "plugin_ignore/bar.txt" => "def",
+        },
+        dest => {
+            "global_ignore/foo.txt" => "abc",
+            "plugin_ignore/bar.txt" => "def",
+        },
+        desc => 'global and plugin ignores',
     );
 }
 
@@ -527,6 +545,42 @@ sub test_cli : Tests {
                 is(
                     $root_dir->child( 'subdir', 'foo2.txt' )->slurp, "bye",
                     "foo2.txt not tidied"
+                );
+
+                # global ignores
+                #
+                $subdir = $root_dir->child('global_ignore');
+                $subdir->mkpath( { mode => 0775 } );
+                $subdir->child('bar.txt')->spew('bye');
+
+                $cwd = cwd();
+                capture_stdout {
+                    my $pushed = pushd($root_dir);
+                    system( $^X, "-I$cwd/lib", "-I$cwd/t/lib", "$cwd/bin/tidyall",
+                        'global_ignore/bar.txt'
+                    );
+                };
+                is(
+                    $root_dir->child( 'global_ignore', 'bar.txt' )->slurp, "bye",
+                    "bar.txt not tidied because of global ignore",
+                );
+
+                # plugin ignores
+                #
+                $subdir = $root_dir->child('plugin_ignore');
+                $subdir->mkpath( { mode => 0775 } );
+                $subdir->child('bar.txt')->spew('bye');
+
+                $cwd = cwd();
+                capture_stdout {
+                    my $pushed = pushd($root_dir);
+                    system( $^X, "-I$cwd/lib", "-I$cwd/t/lib", "$cwd/bin/tidyall",
+                        'plugin_ignore/bar.txt'
+                    );
+                };
+                is(
+                    $root_dir->child( 'global_ignore', 'bar.txt' )->slurp, "bye",
+                    "bar.txt not tidied because of plugin ignore",
                 );
 
                 # -p / --pipe success
