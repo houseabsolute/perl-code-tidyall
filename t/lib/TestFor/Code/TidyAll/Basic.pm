@@ -5,6 +5,7 @@ use Code::TidyAll::CacheModel::Shared;
 use Code::TidyAll::Util qw(pushd tempdir_simple);
 use Code::TidyAll;
 use File::Find qw(find);
+use IPC::Run3 qw( run3 );
 use Path::Tiny qw(cwd path);
 
 use Test::Class::Most parent => 'TestHelper::Test::Class';
@@ -122,16 +123,15 @@ sub test_plugin_order_and_atomicity : Tests {
             test_plugin("AlwaysPhonetic") => { select => '**/*.txt', weight => 51 }
             )
     } ( 1 .. 3 );
-    my $output = capture_stdout {
-        $self->tidy(
-            plugins => {@plugins},
-            options => { verbose => 1 },
-            source  => { "foo.txt" => "abc" },
-            dest    => { "foo.txt" => "CHARLIE-BRAVO-ALFA" },
-            like_output =>
-                qr/.*ReverseFoo, .*UpperText 1, .*UpperText 2, .*UpperText 3, .*CheckUpper 1, .*CheckUpper 2, .*CheckUpper 3/
-        );
-    };
+
+    $self->tidy(
+        plugins => {@plugins},
+        options => { verbose => 1 },
+        source  => { "foo.txt" => "abc" },
+        dest    => { "foo.txt" => "CHARLIE-BRAVO-ALFA" },
+        like_output =>
+            qr/.*ReverseFoo, .*UpperText 1, .*UpperText 2, .*UpperText 3, .*CheckUpper 1, .*CheckUpper 2, .*CheckUpper 3/
+    );
 
     $self->tidy(
         plugins => { %AToZ, %ReverseFoo, %CheckUpper },
@@ -529,26 +529,35 @@ sub test_cli : Tests {
                     "foo2.txt not tidied"
                 );
 
-                # -p / --pipe success
-                #
-                my ( $stdout, $stderr ) = capture {
-                    open(
-                        my $fh, "|-", @cmd, "-p",
-                        $root_dir->child(qw( does_not_exist foo.txt ))
-                    );
-                    print $fh "echo";
-                };
-                is( $stdout, "ECHOECHOECHO", "pipe: stdin tidied" );
-                unlike( $stderr, qr/\S/, "pipe: no stderr" );
+                subtest(
+                    'pipe success',
+                    sub {
+                        my ( $stdout, $stderr );
+                        run3(
+                            [ @cmd, '-p', $root_dir->child(qw( does_not_exist foo.txt )) ],
+                            \'echo',
+                            \$stdout,
+                            \$stderr,
+                        );
+                        is( $stdout, "ECHOECHOECHO", "pipe: stdin tidied" );
+                        unlike( $stderr, qr/\S/, "pipe: no stderr" );
+                    }
+                );
 
-                # -p / --pipe error
-                #
-                ( $stdout, $stderr ) = capture {
-                    open( my $fh, "|-", @cmd, "--pipe", $root_dir->child('foo.txt') );
-                    print $fh "abc1";
-                };
-                is( $stdout, "abc1", "pipe: stdin mirrored to stdout" );
-                like( $stderr, qr/non-alpha content found/ );
+                subtest(
+                    'pipe error',
+                    sub {
+                        my ( $stdout, $stderr );
+                        run3(
+                            [ @cmd, '--pipe', $root_dir->child('foo.txt') ],
+                            \'abc1',
+                            \$stdout,
+                            \$stderr,
+                        );
+                        is( $stdout, "abc1", "pipe: stdin mirrored to stdout" );
+                        like( $stderr, qr/non-alpha content found/ );
+                    }
+                );
             }
         );
     }
