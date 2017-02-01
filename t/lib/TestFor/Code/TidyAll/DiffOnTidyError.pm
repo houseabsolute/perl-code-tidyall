@@ -9,7 +9,7 @@ sub test_diff_on_tidy_error : Tests {
 
     $self->tidy(
         plugins => {
-            '+Code::TidyAll::Test::Plugin::UpperText' => {
+            '+TestHelper::Plugin::UpperText' => {
                 diff_on_tidy_error => 1,
                 select             => '**/*.txt',
             },

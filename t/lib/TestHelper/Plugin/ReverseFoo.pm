@@ -1,4 +1,4 @@
-package Code::TidyAll::Test::Plugin::ReverseFoo;
+package TestHelper::Plugin::ReverseFoo;
 
 use Path::Tiny qw(path);
 use Moo;

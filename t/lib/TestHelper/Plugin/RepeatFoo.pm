@@ -1,4 +1,4 @@
-package Code::TidyAll::Test::Plugin::RepeatFoo;
+package TestHelper::Plugin::RepeatFoo;
 
 use Moo;
 extends 'Code::TidyAll::Plugin';

@@ -1,4 +1,4 @@
-package Code::TidyAll::Test::Plugin::AlwaysPhonetic;
+package TestHelper::Plugin::AlwaysPhonetic;
 
 use Moo;
 extends 'Code::TidyAll::Plugin';

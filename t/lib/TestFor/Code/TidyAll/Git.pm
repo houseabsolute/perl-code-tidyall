@@ -179,7 +179,7 @@ Code::TidyAll::Git::Prereceive->check();
 EOF
 
 $tidyall_ini_template = <<'EOF';
-[+Code::TidyAll::Test::Plugin::UpperText]
+[+TestHelper::Plugin::UpperText]
 select = **/*.txt
 EOF
 

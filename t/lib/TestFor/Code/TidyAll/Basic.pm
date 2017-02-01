@@ -9,7 +9,7 @@ use Path::Tiny qw(cwd path);
 
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 
-sub test_plugin {"+Code::TidyAll::Test::Plugin::$_[0]"}
+sub test_plugin {"+TestHelper::Plugin::$_[0]"}
 my %UpperText  = ( test_plugin('UpperText')  => { select => '**/*.txt' } );
 my %ReverseFoo = ( test_plugin('ReverseFoo') => { select => '**/foo*' } );
 my %RepeatFoo  = ( test_plugin('RepeatFoo')  => { select => '**/foo*' } );
@@ -20,10 +20,10 @@ my $cli_conf = <<'EOF';
 backup_ttl = 15m
 verbose = 1
 
-[+Code::TidyAll::Test::Plugin::UpperText]
+[+TestHelper::Plugin::UpperText]
 select = **/*.txt
 
-[+Code::TidyAll::Test::Plugin::RepeatFoo]
+[+TestHelper::Plugin::RepeatFoo]
 select = **/foo*
 times = 3
 EOF
@@ -168,7 +168,7 @@ sub test_quiet_and_verbose : Tests {
                     if $state eq 'verbose';
                 like(
                     $output,
-                    qr/\[tidied\]  foo\.txt \(\+Code::TidyAll::Test::Plugin::UpperText\)/s,
+                    qr/\[tidied\]  foo\.txt \(\+TestHelper::Plugin::UpperText\)/s,
                     "foo.txt ($state)"
                 ) if $state eq 'verbose';
             }

@@ -9,7 +9,7 @@ sub test_parallel : Tests {
 
     $self->tidy(
         plugins => {
-            '+Code::TidyAll::Test::Plugin::UpperText' => {
+            '+TestHelper::Plugin::UpperText' => {
                 select => '**/*.txt',
             },
         },

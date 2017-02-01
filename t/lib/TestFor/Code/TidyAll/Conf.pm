@@ -11,10 +11,10 @@ my @tests = (
 backup_ttl = 5m
 no_cache = 1
 
-[+Code::TidyAll::Test::Plugin::UpperText]
+[+TestHelper::Plugin::UpperText]
 select = **/*.txt
 
-[+Code::TidyAll::Test::Plugin::RepeatFoo]
+[+TestHelper::Plugin::RepeatFoo]
 select = **/foo*
 select = **/bar*
 times = 3
@@ -25,10 +25,10 @@ EOF
             no_backups      => undef,
             no_cache        => 1,
             plugins         => {
-                '+Code::TidyAll::Test::Plugin::UpperText' => {
+                '+TestHelper::Plugin::UpperText' => {
                     select => ['**/*.txt'],
                 },
-                '+Code::TidyAll::Test::Plugin::RepeatFoo' => {
+                '+TestHelper::Plugin::RepeatFoo' => {
                     select => [ '**/foo*', '**/bar*' ],
                     times  => 3,
                 },
@@ -38,13 +38,13 @@ EOF
     {
         name   => 'space-separate select & ignore',
         config => <<'EOF',
-[+Code::TidyAll::Test::Plugin::RepeatFoo]
+[+TestHelper::Plugin::RepeatFoo]
 select = **/foo* **/bar*
 ignore = buz baz
 EOF
         methods => {
             plugins => {
-                '+Code::TidyAll::Test::Plugin::RepeatFoo' => {
+                '+TestHelper::Plugin::RepeatFoo' => {
                     select => [ '**/foo*', '**/bar*' ],
                     ignore => [ 'buz',     'baz' ],
                 },

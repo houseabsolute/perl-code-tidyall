@@ -1,4 +1,4 @@
-package Code::TidyAll::Test::Plugin::UpperText;
+package TestHelper::Plugin::UpperText;
 
 use Moo;
 extends 'Code::TidyAll::Plugin';
