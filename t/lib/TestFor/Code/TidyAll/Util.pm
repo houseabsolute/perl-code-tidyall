@@ -1,4 +1,4 @@
-package Test::Code::TidyAll::Util;
+package TestFor::Code::TidyAll::Util;
 
 use IPC::System::Simple qw(capturex);
 use Path::Tiny qw(path);

@@ -1,4 +1,4 @@
 #!/usr/bin/perl
 use lib 't/lib';
-use Test::Code::TidyAll::Plugin::JSLint;
-Test::Code::TidyAll::Plugin::JSLint->runtests;
+use TestFor::Code::TidyAll::Plugin::JSLint;
+TestFor::Code::TidyAll::Plugin::JSLint->runtests;

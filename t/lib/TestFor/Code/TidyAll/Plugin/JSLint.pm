@@ -1,6 +1,6 @@
-package Test::Code::TidyAll::Plugin::JSLint;
+package TestFor::Code::TidyAll::Plugin::JSLint;
 
-use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
+use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 
 sub test_filename {'foo.js'}
 

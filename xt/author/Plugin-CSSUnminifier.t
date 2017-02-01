@@ -1,4 +1,4 @@
 #!/usr/bin/perl
 use lib 't/lib';
-use Test::Code::TidyAll::Plugin::CSSUnminifier;
-Test::Code::TidyAll::Plugin::CSSUnminifier->runtests;
+use TestFor::Code::TidyAll::Plugin::CSSUnminifier;
+TestFor::Code::TidyAll::Plugin::CSSUnminifier->runtests;

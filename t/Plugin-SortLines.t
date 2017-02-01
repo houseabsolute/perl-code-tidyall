@@ -1,4 +1,4 @@
 #!/usr/bin/perl
 use lib 't/lib';
-use Test::Code::TidyAll::Plugin::SortLines;
-Test::Code::TidyAll::Plugin::SortLines->runtests;
+use TestFor::Code::TidyAll::Plugin::SortLines;
+TestFor::Code::TidyAll::Plugin::SortLines->runtests;

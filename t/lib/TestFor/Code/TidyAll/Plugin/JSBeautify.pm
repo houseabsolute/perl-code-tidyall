@@ -1,7 +1,7 @@
-package Test::Code::TidyAll::Plugin::JSBeautify;
+package TestFor::Code::TidyAll::Plugin::JSBeautify;
 
 use Encode qw(encode);
-use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
+use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 use Test::Warnings qw(warnings);
 
 sub _extra_path {

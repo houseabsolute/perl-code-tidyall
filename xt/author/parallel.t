@@ -1,4 +1,4 @@
 #!/usr/bin/perl
 use lib 't/lib';
-use Test::Code::TidyAll::Parallel;
-Test::Code::TidyAll::Parallel->runtests;
+use TestFor::Code::TidyAll::Parallel;
+TestFor::Code::TidyAll::Parallel->runtests;

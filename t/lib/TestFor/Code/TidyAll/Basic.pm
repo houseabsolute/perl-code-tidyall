@@ -1,4 +1,4 @@
-package Test::Code::TidyAll::Basic;
+package TestFor::Code::TidyAll::Basic;
 
 use Capture::Tiny qw(capture capture_stdout capture_merged);
 use Code::TidyAll::CacheModel::Shared;

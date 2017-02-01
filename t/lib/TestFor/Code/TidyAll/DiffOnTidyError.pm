@@ -1,4 +1,4 @@
-package Test::Code::TidyAll::DiffOnTidyError;
+package TestFor::Code::TidyAll::DiffOnTidyError;
 
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 use strict;

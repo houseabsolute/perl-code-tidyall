@@ -1,4 +1,4 @@
-package Test::Code::TidyAll::Plugin;
+package TestFor::Code::TidyAll::Plugin;
 
 use strict;
 use warnings;

@@ -1,4 +1,4 @@
-package Test::Code::TidyAll::Conf;
+package TestFor::Code::TidyAll::Conf;
 
 use Code::TidyAll;
 use Code::TidyAll::Util qw(tempdir_simple);

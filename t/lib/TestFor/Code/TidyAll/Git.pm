@@ -1,4 +1,4 @@
-package Test::Code::TidyAll::Git;
+package TestFor::Code::TidyAll::Git;
 
 use Capture::Tiny qw(capture_stdout capture_stderr capture);
 use Code::TidyAll::Git::Util qw(git_files_to_commit git_modified_files);

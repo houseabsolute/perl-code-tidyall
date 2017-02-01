@@ -1,4 +1,4 @@
 #!/usr/bin/perl
 use lib 't/lib';
-use Test::Code::TidyAll::Plugin::JSHint;
-Test::Code::TidyAll::Plugin::JSHint->runtests;
+use TestFor::Code::TidyAll::Plugin::JSHint;
+TestFor::Code::TidyAll::Plugin::JSHint->runtests;

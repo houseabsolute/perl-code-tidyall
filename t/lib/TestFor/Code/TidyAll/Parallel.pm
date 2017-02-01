@@ -1,4 +1,4 @@
-package Test::Code::TidyAll::Parallel;
+package TestFor::Code::TidyAll::Parallel;
 
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
 use strict;

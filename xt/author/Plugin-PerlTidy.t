@@ -1,4 +1,4 @@
 #!/usr/bin/perl
 use lib 't/lib';
-use Test::Code::TidyAll::Plugin::PerlTidy;
-Test::Code::TidyAll::Plugin::PerlTidy->runtests;
+use TestFor::Code::TidyAll::Plugin::PerlTidy;
+TestFor::Code::TidyAll::Plugin::PerlTidy->runtests;

@@ -1,6 +1,6 @@
-package Test::Code::TidyAll::Plugin::JSHint;
+package TestFor::Code::TidyAll::Plugin::JSHint;
 
-use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
+use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 
 sub test_filename {'foo.js'}
 

@@ -1,6 +1,6 @@
-package Test::Code::TidyAll::Plugin::CSSUnminifier;
+package TestFor::Code::TidyAll::Plugin::CSSUnminifier;
 
-use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
+use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 
 sub _extra_path {
     'node_modules/.bin';

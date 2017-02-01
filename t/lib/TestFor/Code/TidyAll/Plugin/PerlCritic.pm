@@ -1,6 +1,6 @@
-package Test::Code::TidyAll::Plugin::PerlCritic;
+package TestFor::Code::TidyAll::Plugin::PerlCritic;
 
-use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
+use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 
 sub test_main : Tests {
     my $self = shift;

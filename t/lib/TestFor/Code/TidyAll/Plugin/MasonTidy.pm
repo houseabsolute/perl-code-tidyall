@@ -1,6 +1,6 @@
-package Test::Code::TidyAll::Plugin::MasonTidy;
+package TestFor::Code::TidyAll::Plugin::MasonTidy;
 
-use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
+use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 
 sub test_main : Tests {
     my $self = shift;

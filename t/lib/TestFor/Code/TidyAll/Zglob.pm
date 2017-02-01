@@ -1,4 +1,4 @@
-package Test::Code::TidyAll::Zglob;
+package TestFor::Code::TidyAll::Zglob;
 
 use File::Zglob;
 use Test::Class::Most parent => 'Code::TidyAll::Test::Class';

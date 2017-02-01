@@ -1,6 +1,6 @@
-package Test::Code::TidyAll::Plugin::PodChecker;
+package TestFor::Code::TidyAll::Plugin::PodChecker;
 
-use Test::Class::Most parent => 'Test::Code::TidyAll::Plugin';
+use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 
 sub test_main : Tests {
     my $self = shift;
