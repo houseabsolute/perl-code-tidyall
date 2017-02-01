@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- Fixed Win32 test failures. Reported by Christian Walde. GH #72.
+
+
 0.55     2016-10-31
 
 - Require Moo 2.000000 or greater.

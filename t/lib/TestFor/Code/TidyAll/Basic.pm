@@ -80,9 +80,15 @@ sub test_basic : Tests {
 }
 
 sub test_filemode : Tests {
-    my $self     = shift;
+    my $self = shift;
+
+    if ( $^O =~ /Win32/ ) {
+        $self->builder->skip('file mode on Win32 is weird');
+        return;
+    }
+
     my $root_dir = $self->create_dir( { "foo.txt" => "abc" } );
-    my $file     = $root_dir->child('foo.txt');
+    my $file = $root_dir->child('foo.txt');
     $file->chmod('0755');
     my $ct = Code::TidyAll->new(
         plugins  => { test_plugin('UpperText') => { select => '**/foo*' } },
