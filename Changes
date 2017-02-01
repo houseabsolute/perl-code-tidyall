@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.56     2017-02-01
+
 - Fixed Win32 test failures. Reported by Christian Walde. GH #72.
 
 - Added a global ignore feature. You can now provide ignore configuration at

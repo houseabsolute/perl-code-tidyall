@@ -4,7 +4,7 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
 # VERSION
 
-version 0.55
+version 0.56
 
 # SYNOPSIS
 
@@ -93,6 +93,7 @@ You can call this API from your own program instead of executing `tidyall`.
 - output\_suffix
 - quiet
 - root\_dir
+- ignore
 - verbose
 
     These options are the same as the equivalent `tidyall` command-line options,
@@ -148,10 +149,15 @@ You can call this API from your own program instead of executing `tidyall`.
 
 # SUPPORT
 
-Bugs may be submitted through
+Bugs may be submitted at
 [https://github.com/houseabsolute/perl-code-tidyall/issues](https://github.com/houseabsolute/perl-code-tidyall/issues).
 
-I am also usually active on IRC as 'drolsky' on `irc://irc.perl.org`.
+I am also usually active on IRC as 'autarch' on `irc://irc.perl.org`.
+
+# SOURCE
+
+The source code repository for Code-TidyAll can be found at
+[https://github.com/houseabsolute/perl-code-tidyall](https://github.com/houseabsolute/perl-code-tidyall).
 
 # AUTHORS
 
@@ -175,11 +181,15 @@ I am also usually active on IRC as 'drolsky' on `irc://irc.perl.org`.
 - Pedro Melo <melo@simplicidade.org>
 - Ricardo Signes <rjbs@cpan.org>
 - Sergey Romanov <sromanov-dev@yandex.ru>
+- Shlomi Fish <shlomif@shlomifish.org>
 - timgimyee <tim.gim.yee@gmail.com>
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 - 2016 by Jonathan Swartz.
+This software is copyright (c) 2011 - 2017 by Jonathan Swartz.
 
 This is free software; you can redistribute it and/or modify it under the same
 terms as the Perl 5 programming language system itself.
+
+The full text of the license can be found in the `LICENSE` file included with
+this distribution.
