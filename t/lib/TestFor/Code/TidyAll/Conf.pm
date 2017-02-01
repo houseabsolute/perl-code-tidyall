@@ -2,7 +2,7 @@ package TestFor::Code::TidyAll::Conf;
 
 use Code::TidyAll;
 use Code::TidyAll::Util qw(tempdir_simple);
-use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
+use Test::Class::Most parent => 'TestHelper::Test::Class';
 
 my @tests = (
     {

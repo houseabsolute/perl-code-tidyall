@@ -1,7 +1,7 @@
 package TestFor::Code::TidyAll::Zglob;
 
 use File::Zglob;
-use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
+use Test::Class::Most parent => 'TestHelper::Test::Class';
 use Code::TidyAll::Util::Zglob qw(zglob_to_regex);
 
 sub test_match : Tests {

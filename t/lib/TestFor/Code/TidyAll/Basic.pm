@@ -7,7 +7,7 @@ use Code::TidyAll;
 use File::Find qw(find);
 use Path::Tiny qw(cwd path);
 
-use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
+use Test::Class::Most parent => 'TestHelper::Test::Class';
 
 sub test_plugin {"+TestHelper::Plugin::$_[0]"}
 my %UpperText  = ( test_plugin('UpperText')  => { select => '**/*.txt' } );

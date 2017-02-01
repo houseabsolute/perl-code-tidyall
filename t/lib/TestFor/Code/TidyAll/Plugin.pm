@@ -8,7 +8,7 @@ use Capture::Tiny qw(capture);
 use Code::TidyAll::Util qw(pushd tempdir_simple);
 use Code::TidyAll;
 use Path::Tiny qw(path);
-use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
+use Test::Class::Most parent => 'TestHelper::Test::Class';
 use Test::Differences qw( eq_or_diff );
 
 __PACKAGE__->SKIP_CLASS("Virtual base class");

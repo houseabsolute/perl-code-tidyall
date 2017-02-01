@@ -1,6 +1,6 @@
 package TestFor::Code::TidyAll::DiffOnTidyError;
 
-use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
+use Test::Class::Most parent => 'TestHelper::Test::Class';
 use strict;
 use warnings;
 

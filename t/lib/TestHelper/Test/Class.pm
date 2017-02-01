@@ -1,4 +1,4 @@
-package Code::TidyAll::Test::Class;
+package TestHelper::Test::Class;
 
 use Capture::Tiny qw(capture_stdout);
 use Code::TidyAll;

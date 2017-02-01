@@ -7,7 +7,7 @@ use Code::TidyAll::Util qw(tempdir_simple);
 use Code::TidyAll;
 use IPC::System::Simple qw(run);
 use Path::Tiny qw(path);
-use Test::Class::Most parent => 'Code::TidyAll::Test::Class';
+use Test::Class::Most parent => 'TestHelper::Test::Class';
 
 my ( $precommit_hook_template, $tidyall_ini_template );
 
