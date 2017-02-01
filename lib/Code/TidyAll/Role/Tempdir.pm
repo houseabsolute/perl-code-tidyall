@@ -3,9 +3,9 @@ package Code::TidyAll::Role::Tempdir;
 use strict;
 use warnings;
 
-use Moo::Role;
-
 use Path::Tiny qw(tempdir);
+
+use Moo::Role;
 
 our $VERSION = '0.56';
 

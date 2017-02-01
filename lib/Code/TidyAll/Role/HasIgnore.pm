@@ -9,6 +9,8 @@ use Specio::Library::String;
 
 use Moo::Role;
 
+our $VERSION = '0.56';
+
 has 'ignore' => (
     is  => 'ro',
     isa => t( 'ArrayRef', of => t('NonEmptyStr') ),
