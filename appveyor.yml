@@ -1,0 +1,17 @@
+cache:
+  - C:\projects\sources
+
+install:
+  - if not exist "C:\projects\sources" mkdir "C:\projects\sources"
+  - cd C:\projects\sources
+
+  - ps: Start-FileDownload http://strawberryperl.com/download/5.20.1.1/strawberry-perl-5.20.1.1-64bit.msi
+  - msiexec /i "C:\projects\sources\strawberry-perl-5.20.1.1-64bit.msi" /qn INSTALLDIR="C:\projects\perl"
+
+  - set PATH=C:\projects\perl\perl\bin;C:\projects\perl\perl\site\bin;C:\projects\perl\c\bin;%PATH%
+  - cd C:\projects\perl-code-tidyall
+
+  - cpanm --installdeps .
+
+build_script:
+  - prove -lr t/
