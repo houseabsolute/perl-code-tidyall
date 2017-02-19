@@ -128,7 +128,7 @@ has 'refresh_cache' => (
 
 has 'root_dir' => (
     is       => 'ro',
-    isa      => t('RealDir')->_subify,
+    isa      => t('RealDir'),
     coerce   => t('RealDir')->coercion_sub,
     required => 1
 );

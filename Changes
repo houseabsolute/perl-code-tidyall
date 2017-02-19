@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- Fix code that called a Specio private method directly.
+
+
 0.56     2017-02-01
 
 - Fixed Win32 test failures. Reported by Christian Walde. GH #72.
