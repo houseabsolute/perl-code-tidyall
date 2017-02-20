@@ -63,7 +63,7 @@ on 'configure' => sub {
 
 on 'develop' => sub {
   requires "CHI" => "0";
-  requires "Code::TidyAll" => "0";
+  requires "Code::TidyAll" => "0.56";
   requires "Code::TidyAll::Plugin::Perl::AlignMooseAttributes" => "0";
   requires "Code::TidyAll::Plugin::Test::Vars" => "0.02";
   requires "JSON::MaybeXS" => "0";
