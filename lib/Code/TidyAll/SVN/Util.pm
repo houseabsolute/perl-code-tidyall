@@ -8,7 +8,7 @@ use IPC::System::Simple qw(capturex);
 
 use Exporter qw(import);
 
-our $VERSION = '0.57';
+our $VERSION = '0.58';
 
 our @EXPORT_OK = qw(svn_uncommitted_files);
 

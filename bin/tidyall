@@ -7,7 +7,7 @@ use Getopt::Long;
 use strict;
 use warnings;
 
-our $VERSION = '0.57';
+our $VERSION = '0.58';
 
 my $usage = '
 Usage: tidyall [options] [file] ...

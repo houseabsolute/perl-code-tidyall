@@ -16,7 +16,7 @@ use Try::Tiny;
 
 use Exporter qw(import);
 
-our $VERSION = '0.57';
+our $VERSION = '0.58';
 
 our @EXPORT_OK = qw(can_load pushd tempdir_simple dirname mkpath read_file write_file);
 
