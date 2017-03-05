@@ -143,6 +143,7 @@ delete $WriteMakefileArgs{CONFIGURE_REQUIRES}
 
 WriteMakefile(%WriteMakefileArgs);
 
-use inc::Util qw(make_node_symlinks);
+use lib 'inc';
+use Util qw( make_node_symlinks );
 
 make_node_symlinks();

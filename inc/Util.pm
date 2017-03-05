@@ -1,4 +1,4 @@
-package inc::Util;
+package Util;
 
 use strict;
 use warnings;

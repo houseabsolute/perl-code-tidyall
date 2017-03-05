@@ -15,7 +15,7 @@ __PACKAGE__->meta->make_immutable;
 1;
 
 __DATA__
-use inc::Util qw(make_node_symlinks);
+use lib 'inc';
+use Util qw( make_node_symlinks );
 
 make_node_symlinks();
-
