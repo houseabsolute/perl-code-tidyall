@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- Don't assume that '.' is in @INC in the Makefile.PL.
+
+
 0.57     2017-02-19
 
 - Fix code that called a Specio private method directly.
