@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.58     2017-03-11
+
 - Don't assume that '.' is in @INC in the Makefile.PL.
 
 - Don't ship the node or PHP code used for tests in the tarball. This makes it
