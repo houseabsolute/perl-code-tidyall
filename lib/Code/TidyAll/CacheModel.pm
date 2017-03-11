@@ -8,7 +8,7 @@ use Path::Tiny ();
 
 use Moo;
 
-our $VERSION = '0.58';
+our $VERSION = '0.59';
 
 # todo, type checking?
 

@@ -5,7 +5,7 @@ use warnings;
 
 use Moo;
 
-our $VERSION = '0.58';
+our $VERSION = '0.59';
 
 has 'error'         => ( is => 'ro' );
 has 'new_contents'  => ( is => 'ro' );
