@@ -19,6 +19,11 @@ sub startup : Tests(startup => no_plan) {
     my $self = shift;
 
     $self->{root_dir} = tempdir_simple();
+
+    my $extra = $self->_extra_path();
+    $ENV{PATH} .= q{:} . $extra if $extra;
+
+    return;
 }
 
 sub plugin_class {
@@ -31,10 +36,6 @@ sub test_filename {'foo.txt'}
 
 sub tidyall {
     my ( $self, %p ) = @_;
-
-    my $extra = $self->_extra_path();
-    local $ENV{PATH} = $ENV{PATH};
-    $ENV{PATH} .= q{:} . $extra if $extra;
 
     my $plugin_class = $self->plugin_class;
     my %plugin_conf  = ( $plugin_class => { select => '*', %{ $p{conf} || {} } } );

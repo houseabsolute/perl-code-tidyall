@@ -11,7 +11,8 @@ sub _extra_path {
 sub test_main : Tests {
     my $self = shift;
 
-    $self->require_executable('php');
+    return unless $self->require_executable('php');
+    return unless $self->require_executable('phpcs');
 
     my $source = '<?php function foo() { $bar = 5 } ?>';
 

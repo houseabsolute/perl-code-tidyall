@@ -50,6 +50,8 @@ install:
   - cpan-install Test::Warnings # for some reason travis-perl started dropping this with the dev & blead perl
 before_script:
   - coverage-setup
+  - ln -s $TRAVIS_BUILD_DIR/node_modules
+  - ln -s $TRAVIS_BUILD_DIR/php5
 script:
   - perl Makefile.PL # makes node_modules/.bin symlinks
   - prove -l -j$(test-jobs) $(test-files)

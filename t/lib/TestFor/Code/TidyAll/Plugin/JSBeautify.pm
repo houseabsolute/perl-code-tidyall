@@ -11,7 +11,8 @@ sub _extra_path {
 sub test_main : Tests {
     my $self = shift;
 
-    $self->require_executable('node');
+    return unless $self->require_executable('node');
+    return unless $self->require_executable('js-beautify');
 
     my $source = 'sp.toggleResult=function(id){foo(id)}';
     $self->tidyall(
@@ -27,6 +28,9 @@ sub test_main : Tests {
 
 sub test_utf8 : Tests {
     my $self = shift;
+
+    return unless $self->require_executable('node');
+    return unless $self->require_executable('js-beautify');
 
     my $contents = encode( 'UTF-8', qq{var unicode  =  "Unicode - \x{263a}";} );
     my $expect   = encode( 'UTF-8', qq{var unicode = "Unicode - \x{263a}";} );

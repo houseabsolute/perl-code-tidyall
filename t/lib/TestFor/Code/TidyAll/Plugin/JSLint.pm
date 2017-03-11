@@ -11,7 +11,8 @@ sub _extra_path {
 sub test_main : Tests {
     my $self = shift;
 
-    $self->require_executable('node');
+    return unless $self->require_executable('node');
+    return unless $self->require_executable('jslint');
 
     $self->tidyall(
         source    => 'var my_object = {};',

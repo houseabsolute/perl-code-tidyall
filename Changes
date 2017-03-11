@@ -2,6 +2,9 @@
 
 - Don't assume that '.' is in @INC in the Makefile.PL.
 
+- Don't ship the node or PHP code used for tests in the tarball. This makes it
+  much smaller.
+
 
 0.57     2017-02-19
 

@@ -9,7 +9,8 @@ sub _extra_path {
 sub test_main : Tests {
     my $self = shift;
 
-    $self->require_executable('node');
+    return unless $self->require_executable('node');
+    return unless $self->require_executable('cssunminifier');
 
     my $source = 'body {\nfont-family:helvetica;\nfont-size:15pt;\n}';
     $self->tidyall(
