@@ -530,7 +530,7 @@ sub process_source {
     }
 
     if ( $self->verbose ) {
-        my @names = map { $_->name } @plugins;
+        my @names = join ', ', map { $_->name } @plugins;
         $self->msg("[applying the following plugins: @names]");
     }
 
