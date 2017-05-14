@@ -10,7 +10,7 @@ use Moo;
 
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.59';
+our $VERSION = '0.60';
 
 sub _build_cmd {'js-beautify'}
 
