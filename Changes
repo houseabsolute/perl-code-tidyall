@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.59     2017-05-14
+
 - Work around issue with Perl::Tidy when Getopt::Long::Configure is called
   before we call Perl::Tidy::perltidy. See
   https://rt.cpan.org/Ticket/Display.html?id=118558 for details.
