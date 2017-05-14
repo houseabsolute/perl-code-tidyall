@@ -2,6 +2,8 @@ package TestFor::Code::TidyAll::Plugin::PerlTidy;
 
 use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 
+use Getopt::Long;
+
 sub test_main : Tests {
     my $self = shift;
 
@@ -30,6 +32,21 @@ sub test_main : Tests {
         conf         => { argv => '-npro --badoption' },
         source       => $source,
         expect_error => qr/Unknown option: badoption/
+    );
+}
+
+sub test_getopt_bug : Tests {
+    my $self = shift;
+
+    # This emulates what Getopt::Long::Descriptive does, which in turn breaks
+    # Perl::Tidy. See https://rt.cpan.org/Ticket/Display.html?id=118558
+    Getopt::Long::Configure(qw( bundling no_auto_help no_ignore_case ));
+
+    my $source = 'if (  $foo) {\nmy   $bar =  $baz;\n}\n';
+    $self->tidyall(
+        conf        => { argv => '-npro' },
+        source      => $source,
+        expect_tidy => 'if ($foo) {\n    my $bar = $baz;\n}\n'
     );
 }
 

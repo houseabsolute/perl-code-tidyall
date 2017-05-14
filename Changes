@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- Work around issue with Perl::Tidy when Getopt::Long::Configure is called
+  before we call Perl::Tidy::perltidy. See
+  https://rt.cpan.org/Ticket/Display.html?id=118558 for details.
+
+
 0.58     2017-03-11
 
 - Don't assume that '.' is in @INC in the Makefile.PL.
