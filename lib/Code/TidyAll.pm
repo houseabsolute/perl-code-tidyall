@@ -361,7 +361,6 @@ sub _load_plugin {
     };
 
     return $plugin_class->new(
-        class   => $plugin_class,
         name    => $plugin_name,
         tidyall => $self,
         %$plugin_conf
