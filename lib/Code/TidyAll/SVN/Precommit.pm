@@ -52,13 +52,13 @@ sub check {
         }
 
         my @files = ( $self->revlook->added(), $self->revlook->updated() );
-        $log->info("----------------------------");
+        $log->info('----------------------------');
         $log->infof(
-            "%s [%s] repos = %s; txn = %s",
+            '%s [%s] repos = %s; txn = %s',
             scalar(localtime), $$, scalar( getpwuid($<) ),
             $self->repos,      $self->txn
         );
-        $log->infof( "looking at files: %s", join( ", ", @files ) );
+        $log->infof( 'looking at files: %s', join( ', ', @files ) );
 
         my %conf_files;
         foreach my $file (@files) {
@@ -68,7 +68,7 @@ sub check {
                 $conf_files{$conf_file}->{$rel_file}++;
             }
             else {
-                my $msg = sprintf( "** could not find conf file upwards from '%s'", $file );
+                my $msg = sprintf( q{** could not find conf file upwards from '%s'}, $file );
                 $log->error($msg);
                 die $msg if $self->reject_on_error;
             }
@@ -112,10 +112,10 @@ sub check {
             $fail_msg = join(
                 "\n",
                 sprintf(
-                    "%d file%s did not pass tidyall check",
-                    $error_count, $error_count > 1 ? "s" : ""
+                    '%d file%s did not pass tidyall check',
+                    $error_count, $error_count > 1 ? 's' : q{}
                 ),
-                map { join( ": ", $_->path, $_->error ) } @error_results
+                map { join( ': ', $_->path, $_->error ) } @error_results
             );
         }
     }
@@ -144,7 +144,7 @@ sub find_conf_for_file {
         else {
             $search_dir = $search_dir->parent;
         }
-        die "inf loop!" if ++$cnt > 100;
+        die 'inf loop!' if ++$cnt > 100;
     }
 }
 
@@ -180,7 +180,7 @@ __END__
 
     #!/usr/bin/perl
     use Code::TidyAll::SVN::Precommit;
-    use Log::Any::Adapter (File => "/path/to/hooks/logs/tidyall.log");
+    use Log::Any::Adapter (File => '/path/to/hooks/logs/tidyall.log');
     use strict;
     use warnings;
 

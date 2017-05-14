@@ -49,7 +49,7 @@ sub test_main : Tests {
     );
 
     my $rc_file = $self->{root_dir}->child('jshint.json');
-    $rc_file->spew('{"camelcase": true}');
+    $rc_file->spew(q[{"camelcase": true}]);
 
     $self->tidyall(
         source       => 'var my_object = {};',
@@ -59,7 +59,7 @@ sub test_main : Tests {
     );
     $self->tidyall(
         source       => 'var my_object = {};',
-        conf         => { argv => "--badoption" },
+        conf         => { argv => '--badoption' },
         expect_error => qr/Unknown option/,
         desc         => 'error - bad option'
     );

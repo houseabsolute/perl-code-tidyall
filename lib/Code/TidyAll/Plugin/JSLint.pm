@@ -16,7 +16,7 @@ sub _build_cmd {'jslint'}
 sub validate_file {
     my ( $self, $file ) = @_;
 
-    my $cmd = sprintf( "%s %s %s", $self->cmd, $self->argv, $file );
+    my $cmd = sprintf( '%s %s %s', $self->cmd, $self->argv, $file );
     my $output;
     run3( $cmd, \undef, \$output, \$output );
     die "$output\n" if $output !~ /is OK\./;

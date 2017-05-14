@@ -184,7 +184,7 @@ sub _build_backup_ttl_secs {
 
 sub _build_base_sig {
     my $self = shift;
-    my $active_plugins = join( "|", map { $_->name } @{ $self->plugin_objects } );
+    my $active_plugins = join( q{|}, map { $_->name } @{ $self->plugin_objects } );
     return $self->_sig( [ $Code::TidyAll::VERSION || 0, $active_plugins ] );
 }
 
@@ -229,9 +229,9 @@ sub BUILD {
     #
     if ( my @bad_params = grep { !$self->can($_) } keys(%$params) ) {
         die sprintf(
-            "unknown constructor param%s %s for %s",
-            @bad_params > 1 ? "s" : "",
-            join( ", ", sort map {"'$_'"} @bad_params ),
+            'unknown constructor param%s %s for %s',
+            @bad_params > 1 ? 's' : q{},
+            join( ', ', sort map {qq['$_']} @bad_params ),
             ref($self)
         );
     }
@@ -249,7 +249,7 @@ sub new_from_conf_file {
 
     $conf_file = path($conf_file);
 
-    die "no such file '$conf_file'" unless $conf_file->is_file;
+    die qq{no such file '$conf_file'} unless $conf_file->is_file;
     my $conf_params = $class->_read_conf_file($conf_file);
     my $main_params = delete( $conf_params->{'_'} ) || {};
 
@@ -262,14 +262,14 @@ sub new_from_conf_file {
     # Initialize with alternate class if given
     #
     if ( my $tidyall_class = delete( $params{tidyall_class} ) ) {
-        die "cannot load '$tidyall_class'" unless can_load($tidyall_class);
+        die qq{cannot load '$tidyall_class'} unless can_load($tidyall_class);
         $class = $tidyall_class;
     }
 
     if ( $params{verbose} ) {
         my $msg_outputter = $params{msg_outputter} || $class->_build_msg_outputter();
         $msg_outputter->(
-            "constructing %s with these params: %s", $class,
+            'constructing %s with these params: %s', $class,
             _dump_params( \%params )
         );
     }
@@ -354,10 +354,10 @@ sub _load_plugin {
         : "Code::TidyAll::Plugin::$plugin_fname"
     );
     try {
-        can_load($plugin_class) || die "not found";
+        can_load($plugin_class) || die 'not found';
     }
     catch {
-        die "could not load plugin class '$plugin_class': $_";
+        die qq{could not load plugin class '$plugin_class': $_};
     };
 
     return $plugin_class->new(
@@ -371,10 +371,10 @@ sub _plugin_conf_matches_mode {
     my ( $self, $conf, $mode ) = @_;
 
     if ( my $only_modes = $conf->{only_modes} ) {
-        return 0 if ( " " . $only_modes . " " ) !~ / $mode /;
+        return 0 if ( q{ } . $only_modes . q{ } ) !~ / $mode /;
     }
     if ( my $except_modes = $conf->{except_modes} ) {
-        return 0 if ( " " . $except_modes . " " ) =~ / $mode /;
+        return 0 if ( q{ } . $except_modes . q{ } ) =~ / $mode /;
     }
     return 1;
 }
@@ -469,7 +469,7 @@ sub process_file {
 
     if ( $self->list_only ) {
         if ( my @plugins = $self->plugins_for_path($path) ) {
-            $self->msg( "%s (%s)", $path, join( ", ", map { $_->name } @plugins ) );
+            $self->msg( '%s (%s)', $path, join( ', ', map { $_->name } @plugins ) );
         }
         return Code::TidyAll::Result->new( path => $path, state => 'checked' );
     }
@@ -479,7 +479,7 @@ sub process_file {
         $cache_model->remove;
     }
     elsif ( $cache_model->is_cached ) {
-        $self->msg( "[cached] %s", $path ) if $self->verbose;
+        $self->msg( '[cached] %s', $path ) if $self->verbose;
         return Code::TidyAll::Result->new( path => $path, state => 'cached' );
     }
 
@@ -519,12 +519,12 @@ sub _cache_model_for {
 sub process_source {
     my ( $self, $contents, $path ) = @_;
 
-    die "contents and path required" unless defined($contents) && defined($path);
+    die 'contents and path required' unless defined($contents) && defined($path);
     my @plugins = $self->plugins_for_path($path);
     if ( !@plugins ) {
         $self->msg(
-            "[no plugins apply%s] %s",
-            $self->mode ? " for mode '" . $self->mode . "'" : "", $path
+            '[no plugins apply%s] %s',
+            $self->mode ? q{ for mode '} . $self->mode . q{'} : q{}, $path
         ) if $self->verbose;
         return Code::TidyAll::Result->new( path => $path, state => 'no_match' );
     }
@@ -553,12 +553,12 @@ sub process_source {
     catch {
         chomp;
         $error = $_;
-        $error = sprintf( "*** '%s': %s", $plugin->name, $_ ) if $plugin;
+        $error = sprintf( q{*** '%s': %s}, $plugin->name, $_ ) if $plugin;
     };
 
     my $was_tidied = !$error && ( $new_contents ne $orig_contents );
     if ( $was_tidied && $self->check_only ) {
-        $error = "*** needs tidying";
+        $error = '*** needs tidying';
         foreach my $diff (@diffs) {
             $error .= "\n\n";
             $error .= "$diff->[0] made the following change:\n$diff->[1]";
@@ -568,10 +568,10 @@ sub process_source {
     }
 
     if ( !$self->quiet || $error ) {
-        my $status = $was_tidied ? "[tidied]  " : "[checked] ";
+        my $status = $was_tidied ? '[tidied]  ' : '[checked] ';
         my $plugin_names
-            = $self->verbose ? sprintf( " (%s)", join( ", ", map { $_->name } @plugins ) ) : "";
-        $self->msg( "%s%s%s", $status, $path, $plugin_names );
+            = $self->verbose ? sprintf( ' (%s)', join( ', ', map { $_->name } @plugins ) ) : q{};
+        $self->msg( '%s%s%s', $status, $path, $plugin_names );
     }
 
     if ($error) {
@@ -596,7 +596,7 @@ sub _read_conf_file {
     my $root_dir    = $conf_file->parent;
     $conf_string =~ s/\$ROOT/$root_dir/g;
     my $conf_hash = Code::TidyAll::Config::INI::Reader->read_string($conf_string);
-    die "'$conf_file' did not evaluate to a hash"
+    die qq{'$conf_file' did not evaluate to a hash}
         unless ( ref($conf_hash) eq 'HASH' );
     return $conf_hash;
 }
@@ -613,22 +613,22 @@ sub _backup_file {
 sub _backup_filename {
     my ( $self, $path ) = @_;
 
-    return join( q{}, $path, '-', time2str( "%Y%m%d-%H%M%S", time ), '.bak' );
+    return join( q{}, $path, '-', time2str( '%Y%m%d-%H%M%S', time ), '.bak' );
 }
 
 sub _purge_backups_periodically {
     my ($self) = @_;
     my $cache = $self->cache;
-    my $last_purge_backups = $cache->get("last_purge_backups") || 0;
+    my $last_purge_backups = $cache->get('last_purge_backups') || 0;
     if ( time > $last_purge_backups + $self->backup_ttl_secs ) {
         $self->_purge_backups();
-        $cache->set( "last_purge_backups", time() );
+        $cache->set( 'last_purge_backups', time() );
     }
 }
 
 sub _purge_backups {
     my ($self) = @_;
-    $self->msg("purging old backups") if $self->verbose;
+    $self->msg('purging old backups') if $self->verbose;
     find(
         {
             follow => 0,
@@ -651,9 +651,9 @@ sub find_conf_file {
         || $class->_find_conf_file_upward( $conf_names, $path2 );
     unless ( defined $conf_file ) {
         die sprintf(
-            "could not find %s upwards from %s",
-            join( " or ", @$conf_names ),
-            ( $path1 eq $path2 ) ? "'$path1'" : "'$path1' or '$path2'"
+            'could not find %s upwards from %s',
+            join( ' or ', @$conf_names ),
+            ( $path1 eq $path2 ) ? qq{'$path1'} : qq{'$path1' or '$path2'}
         );
     }
     return $conf_file;
@@ -674,7 +674,7 @@ sub _find_conf_file_upward {
         else {
             $search_dir = $search_dir->parent;
         }
-        die "inf loop!" if ++$cnt > 100;
+        die 'inf loop!' if ++$cnt > 100;
     }
 }
 
@@ -721,7 +721,7 @@ sub plugins_for_path {
 sub _parse_zglob_list {
     my ( $self, $zglobs ) = @_;
     if ( my ($bad_zglob) = ( grep {m{^/}} @{$zglobs} ) ) {
-        die "zglob '$bad_zglob' should not begin with slash";
+        die qq{zglob '$bad_zglob' should not begin with slash};
     }
     return $zglobs;
 }
@@ -736,7 +736,7 @@ sub _zglob {
             push( @files, File::Zglob::zglob( join( "/", $self->root_dir, $glob ) ) );
         }
         catch {
-            die "error parsing '$glob': $_";
+            die qq{error parsing '$glob': $_};
         }
     }
     return uniq(@files);
@@ -744,14 +744,14 @@ sub _zglob {
 
 sub _small_path {
     my ( $self, $path ) = @_;
-    die sprintf( "'%s' is not underneath root dir '%s'!", $path, $self->root_dir )
+    die sprintf( q{'%s' is not underneath root dir '%s'!}, $path, $self->root_dir )
         unless index( $path, $self->root_dir ) == 0;
     return path( substr( $path . q{}, length( $self->root_dir ) + 1 ) );
 }
 
 sub _sig {
     my ( $self, $data ) = @_;
-    return sha1_hex( join( ",", @$data ) );
+    return sha1_hex( join( ',', @$data ) );
 }
 
 sub msg {
@@ -768,7 +768,7 @@ sub _build_msg_outputter {
 
 sub _error_result {
     my ( $self, $msg, $path, $orig_contents, $new_contents ) = @_;
-    $self->msg( "%s", $msg );
+    $self->msg( '%s', $msg );
     return Code::TidyAll::Result->new(
         path          => $path,
         state         => 'error',

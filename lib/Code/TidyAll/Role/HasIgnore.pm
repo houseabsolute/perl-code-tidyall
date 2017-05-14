@@ -30,7 +30,7 @@ sub _build_ignores {
 sub _parse_zglob_list {
     my ( $self, $zglobs ) = @_;
     if ( my ($bad_zglob) = ( grep {m{^/}} @{$zglobs} ) ) {
-        die "zglob '$bad_zglob' should not begin with slash";
+        die qq{zglob '$bad_zglob' should not begin with slash};
     }
     return $zglobs;
 }

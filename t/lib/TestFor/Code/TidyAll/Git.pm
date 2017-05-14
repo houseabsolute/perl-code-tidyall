@@ -21,24 +21,24 @@ sub test_git : Tests {
     my $output;
 
     my $committed = sub {
-        like( capturex( 'git', 'status' ), qr/nothing to commit/, "committed" );
+        like( capturex( 'git', 'status' ), qr/nothing to commit/, 'committed' );
     };
     my $uncommitted = sub {
-        unlike( capturex( 'git', 'status' ), qr/nothing to commit/, "committed" );
+        unlike( capturex( 'git', 'status' ), qr/nothing to commit/, 'committed' );
     };
 
     my $pushed = sub {
-        unlike( capturex( 'git', 'status' ), qr/Your branch is ahead/, "pushed" );
+        unlike( capturex( 'git', 'status' ), qr/Your branch is ahead/, 'pushed' );
     };
     my $unpushed = sub {
-        like( capturex( 'git', 'status' ), qr/Your branch is ahead/, "unpushed" );
+        like( capturex( 'git', 'status' ), qr/Your branch is ahead/, 'unpushed' );
     };
 
     my $lib_dirs = join q{ }, map { path($_)->realpath } qw( lib t/lib );
 
     # Create the repo
     #
-    run( "git", "init", $work_dir );
+    run( 'git', 'init', $work_dir );
     ok( -d $_, "$_ exists" ) for ( $work_dir, $hooks_dir );
     my $pushd = pushd($work_dir);
 
@@ -46,20 +46,20 @@ sub test_git : Tests {
     #
     $work_dir->child('tidyall.ini')->spew( sprintf($tidyall_ini_template) );
     $work_dir->child('.gitignore')->spew('.tidyall.d');
-    run( "git", "add", "tidyall.ini", ".gitignore" );
-    run( "git", "commit", "-q", "-m", "added", "tidyall.ini", ".gitignore" );
+    run( 'git', 'add', 'tidyall.ini', '.gitignore' );
+    run( 'git', 'commit', '-q', '-m', 'added', 'tidyall.ini', '.gitignore' );
 
     # Add foo.txt, which needs tidying
     #
     $work_dir->child('foo.txt')->spew("abc\n");
-    cmp_deeply( [ git_files_to_commit($work_dir) ], [], "no files to commit" );
+    cmp_deeply( [ git_files_to_commit($work_dir) ], [], 'no files to commit' );
 
     # git add foo.txt and make sure it is now in uncommitted list
     #
     run(qw( git add foo.txt ));
     cmp_deeply(
         [ map { $_->stringify } git_files_to_commit($work_dir) ],
-        [ $work_dir->child('foo.txt')->stringify ], "one file to commit"
+        [ $work_dir->child('foo.txt')->stringify ], 'one file to commit'
     );
 
     # Add pre-commit hook
@@ -71,36 +71,36 @@ sub test_git : Tests {
 
     # Try to commit, make sure we get error
     #
-    $output = capture_stderr { system( "git", "commit", "-m", "changed", "-a" ) };
-    like( $output, qr/1 file did not pass tidyall check/, "1 file did not pass tidyall check" );
-    like( $output, qr/needs tidying/, "needs tidying" );
+    $output = capture_stderr { system( 'git', 'commit', '-m', 'changed', '-a' ) };
+    like( $output, qr/1 file did not pass tidyall check/, '1 file did not pass tidyall check' );
+    like( $output, qr/needs tidying/, 'needs tidying' );
     $uncommitted->();
 
     # Fix file and commit successfully
     #
     $work_dir->child('foo.txt')->spew("ABC\n");
-    $output = capture_stderr { run( "git", "commit", "-m", "changed", "-a" ) };
-    like( $output, qr/\[checked\] foo\.txt/, "checked foo.txt" );
+    $output = capture_stderr { run( 'git', 'commit', '-m', 'changed', '-a' ) };
+    like( $output, qr/\[checked\] foo\.txt/, 'checked foo.txt' );
     $committed->();
 
-    $work_dir->child('bar.txt')->spew("ABC");
-    run( "git", "add", "bar.txt" );
-    run( "git", "commit", "-q", "-m", "bar.txt" );
+    $work_dir->child('bar.txt')->spew('ABC');
+    run( 'git', 'add', 'bar.txt' );
+    run( 'git', 'commit', '-q', '-m', 'bar.txt' );
 
-    $work_dir->child('bar.txt')->spew("def");
-    cmp_deeply( [ git_files_to_commit($work_dir) ], [], "no files to commit" );
+    $work_dir->child('bar.txt')->spew('def');
+    cmp_deeply( [ git_files_to_commit($work_dir) ], [], 'no files to commit' );
     cmp_deeply(
         [ map { $_->stringify } git_modified_files($work_dir) ],
         ["$work_dir/bar.txt"],
-        "one file was modified"
+        'one file was modified'
     );
 
     # Create a bare shared repo, then a clone of that
     #
     my $shared_dir = $temp_dir->child('shared');
     my $clone_dir  = $temp_dir->child('clone');
-    run( "git", "clone", "-q", "--bare", $work_dir, $shared_dir );
-    run( "git", "clone", "-q", $shared_dir, $clone_dir );
+    run( 'git', 'clone', '-q', '--bare', $work_dir, $shared_dir );
+    run( 'git', 'clone', '-q', $shared_dir, $clone_dir );
     chdir($clone_dir);
     $committed->();
 
@@ -114,46 +114,46 @@ sub test_git : Tests {
     # Unfix file and commit
     #
     $clone_dir->child('foo.txt')->spew("def\n");
-    run( "git", "commit", "-m", "changed", "-a" );
+    run( 'git', 'commit', '-m', 'changed', '-a' );
     $committed->();
 
     # Try to push, make sure we get error back
     #
     $unpushed->();
-    $output = capture_stderr { system( "git", "push" ) };
-    like( $output, qr/master -> master/,                  "master -> master" );
-    like( $output, qr/1 file did not pass tidyall check/, "1 file did not pass tidyall check" );
-    like( $output, qr/needs tidying/,                     "needs tidying" );
+    $output = capture_stderr { system( 'git', 'push' ) };
+    like( $output, qr/master -> master/,                  'master -> master' );
+    like( $output, qr/1 file did not pass tidyall check/, '1 file did not pass tidyall check' );
+    like( $output, qr/needs tidying/,                     'needs tidying' );
     $unpushed->();
 
     # Fix file and push successfully
     #
     $clone_dir->child('foo.txt')->spew("DEF\n");
-    $output = capture_stderr { run( "git", "commit", "-m", "changed", "-a" ) };
+    $output = capture_stderr { run( 'git', 'commit', '-m', 'changed', '-a' ) };
     $committed->();
-    $output = capture_stderr { system( "git", "push" ) };
-    like( $output, qr/master -> master/, "master -> master" );
+    $output = capture_stderr { system( 'git', 'push' ) };
+    like( $output, qr/master -> master/, 'master -> master' );
     $pushed->();
 
     # Unfix file and commit
     #
     $clone_dir->child('foo.txt')->spew("def\n");
-    run( "git", "commit", "-m", "changed", "-a" );
+    run( 'git', 'commit', '-m', 'changed', '-a' );
     $committed->();
 
     # Try #1: make sure we get error back
     #
     $unpushed->();
-    $output = capture_stderr { system( "git", "push" ) };
-    like( $output, qr/needs tidying/, "needs tidying" );
+    $output = capture_stderr { system( 'git', 'push' ) };
+    like( $output, qr/needs tidying/, 'needs tidying' );
     $unpushed->();
 
     # Try #2: make sure we get error and repeat notification back
     #
     $unpushed->();
-    $output = capture_stderr { system( "git", "push" ) };
-    like( $output, qr/needs tidying/, "needs tidying" );
-    like( $output, qr/Identical push seen 2 times/, "Identical push seen 2 times" );
+    $output = capture_stderr { system( 'git', 'push' ) };
+    like( $output, qr/needs tidying/, 'needs tidying' );
+    like( $output, qr/Identical push seen 2 times/, 'Identical push seen 2 times' );
     $unpushed->();
 
 }

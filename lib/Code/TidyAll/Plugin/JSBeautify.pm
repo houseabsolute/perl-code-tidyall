@@ -18,7 +18,7 @@ sub transform_file {
     my ( $self, $file ) = @_;
 
     try {
-        my $cmd = join( " ", $self->cmd, $self->argv, $file );
+        my $cmd = join( ' ', $self->cmd, $self->argv, $file );
 
         my $output;
         my $exit = run3( $cmd, \undef, \$output, \$output );

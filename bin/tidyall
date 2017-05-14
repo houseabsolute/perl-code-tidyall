@@ -110,7 +110,7 @@ if ($pipe) {
     exit($status);
 }
 elsif ( ( $all_files || $svn_files || $git_files ) ) {
-    die "cannot use filename(s) with -a/--all, -s/--svn, or -g/--git"
+    die 'cannot use filename(s) with -a/--all, -s/--svn, or -g/--git'
         if @ARGV;
     $conf_file ||= $tidyall_class->find_conf_file( \@conf_names, cwd() );
     $ct = $tidyall_class->new_from_conf_file( $conf_file, %params );

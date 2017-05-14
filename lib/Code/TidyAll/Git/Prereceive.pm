@@ -76,8 +76,8 @@ sub check_input {
         unless ( $self->check_repeated_push($input) ) {
             my $error_count = scalar(@error_results);
             $fail_msg = sprintf(
-                "%d file%s did not pass tidyall check",
-                $error_count, $error_count > 1 ? "s" : ""
+                '%d file%s did not pass tidyall check',
+                $error_count, $error_count > 1 ? 's' : q{}
             );
         }
     }
@@ -90,10 +90,10 @@ sub create_tidyall {
     my $temp_dir = tempdir_simple();
     my @conf_names = $self->conf_name ? ( $self->conf_name ) : Code::TidyAll->default_conf_names;
     my ($conf_file) = grep { $self->get_file_contents( $_, $commit ) } @conf_names
-        or die sprintf( "could not find conf file %s", join( " or ", @conf_names ) );
+        or die sprintf( 'could not find conf file %s', join( ' or ', @conf_names ) );
     foreach my $rel_file ( $conf_file, @{ $self->extra_conf_files } ) {
         my $contents = $self->get_file_contents( $rel_file, $commit )
-            or die sprintf( "could not find file '%s' in repo root", $rel_file );
+            or die sprintf( q{could not find file '%s' in repo root}, $rel_file );
         $temp_dir->child($rel_file)->spew($contents);
     }
     my $tidyall = $self->tidyall_class->new_from_conf_file(
@@ -110,14 +110,14 @@ sub create_tidyall {
 
 sub get_changed_files {
     my ( $self, $base, $commit ) = @_;
-    my $output = capturex( $self->git_path, "diff", "--numstat", "--name-only", "$base..$commit" );
+    my $output = capturex( $self->git_path, 'diff', '--numstat', '--name-only', "$base..$commit" );
     my @files = grep {/\S/} split( "\n", $output );
     return @files;
 }
 
 sub get_file_contents {
     my ( $self, $file, $commit ) = @_;
-    my ( $contents, $error ) = capture { system( $self->git_path, "show", "$commit:$file" ) };
+    my ( $contents, $error ) = capture { system( $self->git_path, 'show', "$commit:$file" ) };
     return $contents;
 }
 

@@ -37,14 +37,14 @@ sub test_basic : Tests {
 
     $self->tidy(
         plugins => {},
-        source  => { "foo.txt" => "abc" },
-        dest    => { "foo.txt" => "abc" },
+        source  => { 'foo.txt' => 'abc' },
+        dest    => { 'foo.txt' => 'abc' },
         desc    => 'one file no plugins',
     );
     $self->tidy(
         plugins => {%UpperText},
-        source  => { "foo.txt" => "abc" },
-        dest    => { "foo.txt" => "ABC" },
+        source  => { 'foo.txt' => 'abc' },
+        dest    => { 'foo.txt' => 'ABC' },
         desc    => 'one file UpperText',
     );
     $self->tidy(
@@ -52,31 +52,31 @@ sub test_basic : Tests {
             test_plugin('UpperText')  => { select => '**/*.txt', only_modes => 'upper' },
             test_plugin('ReverseFoo') => { select => '**/foo*',  only_modes => 'reversals' }
         },
-        source  => { "foo.txt" => "abc" },
-        dest    => { "foo.txt" => "cba" },
+        source  => { 'foo.txt' => 'abc' },
+        dest    => { 'foo.txt' => 'cba' },
         desc    => 'one file reversals mode',
         options => { mode      => 'reversals' },
     );
     $self->tidy(
         plugins => { %UpperText, %ReverseFoo },
         source  => {
-            "foo.txt" => "abc",
-            "bar.txt" => "def",
-            "foo.tx"  => "ghi",
-            "bar.tx"  => "jkl"
+            'foo.txt' => 'abc',
+            'bar.txt' => 'def',
+            'foo.tx'  => 'ghi',
+            'bar.tx'  => 'jkl'
         },
         dest => {
-            "foo.txt" => "CBA",
-            "bar.txt" => "DEF",
-            "foo.tx"  => "ihg",
-            "bar.tx"  => "jkl"
+            'foo.txt' => 'CBA',
+            'bar.txt' => 'DEF',
+            'foo.tx'  => 'ihg',
+            'bar.tx'  => 'jkl'
         },
         desc => 'four files UpperText ReverseFoo',
     );
     $self->tidy(
         plugins => {%UpperText},
-        source  => { "foo.txt" => "abc1" },
-        dest    => { "foo.txt" => "abc1" },
+        source  => { 'foo.txt' => 'abc1' },
+        dest    => { 'foo.txt' => 'abc1' },
         desc    => 'one file UpperText errors',
         errors  => qr/non-alpha content/
     );
@@ -86,12 +86,12 @@ sub test_basic : Tests {
             ignore => ['global_ignore/*'],
         },
         source => {
-            "global_ignore/foo.txt" => "abc",
-            "plugin_ignore/bar.txt" => "def",
+            'global_ignore/foo.txt' => 'abc',
+            'plugin_ignore/bar.txt' => 'def',
         },
         dest => {
-            "global_ignore/foo.txt" => "abc",
-            "plugin_ignore/bar.txt" => "def",
+            'global_ignore/foo.txt' => 'abc',
+            'plugin_ignore/bar.txt' => 'def',
         },
         desc => 'global and plugin ignores',
     );
@@ -105,7 +105,7 @@ sub test_filemode : Tests {
         return;
     }
 
-    my $root_dir = $self->create_dir( { "foo.txt" => "abc" } );
+    my $root_dir = $self->create_dir( { 'foo.txt' => 'abc' } );
     my $file = $root_dir->child('foo.txt');
     $file->chmod('0755');
     my $ct = Code::TidyAll->new(
@@ -113,7 +113,7 @@ sub test_filemode : Tests {
         root_dir => $root_dir,
     );
     $ct->process_paths($file);
-    is( $file->slurp,      "ABC" );
+    is( $file->slurp,      'ABC' );
     is( $file->stat->mode, 0100755 );
 }
 
@@ -125,11 +125,11 @@ sub test_multiple_plugin_instances : Tests {
             test_plugin('RepeatFoo for foo') => { select => '**/foo.*', times => 3 },
             %UpperText
         },
-        source => { "foo.txt" => "abc", "foo.dat" => "def", "bar.txt" => "ghi" },
+        source => { 'foo.txt' => 'abc', 'foo.dat' => 'def', 'bar.txt' => 'ghi' },
         dest   => {
-            "foo.txt" => scalar( "ABC" x 6 ),
-            "foo.dat" => scalar( "def" x 3 ),
-            "bar.txt" => scalar( "GHI" x 2 )
+            'foo.txt' => scalar( 'ABC' x 6 ),
+            'foo.dat' => scalar( 'def' x 3 ),
+            'bar.txt' => scalar( 'GHI' x 2 )
         }
     );
 }
@@ -144,15 +144,15 @@ sub test_plugin_order_and_atomicity : Tests {
 
             # note without the weight here this would run first, and the
             # letters in the photetic words themselves would be reversed
-            test_plugin("AlwaysPhonetic") => { select => '**/*.txt', weight => 51 }
+            test_plugin('AlwaysPhonetic') => { select => '**/*.txt', weight => 51 }
             )
     } ( 1 .. 3 );
 
     $self->tidy(
         plugins => {@plugins},
         options => { verbose => 1 },
-        source  => { "foo.txt" => "abc" },
-        dest    => { "foo.txt" => "CHARLIE-BRAVO-ALFA" },
+        source  => { 'foo.txt' => 'abc' },
+        dest    => { 'foo.txt' => 'CHARLIE-BRAVO-ALFA' },
         like_output =>
             qr/.*ReverseFoo, .*UpperText 1, .*UpperText 2, .*UpperText 3, .*CheckUpper 1, .*CheckUpper 2, .*CheckUpper 3/
     );
@@ -160,8 +160,8 @@ sub test_plugin_order_and_atomicity : Tests {
     $self->tidy(
         plugins => { %AToZ, %ReverseFoo, %CheckUpper },
         options     => { verbose   => 1 },
-        source      => { "foo.txt" => "abc" },
-        dest        => { "foo.txt" => "abc" },
+        source      => { 'foo.txt' => 'abc' },
+        dest        => { 'foo.txt' => 'abc' },
         errors      => qr/lowercase found/,
         like_output => qr/foo.txt (.*ReverseFoo, .*CheckUpper)/
     );
@@ -173,7 +173,7 @@ sub test_quiet_and_verbose : Tests {
 
     foreach my $state ( 'normal', 'quiet', 'verbose' ) {
         foreach my $error ( 0, 1 ) {
-            my $root_dir = $self->create_dir( { "foo.txt" => ( $error ? "123" : "abc" ) } );
+            my $root_dir = $self->create_dir( { 'foo.txt' => ( $error ? '123' : 'abc' ) } );
             my $output = capture_stdout {
                 my $ct = Code::TidyAll->new(
                     plugins  => {%UpperText},
@@ -187,7 +187,7 @@ sub test_quiet_and_verbose : Tests {
             }
             else {
                 is( $output, "[tidied]  foo.txt\n" ) if $state eq 'normal';
-                is( $output, "" ) if $state eq 'quiet';
+                is( $output, q{} ) if $state eq 'quiet';
                 like( $output, qr/purging old backups/, "purging old backups ($state)" )
                     if $state eq 'verbose';
                 like(
@@ -202,7 +202,7 @@ sub test_quiet_and_verbose : Tests {
 
 sub test_iterations : Tests {
     my $self     = shift;
-    my $root_dir = $self->create_dir( { "foo.txt" => "abc" } );
+    my $root_dir = $self->create_dir( { 'foo.txt' => 'abc' } );
     my $ct       = Code::TidyAll->new(
         plugins    => { test_plugin('RepeatFoo') => { select => '**/foo*', times => 3 } },
         root_dir   => $root_dir,
@@ -210,15 +210,15 @@ sub test_iterations : Tests {
     );
     my $file = $root_dir->child('foo.txt');
     $ct->process_paths($file);
-    is( $file->slurp, scalar( "abc" x 9 ), "3^2 = 9" );
+    is( $file->slurp, scalar( 'abc' x 9 ), '3^2 = 9' );
 }
 
 sub test_caching_and_backups : Tests {
     my $self = shift;
 
-    my @chi_or_no_chi = ('');
-    if ( eval "use CHI; 1" ) {
-        push @chi_or_no_chi, "chi";
+    my @chi_or_no_chi = (q{});
+    if ( eval 'use CHI; 1' ) {
+        push @chi_or_no_chi, 'chi';
     }
 
     foreach my $chi (@chi_or_no_chi) {
@@ -232,7 +232,7 @@ sub test_caching_and_backups : Tests {
                 foreach my $no_backups ( 0 .. 1 ) {
                     my $desc
                         = "(no_cache=$no_cache, no_backups=$no_backups, model=$cache_model_class, cache_class=$chi)";
-                    my $root_dir = $self->create_dir( { "foo.txt" => "abc" } );
+                    my $root_dir = $self->create_dir( { 'foo.txt' => 'abc' } );
                     my $ct = Code::TidyAll->new(
                         plugins           => {%UpperText},
                         root_dir          => $root_dir,
@@ -256,16 +256,16 @@ sub test_caching_and_backups : Tests {
                         is( $output, "[checked] foo.txt\n", "second output $desc" );
                     }
                     else {
-                        is( $output, '', "second output $desc" );
+                        is( $output, q{}, "second output $desc" );
                     }
 
-                    $file->spew("ABCD");
+                    $file->spew('ABCD');
                     $go->();
                     is( $output, "[checked] foo.txt\n", "third output $desc" );
 
-                    $file->spew("def");
+                    $file->spew('def');
                     $go->();
-                    is( $file->slurp, "DEF", "fourth file change $desc" );
+                    is( $file->slurp, 'DEF', "fourth file change $desc" );
                     is( $output, "[tidied]  foo.txt\n", "fourth output $desc" );
 
                     my $backup_dir = $ct->data_dir->child('backups');
@@ -310,7 +310,7 @@ sub _chi {
 sub test_selects_and_ignores : Tests {
     my $self = shift;
 
-    my @files = ( "a/foo.pl", "b/foo.pl", "a/foo.pm", "a/bar.pm", "b/bar.pm" );
+    my @files = ( 'a/foo.pl', 'b/foo.pl', 'a/foo.pm', 'a/bar.pm', 'b/bar.pm' );
     my $root_dir = $self->create_dir( { map { $_ => 'hi' } @files } );
     my $ct = Code::TidyAll->new(
         root_dir => $root_dir,
@@ -326,7 +326,7 @@ sub test_selects_and_ignores : Tests {
         [ "$root_dir/a/foo.pm", "$root_dir/b/foo.pl" ]
     );
     cmp_deeply(
-        [ map { $_->name } $ct->plugins_for_path("a/foo.pm") ],
+        [ map { $_->name } $ct->plugins_for_path('a/foo.pm') ],
         [ test_plugin('UpperText') ]
     );
 }
@@ -335,14 +335,14 @@ sub test_shebang : Tests {
     my $self = shift;
 
     my %files = (
-        "a/foo.pl" => "#!/usr/bin/perl",
-        "a/foo"    => "#!/usr/bin/perl",
-        "a/bar"    => "#!/usr/bin/ruby",
-        "a/baz"    => "just another perl hacker",
-        "b/foo"    => "#!/usr/bin/perl6",
-        "b/bar"    => "#!/usr/bin/perl5",
-        "b/baz"    => "#!perl -w",
-        "b/bar.pm" => "package b::bar;",
+        'a/foo.pl' => '#!/usr/bin/perl',
+        'a/foo'    => '#!/usr/bin/perl',
+        'a/bar'    => '#!/usr/bin/ruby',
+        'a/baz'    => 'just another perl hacker',
+        'b/foo'    => '#!/usr/bin/perl6',
+        'b/bar'    => '#!/usr/bin/perl5',
+        'b/baz'    => '#!perl -w',
+        'b/bar.pm' => 'package b::bar;',
     );
     my $root_dir = $self->create_dir( \%files );
     my $ct       = Code::TidyAll->new(
@@ -364,7 +364,7 @@ sub test_shebang : Tests {
 sub test_dirs : Tests {
     my $self = shift;
 
-    my @files = ( "a/foo.txt", "a/bar.txt", "a/bar.pl", "b/foo.txt" );
+    my @files = ( 'a/foo.txt', 'a/bar.txt', 'a/bar.pl', 'b/foo.txt' );
     my $root_dir = $self->create_dir( { map { $_ => 'hi' } @files } );
 
     foreach my $recursive ( 0 .. 1 ) {
@@ -378,18 +378,18 @@ sub test_dirs : Tests {
             @results = $ct->process_paths("$root_dir/a");
         };
         if ($recursive) {
-            is( @results, 3, "3 results" );
-            is( scalar( grep { $_->state eq 'tidied' } @results ), 2, "2 tidied" );
+            is( @results, 3, '3 results' );
+            is( scalar( grep { $_->state eq 'tidied' } @results ), 2, '2 tidied' );
             like( $output, qr/\[tidied\]  a\/foo.txt/ );
             like( $output, qr/\[tidied\]  a\/bar.txt/ );
-            is( path( $root_dir, 'a', 'foo.txt' )->slurp, "IH" );
-            is( path( $root_dir, 'a', 'bar.txt' )->slurp, "HI" );
-            is( path( $root_dir, 'a', 'bar.pl' )->slurp,  "hi" );
-            is( path( $root_dir, 'b', 'foo.txt' )->slurp, "hi" );
+            is( path( $root_dir, 'a', 'foo.txt' )->slurp, 'IH' );
+            is( path( $root_dir, 'a', 'bar.txt' )->slurp, 'HI' );
+            is( path( $root_dir, 'a', 'bar.pl' )->slurp,  'hi' );
+            is( path( $root_dir, 'b', 'foo.txt' )->slurp, 'hi' );
         }
         else {
-            is( @results,           1,       "1 result" );
-            is( $results[0]->state, "error", "error" );
+            is( @results,           1,       '1 result' );
+            is( $results[0]->state, 'error', 'error' );
             like( $output, qr/is a directory/ );
         }
     }
@@ -419,7 +419,7 @@ sub test_paths_in_messages : Tests {
 sub test_errors : Tests {
     my $self = shift;
 
-    my $root_dir = $self->create_dir( { "foo/bar.txt" => "abc" } );
+    my $root_dir = $self->create_dir( { 'foo/bar.txt' => 'abc' } );
     throws_ok { Code::TidyAll->new( root_dir => $root_dir ) } qr/Missing required/;
     throws_ok { Code::TidyAll->new( plugins  => {} ) } qr/Missing required/;
 
@@ -453,13 +453,13 @@ sub test_errors : Tests {
 
     my $ct = Code::TidyAll->new( plugins => {%UpperText}, root_dir => $root_dir );
     my $output = capture_stdout { $ct->process_paths("$root_dir/baz/blargh.txt") };
-    like( $output, qr/baz\/blargh.txt: not a file or directory/, "file not found" );
+    like( $output, qr/baz\/blargh.txt: not a file or directory/, 'file not found' );
 
     $output = capture_stdout { $ct->process_paths("$root_dir/foo/bar.txt") };
-    is( $output, "[tidied]  foo/bar.txt\n", "filename output" );
-    is( path( $root_dir, 'foo', 'bar.txt' )->slurp, "ABC", "tidied" );
+    is( $output, "[tidied]  foo/bar.txt\n", 'filename output' );
+    is( path( $root_dir, 'foo', 'bar.txt' )->slurp, 'ABC', 'tidied' );
     my $other_dir = tempdir_simple();
-    $other_dir->child('foo.txt')->spew("ABC");
+    $other_dir->child('foo.txt')->spew('ABC');
     throws_ok { $ct->process_paths("$other_dir/foo.txt") } qr/not underneath root dir/;
 }
 
@@ -506,8 +506,8 @@ sub test_ignore : Tests {
         );
     };
     is(
-        $root_dir->child( 'global_ignore', 'bar.txt' )->slurp, "bye",
-        "bar.txt not tidied because of global ignore",
+        $root_dir->child( 'global_ignore', 'bar.txt' )->slurp, 'bye',
+        'bar.txt not tidied because of global ignore',
     );
 
     # plugin ignores
@@ -524,8 +524,8 @@ sub test_ignore : Tests {
         );
     };
     is(
-        $root_dir->child( 'global_ignore', 'bar.txt' )->slurp, "bye",
-        "bar.txt not tidied because of plugin ignore",
+        $root_dir->child( 'global_ignore', 'bar.txt' )->slurp, 'bye',
+        'bar.txt not tidied because of plugin ignore',
     );
 }
 
@@ -537,15 +537,15 @@ sub test_cli : Tests {
     my $run = sub { system( @cmd, @_ ) };
 
     $output = capture_stdout {
-        $run->("--version");
+        $run->('--version');
     };
     like( $output, qr/tidyall .* on perl/, '--version output' );
     $output = capture_stdout {
-        $run->("--help");
+        $run->('--help');
     };
     like( $output, qr/Usage.*Options:/s, '--help output' );
 
-    foreach my $conf_name ( "tidyall.ini", ".tidyallrc" ) {
+    foreach my $conf_name ( 'tidyall.ini', '.tidyallrc' ) {
         subtest(
             "conf at $conf_name",
             sub {
@@ -553,14 +553,14 @@ sub test_cli : Tests {
                 my $conf_file = $root_dir->child($conf_name);
                 $conf_file->spew($cli_conf);
 
-                $root_dir->child('foo.txt')->spew("hello");
+                $root_dir->child('foo.txt')->spew('hello');
                 my $output = capture_stdout {
-                    $run->( $root_dir->child('foo.txt'), "-v" );
+                    $run->( $root_dir->child('foo.txt'), '-v' );
                 };
 
                 my ($params_msg)
                     = ( $output =~ /constructing Code::TidyAll with these params:(.*)/ );
-                ok( defined($params_msg), "params msg" );
+                ok( defined($params_msg), 'params msg' );
                 like( $params_msg, qr/backup_ttl => '15m'/, 'backup_ttl' );
                 like( $params_msg, qr/verbose => '?1'?/,    'verbose' );
                 like(
@@ -573,8 +573,8 @@ sub test_cli : Tests {
                     'foo.txt'
                 );
                 is(
-                    $root_dir->child('foo.txt')->slurp, "HELLOHELLOHELLO",
-                    "tidied"
+                    $root_dir->child('foo.txt')->slurp, 'HELLOHELLOHELLO',
+                    'tidied'
                 );
 
                 my $subdir = $root_dir->child('subdir');
@@ -588,12 +588,12 @@ sub test_cli : Tests {
                     system( $^X, "-I$cwd/lib", "-I$cwd/t/lib", "$cwd/bin/tidyall", 'foo.txt' );
                 };
                 is(
-                    $root_dir->child( 'subdir', 'foo.txt' )->slurp, "BYEBYEBYE",
-                    "foo.txt tidied"
+                    $root_dir->child( 'subdir', 'foo.txt' )->slurp, 'BYEBYEBYE',
+                    'foo.txt tidied'
                 );
                 is(
-                    $root_dir->child( 'subdir', 'foo2.txt' )->slurp, "bye",
-                    "foo2.txt not tidied"
+                    $root_dir->child( 'subdir', 'foo2.txt' )->slurp, 'bye',
+                    'foo2.txt not tidied'
                 );
 
                 subtest(
@@ -606,8 +606,8 @@ sub test_cli : Tests {
                             \$stdout,
                             \$stderr,
                         );
-                        is( $stdout, "ECHOECHOECHO", "pipe: stdin tidied" );
-                        unlike( $stderr, qr/\S/, "pipe: no stderr" );
+                        is( $stdout, 'ECHOECHOECHO', 'pipe: stdin tidied' );
+                        unlike( $stderr, qr/\S/, 'pipe: no stderr' );
                     }
                 );
 
@@ -621,7 +621,7 @@ sub test_cli : Tests {
                             \$stdout,
                             \$stderr,
                         );
-                        is( $stdout, "abc1", "pipe: stdin mirrored to stdout" );
+                        is( $stdout, 'abc1', 'pipe: stdin mirrored to stdout' );
                         like( $stderr, qr/non-alpha content found/ );
                     }
                 );

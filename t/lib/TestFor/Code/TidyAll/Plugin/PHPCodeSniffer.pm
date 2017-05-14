@@ -18,17 +18,17 @@ sub test_main : Tests {
 
     $self->tidyall(
         source    => $source,
-        conf      => { argv => "--severity=6" },
+        conf      => { argv => '--severity=6' },
         expect_ok => 1,
     );
     $self->tidyall(
         source       => $source,
-        conf         => { argv => "--severity=3" },
+        conf         => { argv => '--severity=3' },
         expect_error => qr/Missing .* doc/,
     );
     $self->tidyall(
         source       => $source,
-        conf         => { argv => "--blahblah" },
+        conf         => { argv => '--blahblah' },
         expect_error => qr/not known/,
     );
 }

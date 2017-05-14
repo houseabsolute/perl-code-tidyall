@@ -34,19 +34,19 @@ sub check {
         my $tidyall_class = $self->tidyall_class;
 
         # Find conf file at git root
-        my $root_dir = capturex( $self->git_path, "rev-parse", "--show-toplevel" );
+        my $root_dir = capturex( $self->git_path, 'rev-parse', '--show-toplevel' );
         chomp($root_dir);
         $root_dir = path($root_dir);
 
         my @conf_names
             = $self->conf_name ? ( $self->conf_name ) : Code::TidyAll->default_conf_names;
         my ($conf_file) = grep { $_->is_file } map { $root_dir->child($_) } @conf_names
-            or die sprintf( "could not find conf file %s", join( " or ", @conf_names ) );
+            or die sprintf( 'could not find conf file %s', join( ' or ', @conf_names ) );
 
         # Store the stash, and restore it upon exiting this scope
         unless ( $self->no_stash ) {
-            run( $self->git_path, "stash", "-q", "--keep-index" );
-            scope_guard { run( $self->git_path, "stash", "pop", "-q" ) };
+            run( $self->git_path, 'stash', '-q', '--keep-index' );
+            scope_guard { run( $self->git_path, 'stash', 'pop', '-q' ) };
         }
 
         # Gather file paths to be committed
@@ -65,7 +65,7 @@ sub check {
             my $error_count = scalar(@error_results);
             $fail_msg = sprintf(
                 "%d file%s did not pass tidyall check\n",
-                $error_count, $error_count > 1 ? "s" : ""
+                $error_count, $error_count > 1 ? 's' : q{}
             );
         }
     }

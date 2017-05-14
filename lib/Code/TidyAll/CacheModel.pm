@@ -71,7 +71,7 @@ sub remove {
 
 sub _sig {
     my ( $self, $data ) = @_;
-    return sha1_hex( join( ",", @$data ) );
+    return sha1_hex( join( ',', @$data ) );
 }
 
 1;
@@ -86,11 +86,11 @@ __END__
 
   my $cache_model = Cody::TidyAll::CacheModel->new(
       cache_engine => Code::TidyAll::Cache->new(...),
-      path         => "/path/to/file/to/cache",
+      path         => '/path/to/file/to/cache',
   );
 
   # check cache
-  print "Yes!" if $cache_model->is_cached;
+  print 'Yes!' if $cache_model->is_cached;
 
   # update cache
   $cache_model->clear_file_contents;

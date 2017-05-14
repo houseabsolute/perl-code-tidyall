@@ -26,7 +26,7 @@ sub validate_file {
         $argv .= q{ } . $self->_config_file_argv;
     }
 
-    my $cmd = sprintf( "%s %s %s", $self->cmd, $argv, $file );
+    my $cmd = sprintf( '%s %s %s', $self->cmd, $argv, $file );
     my $output;
     run3( $cmd, \undef, \$output, \$output );
     if ( $output =~ /\S/ ) {

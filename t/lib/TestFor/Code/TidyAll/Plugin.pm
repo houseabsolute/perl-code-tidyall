@@ -11,7 +11,7 @@ use Path::Tiny qw(path);
 use Test::Class::Most parent => 'TestHelper::Test::Class';
 use Test::Differences qw( eq_or_diff );
 
-__PACKAGE__->SKIP_CLASS("Virtual base class");
+__PACKAGE__->SKIP_CLASS('Virtual base class');
 
 my $Test = Test::Builder->new;
 

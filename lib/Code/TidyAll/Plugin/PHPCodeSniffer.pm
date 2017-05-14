@@ -20,7 +20,7 @@ sub validate_file {
     my $output;
     run3( \@cmd, \undef, \$output, \$output );
     if ( $? > 0 ) {
-        $output ||= "problem running " . $self->cmd;
+        $output ||= 'problem running ' . $self->cmd;
         die "$output\n";
     }
 }
