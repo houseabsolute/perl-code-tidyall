@@ -284,8 +284,8 @@ sub _dump_params {
         ->Terse(1)->Dump;
 }
 
-# This is all ridiculous workaround the fact that there is no good way to tell
-# Data::Dumper how to serialize a Path::Tiny object.
+# This is all a ridiculous workaround around the fact that there is no good
+# way to tell Data::Dumper how to serialize a Path::Tiny object.
 sub _recurse_dump {
     my ($p) = @_;
 
