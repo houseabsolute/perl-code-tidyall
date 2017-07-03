@@ -14,7 +14,7 @@ use Try::Tiny;
 
 use Moo;
 
-our $VERSION = '0.60';
+our $VERSION = '0.61';
 
 # Public
 has 'conf_name'       => ( is => 'ro' );

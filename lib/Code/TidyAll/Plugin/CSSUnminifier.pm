@@ -9,7 +9,7 @@ use Moo;
 
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.60';
+our $VERSION = '0.61';
 
 sub _build_cmd {'cssunminifier'}
 
