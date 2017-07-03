@@ -1,6 +1,6 @@
 package TestFor::Code::TidyAll::Git;
 
-use Capture::Tiny qw(capture_stdout capture_stderr capture);
+use Capture::Tiny qw(capture capture_stderr);
 use Code::TidyAll::Git::Util qw(git_files_to_commit git_modified_files);
 use Code::TidyAll::Util qw(pushd tempdir_simple);
 use Code::TidyAll;
@@ -60,8 +60,8 @@ sub test_git : Tests {
     subtest 'create bare repo and clone it', sub {
         $shared_dir = $temp_dir->child('shared');
         $clone_dir  = $temp_dir->child('clone');
-        runx( qw( git clone -q --bare ), $work_dir, $shared_dir );
-        runx( qw( git clone -q ), $shared_dir, $clone_dir );
+        runx( qw( git clone -q --bare ), $work_dir,   $shared_dir );
+        runx( qw( git clone -q ),        $shared_dir, $clone_dir );
         chdir($clone_dir);
         $self->_assert_nothing_to_commit;
     };
@@ -115,6 +115,97 @@ sub test_git : Tests {
         like( $output, qr/needs tidying/, 'needs tidying' );
         like( $output, qr/Identical push seen 2 times/, 'Identical push seen 2 times' );
         $self->_assert_branch_is_ahead_of_origin;
+    };
+}
+
+sub test_precommit_stash_bug : Tests {
+    my ($self) = @_;
+
+    my ( $temp_dir, $work_dir, $pushd ) = $self->_make_working_dir_and_repo;
+
+    my $foo_file = $work_dir->child('foo.txt');
+    $foo_file->spew("ABC\n");
+
+    my $bar_file = $work_dir->child('bar.txt');
+    $bar_file->spew("DEF\n");
+
+    subtest 'commit two tidy files', sub {
+        $self->_assert_something_to_commit;
+        runx(qw( git add foo.txt bar.txt ));
+        my $output = capture_stderr( sub { runx(qw( git commit -q -m two )) } );
+        like( $output, qr/\Q[checked] foo.txt/, 'tidyall checked foo.txt' );
+        like( $output, qr/\Q[checked] bar.txt/, 'tidyall checked bar.txt' );
+        $self->_assert_nothing_to_commit;
+    };
+
+    $foo_file->spew("abc\n");
+    $bar_file->spew("abc\n");
+
+    subtest 'cannot commit untidy files', sub {
+        $self->_assert_something_to_commit;
+        my $output = capture_stderr( sub { system(qw( git commit -q -a -m untidy )) } );
+        like(
+            $output,
+            qr/2 files did not pass tidyall check/,
+            'commit failed because 2 files are untidy'
+        );
+        $self->_assert_something_to_commit;
+    };
+
+    $foo_file->spew("ABC\n");
+
+    my $baz_file = $work_dir->child('baz.txt');
+    $baz_file->spew("ABC\n");
+
+    subtest 'commit one valid file and working directory is left intact', sub {
+        runx(qw( git add foo.txt ));
+        my ( $stdout, $stderr ) = capture( sub { system(qw( git commit -q -m foo )) } );
+        like(
+            $stdout,
+            qr/modified:\s+bar\.txt/,
+            'commit shows bar.txt as still modified'
+        );
+        is_deeply( [ git_files_to_commit($work_dir) ], [], 'no files to commit' );
+        is_deeply(
+            [ git_modified_files($work_dir) ],
+            [$bar_file],
+            'bar.txt is still modified in working directory'
+        );
+
+        my $status = capturex(qw( git status --porcelain -unormal ));
+        like(
+            $status,
+            qr/^\?\?\s+baz.txt/m,
+            'baz.txt is still untracked in working directory'
+        );
+    };
+
+    $foo_file->spew("abc\n");
+    subtest 'commit one invalid file and working directory is left intact', sub {
+        runx(qw( git add foo.txt ));
+        my ( undef, $stderr ) = capture( sub { system(qw( git commit -q -m foo )) } );
+        like(
+            $stderr,
+            qr/needs tidying/,
+            'commit fails because flie is not tidied'
+        );
+        is_deeply(
+            [ git_files_to_commit($work_dir) ],
+            [$foo_file],
+            'foo.txt is still in the index'
+        );
+        is_deeply(
+            [ git_modified_files($work_dir) ],
+            [ $bar_file, $foo_file ],
+            'bar.txt is still modified in working directory'
+        );
+
+        my $status = capturex(qw( git status --porcelain -unormal ));
+        like(
+            $status,
+            qr/^\?\?\s+baz.txt/m,
+            'baz.txt is still untracked in working directory'
+        );
     };
 }
 
