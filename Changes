@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.60     2017-07-03
+
 - Attempted to fix a bug related to how git stash is used in the git
   pre-commit hook. The "git stash pop" command was happening too early, which
   would block commits when all the files in the index were tidy but the
