@@ -6,10 +6,10 @@ use warnings;
 use Capture::Tiny qw(capture_stdout capture_stderr);
 use Code::TidyAll::Git::Util qw(git_files_to_commit);
 use Code::TidyAll;
-use Guard;
 use IPC::System::Simple qw(capturex run);
 use Log::Any qw($log);
 use Path::Tiny qw(path);
+use Scope::Guard qw(guard);
 use Try::Tiny;
 
 use Moo;
@@ -34,7 +34,7 @@ sub check {
         my $tidyall_class = $self->tidyall_class;
 
         # Find conf file at git root
-        my $root_dir = capturex( $self->git_path, 'rev-parse', '--show-toplevel' );
+        my $root_dir = capturex( $self->git_path, qw( rev-parse --show-toplevel ) );
         chomp($root_dir);
         $root_dir = path($root_dir);
 
@@ -43,10 +43,20 @@ sub check {
         my ($conf_file) = grep { $_->is_file } map { $root_dir->child($_) } @conf_names
             or die sprintf( 'could not find conf file %s', join( ' or ', @conf_names ) );
 
-        # Store the stash, and restore it upon exiting this scope
+        my $guard;
         unless ( $self->no_stash ) {
-            run( $self->git_path, 'stash', '-q', '--keep-index' );
-            scope_guard { run( $self->git_path, 'stash', 'pop', '-q' ) };
+
+            # There might be no unindexed changes to stash, but calling "git
+            # stash" always creates an entry in the stash, so we want to pop
+            # it off no matter what. We use the guard to make sure that we
+            # only attempt to run tidyall on changes in the index while
+            # ensuring that after the hook runs the working directory is in
+            # the same state it was before the commit.
+            capturex(
+                $self->git_path, qw( stash save --keep-index --include-untracked ),
+                'TidyAll pre-commit guard'
+            );
+            $guard = guard { run( $self->git_path, 'stash', 'pop', '-q' ) };
         }
 
         # Gather file paths to be committed

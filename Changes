@@ -1,5 +1,11 @@
 {{$NEXT}}
 
+- Attempted to fix a bug related to how git stash is used in the git
+  pre-commit hook. The "git stash pop" command was happening too early, which
+  would block commits when all the files in the index were tidy but the
+  working directory contained untidy files. Based on PR #58 from Finn Smith.
+
+
 0.59     2017-05-14
 
 - Work around issue with Perl::Tidy when Getopt::Long::Configure is called

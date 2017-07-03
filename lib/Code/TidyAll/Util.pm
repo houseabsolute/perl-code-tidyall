@@ -10,7 +10,7 @@ use File::Path qw(mkpath);
 use File::Slurp::Tiny qw(read_file write_file);
 
 use File::Spec;
-use Guard;
+use Scope::Guard qw(guard);
 use Path::Tiny 0.098 qw(cwd path tempdir);
 use Try::Tiny;
 
