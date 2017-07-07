@@ -13,7 +13,7 @@ use Moo;
 
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.61';
+our $VERSION = '0.62';
 
 has 'ispell_argv' => ( is => 'ro', default => q{} );
 has 'ispell_cmd'  => ( is => 'ro', default => 'ispell' );

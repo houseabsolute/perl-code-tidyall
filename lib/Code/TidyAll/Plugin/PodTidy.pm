@@ -10,7 +10,7 @@ use Moo;
 
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.61';
+our $VERSION = '0.62';
 
 has 'columns' => ( is => 'ro' );
 

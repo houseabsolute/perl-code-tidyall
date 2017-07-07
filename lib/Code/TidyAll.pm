@@ -28,7 +28,7 @@ use Try::Tiny;
 
 use Moo 2.000000;
 
-our $VERSION = '0.61';
+our $VERSION = '0.62';
 
 sub default_conf_names { ( 'tidyall.ini', '.tidyallrc' ) }
 
