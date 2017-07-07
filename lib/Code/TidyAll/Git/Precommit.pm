@@ -52,11 +52,12 @@ sub check {
             # only attempt to run tidyall on changes in the index while
             # ensuring that after the hook runs the working directory is in
             # the same state it was before the commit.
-            capturex(
+            my $output = capturex(
                 $self->git_path, qw( stash save --keep-index --include-untracked ),
                 'TidyAll pre-commit guard'
             );
-            $guard = guard { run( $self->git_path, 'stash', 'pop', '-q' ) };
+            $guard = guard { run( $self->git_path, 'stash', 'pop', '-q' ) }
+            unless $output =~ /No local changes/;
         }
 
         # Gather file paths to be committed

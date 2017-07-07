@@ -1,5 +1,13 @@
 {{$NEXT}}
 
+- Fixed a Git pre-commit hook stash bug. The hook would always call "git stash
+  pop" even if the call it had just made to "git stash" hadn't added anything
+  to the stash. If the stash had anything on it, this could make a mess of
+  your working directory. This showed up most often with calls to "git commit
+  --amend" where you were trying to just edit the prior commit message, since
+  you would be unlikely to have any changes to stash when doing so.
+
+
 0.60     2017-07-03
 
 - Attempted to fix a bug related to how git stash is used in the git

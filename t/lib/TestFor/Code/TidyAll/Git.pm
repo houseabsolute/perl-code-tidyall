@@ -7,6 +7,7 @@ use Code::TidyAll;
 use IPC::System::Simple qw(capturex runx);
 use Path::Tiny qw(cwd path);
 use Test::Class::Most parent => 'TestHelper::Test::Class';
+use Try::Tiny;
 
 my ( $precommit_hook_template, $prereceive_hook_template, $tidyall_ini_template );
 
@@ -118,7 +119,7 @@ sub test_git : Tests {
     };
 }
 
-sub test_precommit_stash_bug : Tests {
+sub test_precommit_stash_issues : Tests {
     my ($self) = @_;
 
     my ( $temp_dir, $work_dir, $pushd ) = $self->_make_working_dir_and_repo;
@@ -187,7 +188,7 @@ sub test_precommit_stash_bug : Tests {
         like(
             $stderr,
             qr/needs tidying/,
-            'commit fails because flie is not tidied'
+            'commit fails because file is not tidied'
         );
         is_deeply(
             [ git_files_to_commit($work_dir) ],
@@ -205,6 +206,31 @@ sub test_precommit_stash_bug : Tests {
             $status,
             qr/^\?\?\s+baz.txt/m,
             'baz.txt is still untracked in working directory'
+        );
+    };
+
+    runx(qw( git clean -q -dxf ));
+
+    # We need to add to the stash so we can make sure that it's not popped
+    # incorrectly later.
+    $foo_file->spew("abC\n");
+    runx(qw( git stash -q ));
+
+    subtest 'precommit hook does not pop when it did not stash', sub {
+        $foo_file->spew("ABCD\n");
+        runx(qw( git commit -q -a -m changed ));
+
+        # The bug we're fixing is that this commit would always pop the stash,
+        # even though the Precommit hook's call to "git stash" hadn't _added_
+        # to the stash. This meant we'd end up potentially popping some random
+        # thing off the stash, making a huge mess.
+        my $e;
+        try { runx(qw( git commit -q --amend -m amended )) }
+        catch { $e = $_ };
+        is(
+            $e,
+            undef,
+            'no bogus pop amending a commit when the stash has old content'
         );
     };
 }
