@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.61     2017-07-07
+
 - Fixed a Git pre-commit hook stash bug. The hook would always call "git stash
   pop" even if the call it had just made to "git stash" hadn't added anything
   to the stash. If the stash had anything on it, this could make a mess of
