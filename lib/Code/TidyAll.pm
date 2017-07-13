@@ -8,13 +8,13 @@ use Code::TidyAll::CacheModel;
 use Code::TidyAll::Config::INI::Reader;
 use Code::TidyAll::Plugin;
 use Code::TidyAll::Result;
-use Code::TidyAll::Util qw(can_load);
 use Data::Dumper;
 use Date::Format;
 use Digest::SHA qw(sha1_hex);
 use File::Find qw(find);
 use File::Zglob;
 use List::SomeUtils qw(uniq);
+use Module::Runtime qw( use_module );
 use Path::Tiny qw(path);
 use Scalar::Util qw(blessed);
 use Specio 0.30;
@@ -262,7 +262,7 @@ sub new_from_conf_file {
     # Initialize with alternate class if given
     #
     if ( my $tidyall_class = delete( $params{tidyall_class} ) ) {
-        die qq{cannot load '$tidyall_class'} unless can_load($tidyall_class);
+        die qq{cannot load '$tidyall_class'} unless use_module($tidyall_class);
         $class = $tidyall_class;
     }
 
@@ -354,7 +354,7 @@ sub _load_plugin {
         : "Code::TidyAll::Plugin::$plugin_fname"
     );
     try {
-        can_load($plugin_class) || die 'not found';
+        use_module($plugin_class) || die 'not found';
     }
     catch {
         die qq{could not load plugin class '$plugin_class': $_};

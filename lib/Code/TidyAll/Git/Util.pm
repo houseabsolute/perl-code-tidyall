@@ -3,7 +3,7 @@ package Code::TidyAll::Git::Util;
 use strict;
 use warnings;
 
-use Code::TidyAll::Util qw(pushd);
+use File::pushd qw(pushd);
 use IPC::System::Simple qw(capturex);
 use List::SomeUtils qw(uniq);
 use Path::Tiny qw(path);
