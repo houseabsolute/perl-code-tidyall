@@ -3,7 +3,7 @@ package Code::TidyAll::Util;
 use strict;
 use warnings;
 
-# These are loaded aned exported purely for backwards compat since some of Jon
+# These are loaded and exported purely for backwards compat since some of Jon
 # Swartz's plugins use these in their tests :(
 use File::Basename qw(dirname);
 use File::Path qw(mkpath);
