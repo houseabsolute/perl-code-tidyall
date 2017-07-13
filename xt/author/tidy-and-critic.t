@@ -6,7 +6,7 @@ use Path::Tiny qw(path);
 use Test::More;
 use Capture::Tiny qw(capture_merged);
 
-my $root_dir = tempdir_simple('Code-TidyAll-XXXX');
+my $root_dir = tempdir_simple();
 
 sub make {
     my ( $file, $content ) = @_;
