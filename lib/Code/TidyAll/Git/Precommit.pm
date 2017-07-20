@@ -46,12 +46,13 @@ sub check {
         my $guard;
         unless ( $self->no_stash ) {
 
-            # There might be no unindexed changes to stash, but calling "git
-            # stash" always creates an entry in the stash, so we want to pop
-            # it off no matter what. We use the guard to make sure that we
-            # only attempt to run tidyall on changes in the index while
-            # ensuring that after the hook runs the working directory is in
-            # the same state it was before the commit.
+            # We stash things to make sure that we only attempt to run tidyall
+            # on changes in the index while ensuring that after the hook runs
+            # the working directory is in the same state it was before the
+            # commit.
+            #
+            # If there's nothing to stash there's no stash entry, in which
+            # case popping would be very bad.
             my $output = capturex(
                 $self->git_path, qw( stash save --keep-index --include-untracked ),
                 'TidyAll pre-commit guard'
