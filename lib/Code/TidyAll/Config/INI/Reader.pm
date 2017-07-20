@@ -7,7 +7,7 @@ use base qw(Config::INI::Reader);
 
 our $VERSION = '0.62';
 
-my %multi_value = map { $_ => 1 } qw( ignore select shebang );
+my %multi_value = map { $_ => 1 } qw( ignore inc select shebang );
 
 sub set_value {
     my ( $self, $name, $value ) = @_;

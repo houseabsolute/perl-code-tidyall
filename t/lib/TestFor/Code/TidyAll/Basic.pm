@@ -631,4 +631,31 @@ sub test_cli : Tests {
     }
 }
 
+sub test_inc : Tests {
+    my $self = shift;
+
+    my $root_dir = $self->create_dir( { 'foo.txt' => 'abc' } );
+
+    my $ct = Code::TidyAll->new(
+        inc     => [ 't/inc1', 't/inc2' ],
+        plugins => {
+            test_plugin('UpperText') => { select => '**/*.txt' },
+            '+Foo'                   => { select => '*' },
+            '+Bar'                   => { select => '*' },
+        },
+        root_dir => $root_dir,
+    );
+
+    is_deeply(
+        [ sort map { ref($_) } @{ $ct->plugin_objects } ],
+        [qw( Bar Foo TestHelper::Plugin::UpperText )],
+        'when inc is provided it is used when loading plugins'
+    );
+
+    # We don't care what the plugins do, just that they run. One of the
+    # plugins we loaded, Foo.pm, contains some code which executes some tests.
+    my $file = $root_dir->child('foo.txt');
+    $ct->process_paths($file);
+}
+
 1;

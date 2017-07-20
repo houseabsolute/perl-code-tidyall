@@ -139,6 +139,12 @@ has 'verbose' => (
     default => 0,
 );
 
+has 'inc' => (
+    is  => 'ro',
+    isa => t( 'ArrayRef', of => t('NonEmptyStr') ),
+    default => sub { [] },
+);
+
 # Internal
 has 'backup_dir' => (
     is       => 'lazy',
@@ -242,6 +248,8 @@ sub BUILD {
         $self->backup_dir->mkpath( { mode => 0775 } );
         $self->_purge_backups_periodically();
     }
+
+    @INC = ( @{ $self->inc }, @INC );
 }
 
 sub new_from_conf_file {
@@ -262,7 +270,8 @@ sub new_from_conf_file {
     # Initialize with alternate class if given
     #
     if ( my $tidyall_class = delete( $params{tidyall_class} ) ) {
-        die qq{cannot load '$tidyall_class'} unless use_module($tidyall_class);
+        local @INC = ( @{ $conf_params->{inc} }, @INC ) if $conf_params->{inc};
+        use_module($tidyall_class) or die qq{cannot load '$tidyall_class'};
         $class = $tidyall_class;
     }
 
@@ -873,6 +882,13 @@ actually written back to the file.
 
 A boolean indicating if we should skip cleaning temporary files or not.
 Defaults to false.
+
+=item inc
+
+An arrayref of directories to prepend to C<@INC>. This can be set via the
+command-line as C<-I>, but you can also set it in a config file.
+
+This affects both loading and running plugins.
 
 =item data_dir
 

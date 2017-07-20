@@ -10,6 +10,8 @@ my @tests = (
         config => <<'EOF',
 backup_ttl = 5m
 no_cache = 1
+inc = /foo
+inc = /bar
 
 [+TestHelper::Plugin::UpperText]
 select = **/*.txt
@@ -22,6 +24,7 @@ EOF
         methods => {
             backup_ttl      => '5m',
             backup_ttl_secs => '300',
+            inc             => [ '/foo', '/bar' ],
             no_backups      => undef,
             no_cache        => 1,
             plugins         => {

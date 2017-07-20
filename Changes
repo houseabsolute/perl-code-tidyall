@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- Added support for a global config option "inc". This allows you to prepend
+  directories to @INC when loading a configured tidyall_class or plugins. This
+  is equivalent to the command line's -I option.
+
+
 0.61     2017-07-07
 
 - Fixed a Git pre-commit hook stash bug. The hook would always call "git stash

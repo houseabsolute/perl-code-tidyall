@@ -669,6 +669,13 @@ above the plugin sections. Replace dashes with underscores. e.g.
 
 If an option is passed in both places, the command-line takes precedence.
 
+=head3 inc
+
+You can specify C<inc> as a global configuration option outside of any
+plugin's section. You can specify this more than once to include multiple
+directories. Any directories you list here will be I<prepended> to C<@INC>
+before loading plugins or a C<tidyall_class>
+
 =head1 EXIT STATUS
 
 C<tidyall> will exit with status 1 if any errors occurred while processing
