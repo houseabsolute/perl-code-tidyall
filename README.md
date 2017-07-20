@@ -4,7 +4,7 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
 # VERSION
 
-version 0.61
+version 0.62
 
 # SYNOPSIS
 
@@ -84,6 +84,13 @@ You can call this API from your own program instead of executing `tidyall`.
 
     A boolean indicating if we should skip cleaning temporary files or not.
     Defaults to false.
+
+- inc
+
+    An arrayref of directories to prepend to `@INC`. This can be set via the
+    command-line as `-I`, but you can also set it in a config file.
+
+    This affects both loading and running plugins.
 
 - data\_dir
 - iterations

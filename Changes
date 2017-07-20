@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.62     2017-07-20
+
 - Added support for a global config option "inc". This allows you to prepend
   directories to @INC when running tidyall. This affects both loading classes
   and running plugins. This is equivalent to the command line's -I option.
