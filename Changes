@@ -1,8 +1,8 @@
 {{$NEXT}}
 
 - Added support for a global config option "inc". This allows you to prepend
-  directories to @INC when loading a configured tidyall_class or plugins. This
-  is equivalent to the command line's -I option.
+  directories to @INC when running tidyall. This affects both loading classes
+  and running plugins. This is equivalent to the command line's -I option.
 
 
 0.61     2017-07-07
