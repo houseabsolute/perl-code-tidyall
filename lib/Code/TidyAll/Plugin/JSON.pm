@@ -7,7 +7,7 @@ use JSON::MaybeXS ();
 
 use Moo;
 
-our $VERSION = '0.62';
+our $VERSION = '0.63';
 
 extends 'Code::TidyAll::Plugin';
 
