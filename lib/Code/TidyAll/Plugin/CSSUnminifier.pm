@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use IPC::System::Simple qw(run);
+use Text::ParseWords qw(shellwords);
 
 use Moo;
 
@@ -16,7 +17,7 @@ sub _build_cmd {'cssunminifier'}
 sub transform_file {
     my ( $self, $file ) = @_;
 
-    run( $self->cmd, $self->argv, $file, $file );
+    run( $self->cmd, shellwords( $self->argv ), $file, $file );
 }
 
 1;

@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use IPC::Run3;
+use Text::ParseWords qw(shellwords);
 
 use Moo;
 
@@ -16,7 +17,7 @@ sub _build_cmd {'phpcs'}
 sub validate_file {
     my ( $self, $file ) = @_;
 
-    my @cmd = ( $self->cmd, $self->argv, $file );
+    my @cmd = ( $self->cmd, shellwords( $self->argv ), $file );
     my $output;
     run3( \@cmd, \undef, \$output, \$output );
     if ( $? > 0 ) {

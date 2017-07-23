@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use IPC::Run3 qw(run3);
+use Text::ParseWords qw(shellwords);
 
 use Moo;
 
@@ -20,14 +21,12 @@ sub _build_cmd {'jshint'}
 sub validate_file {
     my ( $self, $file ) = @_;
 
-    my $argv = $self->argv || q{};
-    if ( $self->_has_options ) {
-        $argv .= q{ } . $self->_config_file_argv;
-    }
+    my @cmd = ( $self->cmd, shellwords( $self->argv ) );
+    push @cmd, $self->_config_file_argv if $self->_has_options;
+    push @cmd, $file;
 
-    my $cmd = sprintf( '%s %s %s', $self->cmd, $argv, $file );
     my $output;
-    run3( $cmd, \undef, \$output, \$output );
+    run3( \@cmd, \undef, \$output, \$output );
     if ( $output =~ /\S/ ) {
         $output =~ s/^$file:\s*//gm;
         die "$output\n";
@@ -40,7 +39,7 @@ sub _config_file_argv {
     my $conf_file = $self->_tempdir->child('jshint.json');
     $conf_file->spew(
         '{ ' . join( ",\n", map {qq["$_": true]} split /\s+/, $self->options ) . ' }' );
-    return "--config $conf_file";
+    return '--config', $conf_file;
 }
 
 1;

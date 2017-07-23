@@ -1,5 +1,14 @@
 {{$NEXT}}
 
+- All plugins should now work when run against paths that include
+  spaces. Previously, many plugins would fail because they were calling system
+  commands by passing a single string rather than a list of arguments. Note
+  that we now parse the "argv" given in the config file use
+  Text::ParseWords::shellwords. It's possible that this could break your setup
+  if you have some very pathological configuration options. Bug reports are
+  welcome. Fixes #79.
+
+
 0.62     2017-07-20
 
 - Added support for a global config option "inc". This allows you to prepend

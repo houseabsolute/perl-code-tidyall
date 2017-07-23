@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use IPC::Run3 qw(run3);
+use Text::ParseWords qw(shellwords);
 
 use Moo;
 
@@ -16,9 +17,9 @@ sub _build_cmd {'perlcritic'}
 sub validate_file {
     my ( $self, $file ) = @_;
 
-    my $cmd = sprintf( '%s %s %s', $self->cmd, $self->argv, $file );
+    my @cmd = ( $self->cmd, shellwords( $self->argv ), $file );
     my $output;
-    run3( $cmd, \undef, \$output, \$output );
+    run3( \@cmd, \undef, \$output, \$output );
     die "$output\n" if $output !~ /^.* source OK\n/s;
 }
 

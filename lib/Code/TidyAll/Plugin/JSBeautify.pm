@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use IPC::Run3 qw(run3);
+use Text::ParseWords qw(shellwords);
 use Try::Tiny;
 
 use Moo;
@@ -18,10 +19,9 @@ sub transform_file {
     my ( $self, $file ) = @_;
 
     try {
-        my $cmd = join( ' ', $self->cmd, $self->argv, $file );
-
+        my @cmd = ( $self->cmd, shellwords( $self->argv ), $file );
         my $output;
-        my $exit = run3( $cmd, \undef, \$output, \$output );
+        my $exit = run3( \@cmd, \undef, \$output, \$output );
         die "exited with $?\n" if $?;
         $file->spew($output);
     }
