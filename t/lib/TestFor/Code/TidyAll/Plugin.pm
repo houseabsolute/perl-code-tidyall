@@ -20,8 +20,8 @@ sub startup : Tests(startup => no_plan) {
 
     $self->{root_dir} = tempdir_simple();
 
-    my $extra = $self->_extra_path();
-    $ENV{PATH} .= q{:} . $extra if $extra;
+    my @extra = $self->_extra_path();
+    $ENV{PATH} .= q{:} . join ':', @extra if @extra;
 
     return;
 }
