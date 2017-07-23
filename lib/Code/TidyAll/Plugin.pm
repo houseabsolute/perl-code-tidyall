@@ -236,9 +236,11 @@ as parameters. e.g. given
 
 then L<Code::TidyAll::Plugin::PerlCritic> would be constructed with parameters
 
-    select => 'lib/**/*.pm',
-    ignore = 'lib/UtterHack.pm',
-    argv = '-severity 3'
+    Code::TidyAll::Plugin::PerlCritic->new(
+        select => 'lib/**/*.pm',
+        ignore => 'lib/UtterHack.pm',
+        argv   => '-severity 3',
+    );
 
 The following attributes are part of this base class. Your subclass can declare
 others, of course.
