@@ -5,9 +5,7 @@ use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 sub test_main : Tests {
     my $self = shift;
 
-    my $source;
-
-    $source = "%if(\$foo) {\n%bar(1,2);\n%}";
+    my $source = "%if(\$foo) {\n%bar(1,2);\n%}";
     $self->tidyall(
         source      => $source,
         conf        => { argv => '-m 1' },
