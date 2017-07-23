@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.63     2017-07-23
+
 - All plugins should now work when run against paths that include
   spaces. Previously, many plugins would fail because they were calling system
   commands by passing a single string rather than a list of arguments. Note
