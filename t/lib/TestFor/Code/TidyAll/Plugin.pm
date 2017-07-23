@@ -37,12 +37,10 @@ sub test_filename {'foo.txt'}
 sub tidyall {
     my ( $self, %p ) = @_;
 
-    my $plugin_class = $self->plugin_class;
-    my %plugin_conf  = ( $plugin_class => { select => '*', %{ $p{conf} || {} } } );
-    my $ct           = Code::TidyAll->new(
+    my $ct = Code::TidyAll->new(
         quiet    => 1,
         root_dir => $self->{root_dir},
-        plugins  => \%plugin_conf,
+        plugins  => ( $p{plugin_conf} ? $p{plugin_conf} : $self->_plugin_conf( $p{conf} ) ),
     );
 
     my ( $source, $result, $output, $error );
@@ -87,6 +85,14 @@ sub tidyall {
         is( $result->state, 'error', "state=error [$desc]" );
         like( $result->error || '', $expect_error, "error message [$desc]" );
     }
+}
+
+sub _plugin_conf {
+    my $self = shift;
+    my $conf = shift;
+
+    my $plugin_class = $self->plugin_class;
+    return { $plugin_class => { select => '*', %{ $conf || {} } } };
 }
 
 sub _extra_path {
