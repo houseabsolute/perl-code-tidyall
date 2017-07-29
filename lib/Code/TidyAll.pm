@@ -176,6 +176,13 @@ has 'plugins_for_mode' => (
     init_arg => undef,
 );
 
+has '_plugins_for_path' => (
+    is  => 'lazy',
+    isa => t( 'HashRef', of => t('HashRef') ),
+    default  => sub { {} },
+    init_arg => undef,
+);
+
 with qw( Code::TidyAll::Role::HasIgnore Code::TidyAll::Role::Tempdir );
 
 sub _build_backup_dir {
@@ -241,8 +248,6 @@ sub BUILD {
             ref($self)
         );
     }
-
-    $self->{plugins_for_path} = {};
 
     unless ( $self->no_backups ) {
         $self->backup_dir->mkpath( { mode => 0775 } );
@@ -691,7 +696,7 @@ sub find_matched_files {
     my ($self) = @_;
 
     my @matched_files;
-    my $plugins_for_path = $self->{plugins_for_path};
+    my $plugins_for_path = $self->_plugins_for_path;
     my $root_length      = length( $self->root_dir );
     foreach my $plugin ( @{ $self->plugin_objects } ) {
         my @selected = grep { -f && !-l } $self->_zglob( $plugin->selects );
@@ -722,9 +727,9 @@ sub find_matched_files {
 sub plugins_for_path {
     my ( $self, $path ) = @_;
 
-    $self->{plugins_for_path}->{$path}
+    $self->_plugins_for_path->{$path}
         ||= [ grep { $_->matches_path($path) } @{ $self->plugin_objects } ];
-    return @{ $self->{plugins_for_path}->{$path} };
+    return @{ $self->_plugins_for_path->{$path} };
 }
 
 sub _parse_zglob_list {
