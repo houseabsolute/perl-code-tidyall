@@ -405,7 +405,7 @@ sub process_paths {
     @paths = map {
         try { $_->realpath }
             || $_->absolute
-    } map { path($_) } @paths;
+    } map { path($_) } sort { $a cmp $b } @paths;
 
     if ( $self->jobs > 1 && @paths > 1 ) {
         return $self->_process_parallel(@paths);
@@ -695,33 +695,46 @@ sub _find_conf_file_upward {
 sub find_matched_files {
     my ($self) = @_;
 
-    my @matched_files;
     my $plugins_for_path = $self->_plugins_for_path;
     my $root_length      = length( $self->root_dir );
-    foreach my $plugin ( @{ $self->plugin_objects } ) {
-        my @selected = grep { -f && !-l } $self->_zglob( $plugin->selects );
-        my @ignores = ( @{ $self->ignores || [] }, @{ $plugin->ignores || [] } );
-        if (@ignores) {
-            my %is_ignored = map { ( $_, 1 ) } $self->_zglob( \@ignores );
-            @selected = grep { !$is_ignored{$_} } @selected;
-        }
-        if ( my $shebang = $plugin->shebang ) {
-            my $re = join '|', map {quotemeta} @{$shebang};
-            $re       = qr/^#!.*\b(?:$re)\b/;
-            @selected = grep {
-                my $fh;
-                open $fh, '<', $_ and <$fh> =~ /$re/;
-            } @selected;
-        }
-        push( @matched_files, @selected );
-        foreach my $file (@selected) {
+
+    my @all;
+    for my $plugin ( @{ $self->plugin_objects } ) {
+        my @matched = $self->_matched_by_plugin($plugin);
+        push @all, @matched;
+
+        # When we end up in process_source we'll need to know which plugins
+        # match a given file. This could be (re-)calculated When we call
+        # ->plugins_for_path($file) there but since we already know the path
+        # to plugin mapping, we might as well store it here.
+        for my $file (@matched) {
             my $path = substr( $file, $root_length + 1 );
             $plugins_for_path->{$path} ||= [];
-            push( @{ $plugins_for_path->{$path} }, $plugin );
+            push @{ $plugins_for_path->{$path} }, $plugin;
         }
     }
 
-    return map { path($_) } sort( uniq(@matched_files) );
+    return map { path($_) } uniq(@all);
+}
+
+sub _matched_by_plugin {
+    my $self   = shift;
+    my $plugin = shift;
+
+    my %is_ignored = map { $_ => 1 }
+        $self->_zglob( [ @{ $self->ignores || [] }, @{ $plugin->ignores || [] } ] );
+    my @matched = grep { !$is_ignored{$_} } grep { -f && !-l } $self->_zglob( $plugin->selects );
+
+    my $shebang = $plugin->shebang
+        or return @matched;
+
+    my $re = join '|', map {quotemeta} @{$shebang};
+    $re = qr/^#!.*\b(?:$re)\b/;
+    return grep {
+        my $fh;
+        open $fh, '<', $_ or die $!;
+        scalar <$fh> =~ /$re/;
+    } @matched;
 }
 
 sub plugins_for_path {
