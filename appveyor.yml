@@ -1,16 +1,26 @@
+---
+skip_tags: true
 cache:
   - C:\strawberry
-
+environment:
+  nodejs_version: "6"
 install:
   - if not exist "C:\strawberry" cinst strawberryperl -y
   - set PATH=C:\strawberry\perl\bin;C:\strawberry\perl\site\bin;C:\strawberry\c\bin;%PATH%
-  - cd C:\projects\%APPVEYOR_PROJECT_NAME%
+  - cd %APPVEYOR_BUILD_FOLDER%
   - cpanm --installdeps . -n
-
+  # Is there a better way to get the list of DevelopRequires modules?
+  - cpanm -n CHI Code::TidyAll::Plugin::Perl::AlignMooseAttributes JSON::MaybeXS Mason::Tidy Mason::Tidy::App Parallel::ForkManager Perl::Critic::Policy::Moose::RequireMakeImmutable Perl::Tidy Perl::Tidy::Sweetened Pod::Checker Pod::Spell Pod::Tidy SVN::Look
+  - ps: Install-Product node $env:nodejs_version
+  # See https://www.chadsikorra.com/blog/appveyor-chocolatey-php - without
+  # this some of the PHP prereq packages fail to install
+  - ps: Set-Service wuauserv -StartupType "Automatic"; Start-Service wuauserv
+  - cinst php
 build_script:
   - perl -e 1
-
 test_script:
-  - prove -lrv t/
+  - prove -lrv t/ xt/
+### __app_cisetup__
+# --- {}
 
-skip_tags: true
+### __app_cisetup__
