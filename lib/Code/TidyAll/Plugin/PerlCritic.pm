@@ -12,7 +12,9 @@ extends 'Code::TidyAll::Plugin';
 
 our $VERSION = '0.64';
 
-sub _build_cmd {'perlcritic'}
+# On Windows only the batch file is actually executable.
+my $cmd = $^O eq 'MSWin32' ? 'perlcritic.bat' : 'perlcritic';
+sub _build_cmd {$cmd}
 
 sub validate_file {
     my ( $self, $file ) = @_;
