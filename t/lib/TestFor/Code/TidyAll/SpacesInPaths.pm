@@ -98,18 +98,23 @@ EOF
 
     $file->spew($source);
 
-    $self->tidyall(
-        plugin_conf => {
-            PerlCritic => {
-                argv   => '--gentle',
-                select => '**/*.pl'
-            },
-            PerlTidy      => { select => '**/*.pl' },
-            PerlTidySweet => { select => '**/*.pl' },
-            PodChecker    => { select => '**/*.pl' },
-            PodSpell      => { select => '**/*.pl' },
-            PodTidy       => { select => '**/*.pl' },
+    my %plugins = (
+        PerlCritic => {
+            argv   => '--gentle',
+            select => '**/*.pl'
         },
+        PerlTidy      => { select => '**/*.pl' },
+        PerlTidySweet => { select => '**/*.pl' },
+        PodChecker    => { select => '**/*.pl' },
+        PodTidy       => { select => '**/*.pl' },
+    );
+
+    # No ispell on Windows
+    $plugins{PodSpell} = { select => '**/*.pl' }
+        unless $^O eq 'MSWin32';
+
+    $self->tidyall(
+        plugin_conf => \%plugins,
         source_file => $file,
         expect_ok   => 1,
     );
