@@ -6,6 +6,7 @@ requires "Date::Format" => "0";
 requires "Digest::SHA" => "0";
 requires "Exporter" => "0";
 requires "File::Find" => "0";
+requires "File::Spec" => "0";
 requires "File::Which" => "0";
 requires "File::Zglob" => "0";
 requires "File::pushd" => "0";

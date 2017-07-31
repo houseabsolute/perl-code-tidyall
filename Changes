@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.64     2017-07-31
+
 - Bug fixes on Windows. Now all plugins except PodSpell (which requires
   ispell) should work on Windows. This should all fix test failures seen in
   CPANTesters on Windows.

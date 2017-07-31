@@ -27,6 +27,7 @@ my %WriteMakefileArgs = (
     "Digest::SHA" => 0,
     "Exporter" => 0,
     "File::Find" => 0,
+    "File::Spec" => 0,
     "File::Which" => 0,
     "File::Zglob" => 0,
     "File::pushd" => 0,
