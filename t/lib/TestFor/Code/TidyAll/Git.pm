@@ -10,9 +10,14 @@ use Path::Tiny qw(cwd path);
 use Test::Class::Most parent => 'TestHelper::Test::Class';
 use Try::Tiny;
 
+use constant IS_WIN32 => $^O eq 'MSWin32';
+
 my ( $precommit_hook_template, $prereceive_hook_template, $tidyall_ini_template );
 
 my $Cwd = cwd()->realpath;
+
+$ENV{GIT_AUTHOR_NAME}  = $ENV{GIT_COMMITTER_NAME}  = 'G. Author';
+$ENV{GIT_AUTHOR_EMAIL} = $ENV{GIT_COMMITTER_EMAIL} = 'git-author@example.com';
 
 sub test_git : Tests {
     my ($self) = @_;
@@ -62,8 +67,9 @@ sub test_git : Tests {
     subtest 'create bare repo and clone it', sub {
         $shared_dir = $temp_dir->child('shared');
         $clone_dir  = $temp_dir->child('clone');
-        runx( qw( git clone -q --bare ), $work_dir,   $shared_dir );
-        runx( qw( git clone -q ),        $shared_dir, $clone_dir );
+
+        runx( qw( git clone -q --bare ), map { _quote_for_win32($_) } $work_dir,   $shared_dir );
+        runx( qw( git clone -q ),        map { _quote_for_win32($_) } $shared_dir, $clone_dir );
         chdir($clone_dir);
         $self->_assert_nothing_to_commit;
     };
@@ -118,6 +124,15 @@ sub test_git : Tests {
         like( $output, qr/Identical push seen 2 times/, 'Identical push seen 2 times' );
         $self->_assert_branch_is_ahead_of_origin;
     };
+}
+
+sub _quote_for_win32 {
+
+    # The docs for IPC::System::Simple lie about how iallt works on
+    # Windows. On Windows it _always_ invokes a shell, so we need to quote a
+    # path with spaces.
+    return $_[0] unless IS_WIN32 && $_[0] =~ / /;
+    return qq{"$_[0]"};
 }
 
 sub test_precommit_stash_issues : Tests {
@@ -245,7 +260,8 @@ sub _make_working_dir_and_repo {
     my $work_dir  = $temp_dir->child('work');
     my $hooks_dir = $work_dir->child(qw( .git hooks ));
 
-    runx( qw( git init -q ), $work_dir );
+    runx( qw( git init -q ), _quote_for_win32($work_dir) );
+
     ok( -d $_, "$_ exists" ) for ( $work_dir, $hooks_dir );
 
     my $pushd = pushd($work_dir);
@@ -306,6 +322,13 @@ use warnings;
 
 Code::TidyAll::Git::Prereceive->check();
 EOF
+
+if (IS_WIN32) {
+    for my $t ( $precommit_hook_template, $prereceive_hook_template ) {
+        ( my $perl = $^X ) =~ s{\\}{/}g;
+        $t = qq{#!/bin/sh\n$perl -e '$t'};
+    }
+}
 
 $tidyall_ini_template = <<'EOF';
 [+TestHelper::Plugin::UpperText]
