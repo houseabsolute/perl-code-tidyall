@@ -10,7 +10,7 @@ use Moo;
 
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.64';
+our $VERSION = '0.65';
 
 # On Windows only the batch file is actually executable.
 my $cmd = $^O eq 'MSWin32' ? 'perlcritic.bat' : 'perlcritic';
