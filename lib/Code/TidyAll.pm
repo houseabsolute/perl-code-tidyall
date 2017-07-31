@@ -714,12 +714,11 @@ sub _find_conf_file_upward {
             my $try_path = $search_dir->child($conf_name);
             return $try_path if $try_path->is_file;
         }
-        if ( $search_dir eq '/' ) {
-            return undef;
-        }
-        else {
-            $search_dir = $search_dir->parent;
-        }
+
+        my $parent = $search_dir->parent;
+        last if $parent eq $search_dir;
+        $search_dir = $parent;
+
         die 'inf loop!' if ++$cnt > 100;
     }
 }
