@@ -27,11 +27,12 @@ make( "lib/Foo.pod",   "=over\n\n=item a\n\n" . scalar( "Blah " x 25 ) . "\n\n=b
 make( "data/baz.txt",  "    34" );
 make( ".perlcriticrc", "include = RequireUseStrict" );
 
+my $rc_file = $root_dir->child('.perlcriticrc');
 my $ct = Code::TidyAll->new(
     root_dir => $root_dir,
     plugins  => {
         PerlTidy   => { select => '**/*.{pl,pm}' },
-        PerlCritic => { select => '**/*.{pl,pm}', argv => "--profile $root_dir/.perlcriticrc" },
+        PerlCritic => { select => '**/*.{pl,pm}', argv => qq{--profile "$rc_file"} },
         PodTidy    => { select => '**/*.pod' },
     }
 );
