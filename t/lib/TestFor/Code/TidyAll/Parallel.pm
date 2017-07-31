@@ -7,6 +7,11 @@ use warnings;
 sub test_parallel : Tests {
     my $self = shift;
 
+    if ( $^O eq 'MSWin32' ) {
+        $self->builder->skip('Parallel::ForkManager does not seem to work on Windows');
+        return;
+    }
+
     $self->tidy(
         plugins => {
             '+TestHelper::Plugin::UpperText' => {
