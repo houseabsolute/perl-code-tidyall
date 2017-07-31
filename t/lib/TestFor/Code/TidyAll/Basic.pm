@@ -101,8 +101,8 @@ sub test_basic : Tests {
 sub test_filemode : Tests {
     my $self = shift;
 
-    if ( $^O =~ /Win32/ ) {
-        $self->builder->skip('file mode on Win32 is weird');
+    if ( $^O eq 'MSWin32' ) {
+        $self->builder->skip('File mode on Windows is weird');
         return;
     }
 
