@@ -8,7 +8,7 @@ use Path::Tiny qw(path);
 
 use Moo;
 
-our $VERSION = '0.65';
+our $VERSION = '0.66';
 
 has 'cache_dir' => ( is => 'ro', required => 1 );
 

@@ -7,7 +7,7 @@ use Path::Tiny qw(tempdir);
 
 use Moo::Role;
 
-our $VERSION = '0.65';
+our $VERSION = '0.66';
 
 has '_tempdir'   => ( is => 'ro', lazy => 1, builder => 1 );
 has 'no_cleanup' => ( is => 'ro', default => 0 );
