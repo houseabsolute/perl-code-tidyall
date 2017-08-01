@@ -135,6 +135,33 @@ sub _quote_for_win32 {
     return qq{"$_[0]"};
 }
 
+sub test_copied_status : Tests {
+    my ($self) = @_;
+
+    my ( $temp_dir, $work_dir, $pushd ) = $self->_make_working_dir_and_repo;
+
+    my $foo_file = $work_dir->child('foo.txt');
+
+    # If the file isn't long enough the new file doesn't end up with the
+    # "copied" status.
+    $foo_file->spew( "ABC\n" x 500 );
+
+    runx(qw( git add foo.txt ));
+    runx(qw( git commit -m foo ));
+
+    my $bar_file = $work_dir->child('bar.txt');
+    $bar_file->spew( "ABC\n" x 500 );
+    $foo_file->spew(q{});
+
+    runx(qw( git add foo.txt bar.txt ));
+    my $output = capture_stderr { runx(qw( git commit -m bar )) };
+    unlike(
+        $output,
+        qr/uninitialized value/i,
+        'no warnings from Code::TidyAll::Git::Util module'
+    );
+}
+
 sub test_precommit_stash_issues : Tests {
     my ($self) = @_;
 

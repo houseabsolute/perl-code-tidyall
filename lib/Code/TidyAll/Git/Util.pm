@@ -57,12 +57,12 @@ sub _parse_status {
         my $name = $1;
 
         # on renames, parse but throw away the "renamed from" filename
-        if ( $mode =~ /R/ ) {
+        if ( $mode =~ /[CR]/ ) {
             /\G([^\0]+)\0/g;
         }
 
         # deletions and renames don't cause tidying
-        next unless $mode =~ /[MAC]/;
+        next unless $mode =~ /[MA]/;
         next if $index_only && $mode =~ /^ /;
 
         push @files, $name;

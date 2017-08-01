@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- A file under Git which had a status of "copied" would cause uninitialized
+  value warnings from a pre-commit hook. Reported by Nigel Metheringham with
+  help from Adam Herzog. GH #81.
+
+
 0.64     2017-07-31
 
 - Bug fixes on Windows. Now all plugins except PodSpell (which requires
