@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.65     2017-08-01
+
 - A file under Git which had a status of "copied" would cause uninitialized
   value warnings from a pre-commit hook. Reported by Nigel Metheringham with
   help from Adam Herzog. GH #81.
