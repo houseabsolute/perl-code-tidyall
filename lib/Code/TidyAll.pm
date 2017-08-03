@@ -405,11 +405,8 @@ sub _recurse_dump {
                     die 'Cannot dump ' . ref($v) . ' object';
                 }
             }
-            elsif ( ref $v eq 'HASH' ) {
+            elsif ( ref $v =~ /^(?:HASH|ARRAY)$/ ) {
                 $dump{$k} = _recurse_dump($v);
-            }
-            elsif ( ref $v eq 'ARRAY' ) {
-                $dump{$k} = [ map { _recurse_dump($_) } @{$v} ];
             }
             else {
                 $dump{$k} = $v;
@@ -428,11 +425,8 @@ sub _recurse_dump {
                     die 'Cannot dump ' . ref($v) . ' object';
                 }
             }
-            elsif ( ref $v eq 'HASH' ) {
+            elsif ( ref $v =~ /^(?:HASH|ARRAY)$/ ) {
                 push @dump, _recurse_dump($v);
-            }
-            elsif ( ref $v eq 'ARRAY' ) {
-                push @dump, [ map { _recurse_dump($_) } @{ $p->{$v} } ];
             }
             else {
                 push @dump, $v;
