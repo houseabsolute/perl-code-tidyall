@@ -112,6 +112,13 @@ has plugins => (
     required => 1,
 );
 
+has selected_plugins => (
+    is   => 'ro',
+    isa  => t( 'ArrayRef', of => t('NonEmptyStr') ),
+    lazy => 1,
+    default => sub { [] },
+);
+
 has quiet => (
     is  => 'ro',
     isa => t('Bool'),
@@ -177,12 +184,12 @@ has _plugin_objects => (
     builder  => '_build_plugin_objects',
 );
 
-has _plugins_for_mode => (
+has _plugins_to_run => (
     is       => 'ro',
     isa      => t( 'HashRef', of => t('HashRef') ),
     init_arg => undef,
     lazy     => 1,
-    builder  => '_build_plugins_for_mode',
+    builder  => '_build_plugins_to_run',
 );
 
 has _plugins_for_path => (
@@ -226,17 +233,25 @@ sub _build_data_dir {
     return $self->root_dir->child('/.tidyall.d');
 }
 
-sub _build_plugins_for_mode {
-    my $self    = shift;
-    my $plugins = $self->plugins;
+sub _build_plugins_to_run {
+    my $self = shift;
 
-    if ( my $mode = $self->mode ) {
-        $plugins = {
-            map { ( $_, $plugins->{$_} ) }
-            grep { $self->_plugin_conf_matches_mode( $plugins->{$_}, $mode ) } keys(%$plugins)
-        };
+    my $all_plugins = $self->plugins;
+    my %selected = map { $_ => 1 } @{ $self->selected_plugins };
+    my %plugins;
+
+    if (%selected) {
+        my @unknown = sort grep { !$all_plugins->{$_} } keys %selected;
+        die "Asked for unknown plugins: [@unknown]" if @unknown;
+        %plugins = map { $_ => $all_plugins->{$_} } keys %selected;
     }
-    return $plugins;
+    elsif ( my $mode = $self->mode ) {
+        %plugins = map { $_ => $all_plugins->{$_} }
+            grep { $self->_plugin_conf_matches_mode( $all_plugins->{$_}, $mode ) }
+            keys %{$all_plugins};
+    }
+
+    return \%plugins;
 }
 
 sub _plugin_conf_matches_mode {
@@ -253,14 +268,16 @@ sub _plugin_conf_matches_mode {
 
 sub _build_plugin_objects {
     my $self = shift;
-    my @plugin_objects = map { $self->_load_plugin( $_, $self->plugins->{$_} ) }
-        keys( %{ $self->_plugins_for_mode } );
 
     # Sort tidiers by weight (by default validators have a weight of 60 and non-
     # validators a weight of 50 meaning non-validators normally go first), then
     # alphabetical
     # TODO: These should probably sort in a consistent way independent of locale
-    return [ sort { ( $a->weight <=> $b->weight ) || ( $a->name cmp $b->name ) } @plugin_objects ];
+    return [
+        sort { ( $a->weight <=> $b->weight ) || ( $a->name cmp $b->name ) }
+            map { $self->_load_plugin( $_, $self->_plugins_to_run->{$_} ) }
+            keys %{ $self->_plugins_to_run }
+    ];
 }
 
 sub _load_plugin {
@@ -348,7 +365,8 @@ sub new_from_conf_file {
     %params = (
         plugins  => $conf_params,
         root_dir => path($conf_file)->realpath->parent,
-        %$main_params, %params
+        %{$main_params},
+        %params
     );
 
     # Initialize with alternate class if given
@@ -451,7 +469,7 @@ sub process_paths {
     @paths = map {
         try { $_->realpath }
             || $_->absolute
-    } map { path($_) } sort { $a cmp $b } @paths;
+    } map { path($_) } @paths;
 
     if ( $self->jobs > 1 && @paths > 1 ) {
         return $self->_process_parallel(@paths);
@@ -884,6 +902,16 @@ constructed instead of C<Code::TidyAll>.
 Specify a hash of plugins, each of which is itself a hash of options. This is
 equivalent to what would be parsed out of the sections in the configuration
 file.
+
+=item selected_plugins
+
+An arrayref of plugins to be used. This overrides the C<mode> parameter.
+
+This is really only useful if you're getting configuration from a config file
+and want to narrow the set of plugins to be run.
+
+Note that plugins will still only run on files which match their C<select> and
+C<ignore> configuration.
 
 =item cache_model_class
 

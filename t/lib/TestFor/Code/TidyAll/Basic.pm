@@ -10,6 +10,7 @@ use IPC::Run3 qw( run3 );
 use Path::Tiny qw(cwd path);
 
 use Test::Class::Most parent => 'TestHelper::Test::Class';
+use Test::Fatal;
 
 sub test_plugin {"+TestHelper::Plugin::$_[0]"}
 my %UpperText
@@ -656,6 +657,49 @@ sub test_inc : Tests {
     # plugins we loaded, Foo.pm, contains some code which executes some tests.
     my $file = $root_dir->child('foo.txt');
     $ct->process_paths($file);
+}
+
+sub test_selected_plugins : Tests {
+    my $self = shift;
+
+    my $root_dir = $self->create_dir( { 'foo.txt' => 'abc' } );
+
+    my $ct = Code::TidyAll->new(
+        plugins => {
+            %UpperText,
+            %ReverseFoo,
+            %RepeatFoo,
+            %CheckUpper,
+            %AToZ,
+        },
+        selected_plugins => [ test_plugin('UpperText'), test_plugin('ReverseFoo') ],
+        root_dir         => $root_dir,
+    );
+
+    is_deeply(
+        [ sort map { ref($_) } @{ $ct->_plugin_objects } ],
+        [qw( TestHelper::Plugin::ReverseFoo TestHelper::Plugin::UpperText )],
+        'when selected_plugins is provided only those plugins are used'
+    );
+
+    $ct = Code::TidyAll->new(
+        plugins => {
+            %UpperText,
+            %ReverseFoo,
+            %RepeatFoo,
+            %CheckUpper,
+            %AToZ,
+        },
+        selected_plugins =>
+            [ test_plugin('UpperText'), test_plugin('ReverseFoo'), 'DoesNotExist', 'NorDoesThis' ],
+        root_dir => $root_dir,
+    );
+
+    like(
+        exception { $ct->_plugin_objects },
+        qr/\QAsked for unknown plugins: [DoesNotExist NorDoesThis]/,
+        'exception is thrown when selected_plugins include unknown plugins'
+    );
 }
 
 1;

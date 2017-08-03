@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- The tidyall command line app now takes a --plugins option. This allows you
+  to limit tidyall to running just the selected plugin(s).
+
+
 0.65     2017-08-01
 
 - A file under Git which had a status of "copied" would cause uninitialized

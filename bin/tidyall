@@ -28,6 +28,7 @@ Options:
    -I I<path1,path2,...>    Add one or more paths to @INC
    --backup-ttl <duration>  Amount of time before backup files can be purged
    --check-only             Just check each file, don\'t modify
+   --plugins <name>         Explicitly run only the given plugins
    --conf-file <path>       Relative or absolute path to conf file
    --conf-name <name>       Conf file name to search for
    --data-dir <path>        Contains metadata, defaults to root/.tidyall.d
@@ -69,6 +70,7 @@ GetOptions(
     'no-cache'        => \$params{no_cache},
     'no-cleanup'      => \$params{no_cleanup},
     'output-suffix=s' => \$params{output_suffix},
+    'plugins=s@'      => \$params{selected_plugins},
     'refresh-cache'   => \$params{refresh_cache},
     'root-dir=s'      => \$params{root_dir},
     'tidyall-class=s' => \$params{tidyall_class},
@@ -93,7 +95,7 @@ usage()   if $help;
 
 unshift( @INC, split( /\s*,\s*/, $inc_dirs ) ) if defined($inc_dirs);
 
-%params = map { ( $_, $params{$_} ) } grep { defined( $params{$_} ) } keys(%params);
+%params = map { $_ => $params{$_} } grep { defined( $params{$_} ) } keys %params;
 for my $key (qw( data_dir root_dir )) {
     $params{$key} = path( $params{$key} ) if exists $params{$key};
 }
@@ -630,6 +632,16 @@ Don't backup files before processing.
 
 Don't cache last processed times; process all files every time. See also
 C<--refresh-cache>.
+
+=item --plugins I<name>
+
+Only run the specified plugins. The name should match the name given in the
+config file exactly, including a leading "+" if one exists.
+
+This overrides the C<--mode> option.
+
+Note that plugins will still only run on files which match their C<select> and
+C<ignore> configuration.
 
 =item --output-suffix I<suffix>
 
