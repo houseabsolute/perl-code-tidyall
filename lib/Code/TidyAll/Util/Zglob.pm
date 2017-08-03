@@ -18,7 +18,12 @@ use constant debug => 0;
 
 sub zglobs_to_regex {
     my @globs = @_;
-    return @globs ? join( '|', map { "(?:" . zglob_to_regex($_) . ")" } @globs ) : qr/(?!)/;
+    return @globs
+        ? do {
+        my $re = join( '|', map { "(?:" . zglob_to_regex($_) . ")" } @globs );
+        qr/$re/;
+        }
+        : qr/(?!)/;
 }
 
 sub zglob_to_regex {

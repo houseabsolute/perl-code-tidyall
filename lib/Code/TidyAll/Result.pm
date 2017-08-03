@@ -3,15 +3,38 @@ package Code::TidyAll::Result;
 use strict;
 use warnings;
 
+use Specio::Declare;
+use Specio::Library::Path::Tiny;
+use Specio::Library::String;
+
 use Moo;
 
 our $VERSION = '0.66';
 
-has 'error'         => ( is => 'ro' );
-has 'new_contents'  => ( is => 'ro' );
-has 'orig_contents' => ( is => 'ro' );
-has 'path'          => ( is => 'ro' );
-has 'state'         => ( is => 'ro' );
+has error => (
+    is  => 'ro',
+    isa => t('NonEmptyStr'),
+);
+
+has new_contents => (
+    is  => 'ro',
+    isa => t('NonEmptyStr'),
+);
+
+has orig_contents => (
+    is  => 'ro',
+    isa => t('NonEmptyStr'),
+);
+
+has path => (
+    is  => 'ro',
+    isa => t('Path'),
+);
+
+has state => (
+    is  => 'ro',
+    isa => enum( values => [qw( cached checked error no_match tidied)] ),
+);
 
 sub ok { return $_[0]->state ne 'error' }
 

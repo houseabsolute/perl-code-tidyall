@@ -10,19 +10,42 @@ use IPC::System::Simple qw(capturex run);
 use Log::Any qw($log);
 use Path::Tiny qw(path);
 use Scope::Guard qw(guard);
+use Specio::Library::Builtins;
+use Specio::Library::String;
 use Try::Tiny;
 
 use Moo;
 
 our $VERSION = '0.66';
 
-# Public
-has 'conf_name'       => ( is => 'ro' );
-has 'git_path'        => ( is => 'ro', default => 'git' );
-has 'no_stash'        => ( is => 'ro' );
-has 'reject_on_error' => ( is => 'ro' );
-has 'tidyall_class'   => ( is => 'ro', default => 'Code::TidyAll' );
-has 'tidyall_options' => ( is => 'ro', default => sub { {} } );
+has conf_name => (
+    is  => 'ro',
+    isa => t('NonEmptyStr'),
+);
+
+has git_path => (
+    is      => 'ro',
+    isa     => t('NonEmptyStr'),
+    default => 'git'
+);
+
+has no_stash => (
+    is      => 'ro',
+    isa     => t('Bool'),
+    default => 0,
+);
+
+has tidyall_class => (
+    is      => 'ro',
+    isa     => t('ClassName'),
+    default => 'Code::TidyAll'
+);
+
+has tidyall_options => (
+    is      => 'ro',
+    isa     => t('HashRef'),
+    default => sub { {} }
+);
 
 sub check {
     my ( $class, %params ) = @_;

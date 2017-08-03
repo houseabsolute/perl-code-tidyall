@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Pod::Checker;
+use Specio::Library::Numeric;
 
 use Moo;
 
@@ -11,13 +12,16 @@ extends 'Code::TidyAll::Plugin';
 
 our $VERSION = '0.66';
 
-has 'warnings' => ( is => 'ro' );
+has warnings => (
+    is  => 'ro',
+    isa => t('PositiveInt'),
+);
 
 sub validate_file {
     my ( $self, $file ) = @_;
 
     my $result;
-    my %options = ( defined( $self->warnings ) ? ( '-warnings' => $self->warnings ) : () );
+    my %options = ( $self->warnings ? ( '-warnings' => $self->warnings ) : () );
     my $checker = Pod::Checker->new(%options);
     my $output;
     open my $fh, '>', \$output;

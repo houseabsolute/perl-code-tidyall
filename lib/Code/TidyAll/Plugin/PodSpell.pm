@@ -7,6 +7,8 @@ use Capture::Tiny qw();
 use IPC::Run3;
 use List::SomeUtils qw(uniq);
 use Pod::Spell;
+use Specio::Library::Builtins;
+use Specio::Library::String;
 use Text::ParseWords qw(shellwords);
 
 use Moo;
@@ -15,9 +17,22 @@ extends 'Code::TidyAll::Plugin';
 
 our $VERSION = '0.66';
 
-has 'ispell_argv' => ( is => 'ro', default => q{} );
-has 'ispell_cmd'  => ( is => 'ro', default => 'ispell' );
-has 'suggest'     => ( is => 'ro' );
+has ispell_argv => (
+    is      => 'ro',
+    isa     => t('Str'),
+    default => q{}
+);
+
+has ispell_cmd => (
+    is      => 'ro',
+    isa     => t('NonEmptyStr'),
+    default => 'ispell'
+);
+
+has suggest => (
+    is  => 'ro',
+    isa => t('Bool'),
+);
 
 sub validate_file {
     my ( $self, $file ) = @_;

@@ -17,7 +17,7 @@ use List::SomeUtils qw(uniq);
 use Module::Runtime qw( use_module );
 use Path::Tiny qw(path);
 use Scalar::Util qw(blessed);
-use Specio 0.30;
+use Specio 0.40;
 use Specio::Declare;
 use Specio::Library::Builtins;
 use Specio::Library::Numeric;
@@ -33,154 +33,164 @@ our $VERSION = '0.66';
 sub default_conf_names { ( 'tidyall.ini', '.tidyallrc' ) }
 
 # External
-has 'backup_ttl' => (
+has backup_ttl => (
     is      => 'ro',
     isa     => t('NonEmptyStr'),
     default => '1 hour',
 );
 
-has 'cache' => (
+has cache => (
     is  => 'lazy',
     isa => object_can_type( methods => [qw( get set )] ),
 );
 
-has 'cache_model_class' => (
+has cache_model_class => (
     is      => 'ro',
     isa     => t('ClassName'),
     default => 'Code::TidyAll::CacheModel',
 );
 
-has 'check_only' => (
+has check_only => (
     is  => 'ro',
     isa => t('Bool'),
 );
 
-has 'data_dir' => (
+has data_dir => (
     is     => 'lazy',
     isa    => t('Path'),
     coerce => t('Path')->coercion_sub,
 );
 
-has 'iterations' => (
+has iterations => (
     is      => 'ro',
     isa     => t('PositiveInt'),
     default => 1,
 );
 
-has 'jobs' => (
+has jobs => (
     is      => 'ro',
     isa     => t('Int'),
     default => 1,
 );
 
-has 'list_only' => (
+has list_only => (
     is  => 'ro',
     isa => t('Bool'),
 );
 
-has 'mode' => (
+has mode => (
     is      => 'ro',
     isa     => t('NonEmptyStr'),
     default => 'cli',
 );
 
-has 'msg_outputter' => (
+has msg_outputter => (
     is      => 'ro',
     isa     => t('CodeRef'),
     builder => '_build_msg_outputter',
 );
 
-has 'no_backups' => (
+has no_backups => (
     is  => 'ro',
     isa => t('Bool'),
 );
 
-has 'no_cache' => (
+has no_cache => (
     is  => 'ro',
     isa => t('Bool'),
 );
 
-has 'output_suffix' => (
+has output_suffix => (
     is      => 'ro',
     isa     => t('Str'),
     default => q{},
 );
 
-has 'plugins' => (
+has plugins => (
     is       => 'ro',
     isa      => t('HashRef'),
     required => 1,
 );
 
-has 'quiet' => (
+has quiet => (
     is  => 'ro',
     isa => t('Bool'),
 );
-has 'recursive' => (
-    is  => 'ro',
-    isa => t('Bool'),
-);
-
-has 'refresh_cache' => (
+has recursive => (
     is  => 'ro',
     isa => t('Bool'),
 );
 
-has 'root_dir' => (
+has refresh_cache => (
+    is  => 'ro',
+    isa => t('Bool'),
+);
+
+has root_dir => (
     is       => 'ro',
     isa      => t('RealDir'),
     coerce   => t('RealDir')->coercion_sub,
     required => 1
 );
 
-has 'verbose' => (
+has verbose => (
     is      => 'ro',
     isa     => t('Bool'),
     default => 0,
 );
 
-has 'inc' => (
+has inc => (
     is  => 'ro',
     isa => t( 'ArrayRef', of => t('NonEmptyStr') ),
     default => sub { [] },
 );
 
-# Internal
-has 'backup_dir' => (
-    is       => 'lazy',
+has _backup_dir => (
+    is       => 'ro',
     isa      => t('Path'),
     init_arg => undef,
+    lazy     => 1,
+    builder  => '_build_backup_dir',
 );
 
-has 'backup_ttl_secs' => (
-    is       => 'lazy',
+has _backup_ttl_secs => (
+    is       => 'ro',
     isa      => t('Int'),
     init_arg => undef,
+    lazy     => 1,
+    builder  => '_build_backup_ttl_secs',
 );
 
-has 'base_sig' => (
-    is       => 'lazy',
+has _base_sig => (
+    is       => 'ro',
     isa      => t('NonEmptyStr'),
     init_arg => undef,
+    lazy     => 1,
+    builder  => '_build_base_sig',
 );
 
-has 'plugin_objects' => (
-    is       => 'lazy',
+has _plugin_objects => (
+    is       => 'ro',
     isa      => t( 'ArrayRef', of => object_isa_type('Code::TidyAll::Plugin') ),
     init_arg => undef,
+    lazy     => 1,
+    builder  => '_build_plugin_objects',
 );
 
-has 'plugins_for_mode' => (
-    is       => 'lazy',
+has _plugins_for_mode => (
+    is       => 'ro',
     isa      => t( 'HashRef', of => t('HashRef') ),
     init_arg => undef,
+    lazy     => 1,
+    builder  => '_build_plugins_for_mode',
 );
 
-has '_plugins_for_path' => (
-    is  => 'lazy',
-    isa => t( 'HashRef', of => t('HashRef') ),
-    default  => sub { {} },
+has _plugins_for_path => (
+    is       => 'ro',
+    isa      => t( 'HashRef', of => t('HashRef') ),
     init_arg => undef,
+    lazy     => 1,
+    default => sub { {} },
 );
 
 with qw( Code::TidyAll::Role::HasIgnore Code::TidyAll::Role::Tempdir );
@@ -197,7 +207,7 @@ sub _build_backup_ttl_secs {
 
 sub _build_base_sig {
     my $self = shift;
-    my $active_plugins = join( q{|}, map { $_->name } @{ $self->plugin_objects } );
+    my $active_plugins = join( q{|}, map { $_->name } @{ $self->_plugin_objects } );
     return $self->_sig( [ $Code::TidyAll::VERSION || 0, $active_plugins ] );
 }
 
@@ -219,6 +229,7 @@ sub _build_data_dir {
 sub _build_plugins_for_mode {
     my $self    = shift;
     my $plugins = $self->plugins;
+
     if ( my $mode = $self->mode ) {
         $plugins = {
             map { ( $_, $plugins->{$_} ) }
@@ -243,7 +254,7 @@ sub _plugin_conf_matches_mode {
 sub _build_plugin_objects {
     my $self = shift;
     my @plugin_objects = map { $self->_load_plugin( $_, $self->plugins->{$_} ) }
-        keys( %{ $self->plugins_for_mode } );
+        keys( %{ $self->_plugins_for_mode } );
 
     # Sort tidiers by weight (by default validators have a weight of 60 and non-
     # validators a weight of 50 meaning non-validators normally go first), then
@@ -293,7 +304,7 @@ sub BUILD {
     }
 
     unless ( $self->no_backups ) {
-        $self->backup_dir->mkpath( { mode => 0775 } );
+        $self->_backup_dir->mkpath( { mode => 0775 } );
         $self->_purge_backups_periodically();
     }
 
@@ -304,7 +315,7 @@ sub _purge_backups_periodically {
     my ($self) = @_;
     my $cache = $self->cache;
     my $last_purge_backups = $cache->get('last_purge_backups') || 0;
-    if ( time > $last_purge_backups + $self->backup_ttl_secs ) {
+    if ( time > $last_purge_backups + $self->_backup_ttl_secs ) {
         $self->_purge_backups();
         $cache->set( 'last_purge_backups', time() );
     }
@@ -317,11 +328,11 @@ sub _purge_backups {
         {
             follow => 0,
             wanted => sub {
-                unlink $_ if -f && /\.bak$/ && time > ( stat($_) )[9] + $self->backup_ttl_secs;
+                unlink $_ if -f && /\.bak$/ && time > ( stat($_) )[9] + $self->_backup_ttl_secs;
             },
             no_chdir => 1
         },
-        $self->backup_dir
+        $self->_backup_dir,
     );
 }
 
@@ -572,24 +583,24 @@ sub plugins_for_path {
     my ( $self, $path ) = @_;
 
     $self->_plugins_for_path->{$path}
-        ||= [ grep { $_->matches_path($path) } @{ $self->plugin_objects } ];
+        ||= [ grep { $_->matches_path($path) } @{ $self->_plugin_objects } ];
     return @{ $self->_plugins_for_path->{$path} };
 }
 
 sub _cache_model_for {
     my ( $self, $path, $full_path ) = @_;
     return $self->cache_model_class->new(
-        path         => $path,
-        full_path    => $full_path,
-        cache_engine => $self->no_cache ? undef : $self->cache,
-        base_sig     => $self->base_sig,
+        path      => $path,
+        full_path => $full_path,
+        ( $self->no_cache ? () : ( cache_engine => $self->cache ) ),
+        base_sig => $self->_base_sig,
     );
 }
 
 sub _backup_file {
     my ( $self, $path, $contents ) = @_;
     unless ( $self->no_backups ) {
-        my $backup_file = $self->backup_dir->child( $self->_backup_filename($path) );
+        my $backup_file = $self->_backup_dir->child( $self->_backup_filename($path) );
         $backup_file->parent->mkpath( { mode => 0775 } );
         $backup_file->spew($contents);
     }
@@ -604,8 +615,11 @@ sub _backup_filename {
 sub process_source {
     my ( $self, $contents, $path ) = @_;
 
+    $path = path($path);
+
     die 'contents and path required' unless defined($contents) && defined($path);
     my @plugins = $self->plugins_for_path($path);
+
     if ( !@plugins ) {
         $self->msg(
             '[no plugins apply%s] %s',
@@ -679,11 +693,19 @@ sub _error_result {
     my ( $self, $msg, $path, $orig_contents, $new_contents ) = @_;
     $self->msg( '%s', $msg );
     return Code::TidyAll::Result->new(
-        path          => $path,
-        state         => 'error',
-        error         => $msg,
-        orig_contents => $orig_contents,
-        new_contents  => $new_contents,
+        path  => $path,
+        state => 'error',
+        error => $msg,
+        (
+              ( defined $orig_contents && length $orig_contents )
+            ? ( orig_contents => $orig_contents )
+            : ()
+        ),
+        (
+              ( defined $new_contents && length $new_contents )
+            ? ( new_contents => $new_contents )
+            : ()
+        ),
     );
 }
 
@@ -730,7 +752,7 @@ sub find_matched_files {
     my $root_length      = length( $self->root_dir );
 
     my @all;
-    for my $plugin ( @{ $self->plugin_objects } ) {
+    for my $plugin ( @{ $self->_plugin_objects } ) {
         my @matched = $self->_matched_by_plugin($plugin);
         push @all, @matched;
 

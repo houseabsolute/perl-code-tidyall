@@ -5,6 +5,7 @@ use warnings;
 
 use Capture::Tiny qw(capture_merged);
 use Pod::Tidy;
+use Specio::Library::Numeric;
 
 use Moo;
 
@@ -12,7 +13,10 @@ extends 'Code::TidyAll::Plugin';
 
 our $VERSION = '0.66';
 
-has 'columns' => ( is => 'ro' );
+has columns => (
+    is  => 'ro',
+    isa => t('PositiveInt'),
+);
 
 sub transform_file {
     my ( $self, $file ) = @_;

@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use JSON::MaybeXS ();
+use Specio::Library::Builtins;
 
 use Moo;
 
@@ -11,7 +12,11 @@ our $VERSION = '0.66';
 
 extends 'Code::TidyAll::Plugin';
 
-has 'ascii' => ( is => 'ro', default => 0 );
+has ascii => (
+    is      => 'ro',
+    isa     => t('Bool'),
+    default => 0,
+);
 
 sub transform_source {
     my $self   = shift;

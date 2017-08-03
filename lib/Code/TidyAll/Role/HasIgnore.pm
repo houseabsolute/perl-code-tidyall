@@ -11,16 +11,27 @@ use Moo::Role;
 
 our $VERSION = '0.66';
 
-has 'ignore' => (
+has ignore => (
     is  => 'ro',
     isa => t( 'ArrayRef', of => t('NonEmptyStr') ),
     default => sub { [] },
 );
 
-has 'ignore_regex' => ( is => 'lazy' );
-has 'ignores'      => ( is => 'lazy' );
-has 'select_regex' => ( is => 'lazy' );
-has 'selects'      => ( is => 'lazy' );
+has ignore_regex => (
+    is  => 'lazy',
+    isa => t('RegexpRef'),
+);
+
+has ignores => (
+    is  => 'lazy',
+    isa => t( 'ArrayRef', of => t('NonEmptyStr') ),
+);
+
+has select => (
+    is  => 'ro',
+    isa => t( 'ArrayRef', of => t('NonEmptyStr') ),
+    default => sub { [] },
+);
 
 sub _build_ignores {
     my ($self) = @_;

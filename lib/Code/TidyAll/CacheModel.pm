@@ -5,21 +5,69 @@ use warnings;
 
 use Digest::SHA qw(sha1_hex);
 use Path::Tiny ();
+use Specio::Declare;
+use Specio::Library::Builtins;
+use Specio::Library::Path::Tiny;
+use Specio::Library::String;
 
 use Moo;
 
 our $VERSION = '0.66';
 
-# todo, type checking?
+has base_sig => (
+    is      => 'ro',
+    isa     => t('Str'),
+    default => q{},
+);
 
-has 'base_sig'      => ( is => 'ro', default => "" );
-has 'cache_engine'  => ( is => 'ro' );
-has 'cache_key'     => ( is => 'lazy', clearer => 1 );
-has 'cache_value'   => ( is => 'lazy', clearer => 1 );
-has 'file_contents' => ( is => 'rw', lazy => 1, builder => 1, trigger => 1, clearer => 1 );
-has 'full_path'     => ( is => 'ro', required => 1 );
-has 'is_cached'     => ( is => 'rw', lazy => 1, builder => 1, clearer => 1 );
-has 'path'          => ( is => 'ro', required => 1 );
+has cache_engine => (
+    is  => 'ro',
+    isa => object_can_type(
+        methods => [qw( get set remove )],
+    ),
+    predicate => '_has_cache_engine',
+);
+
+has cache_key => (
+    is      => 'lazy',
+    isa     => t('NonEmptyStr'),
+    clearer => 1,
+);
+
+has cache_value => (
+    is      => 'lazy',
+    isa     => t('NonEmptyStr'),
+    clearer => 1,
+);
+
+has file_contents => (
+    is      => 'rw',
+    isa     => t('Str'),
+    lazy    => 1,
+    builder => 1,
+    trigger => 1,
+    clearer => 1,
+);
+
+has full_path => (
+    is       => 'ro',
+    isa      => t('Path'),
+    required => 1,
+);
+
+has is_cached => (
+    is      => 'rw',
+    isa     => t('Bool'),
+    lazy    => 1,
+    builder => 1,
+    clearer => 1,
+);
+
+has path => (
+    is       => 'ro',
+    isa      => t('Path'),
+    required => 1,
+);
 
 sub _build_file_contents {
     my ($self) = @_;
@@ -49,23 +97,26 @@ sub _build_cache_value {
 
 sub _build_is_cached {
     my ($self) = @_;
-    my $cache_engine = $self->cache_engine or return;
-    my $cached_value = $cache_engine->get( $self->cache_key );
+
+    return unless $self->_has_cache_engine;
+    my $cached_value = $self->cache_engine->get( $self->cache_key );
     return defined $cached_value && $cached_value eq $self->cache_value;
 }
 
 sub update {
     my ($self) = @_;
-    my $cache_engine = $self->cache_engine or return;
-    $cache_engine->set( $self->cache_key, $self->cache_value );
+
+    return unless $self->_has_cache_engine;
+    $self->cache_engine->set( $self->cache_key, $self->cache_value );
     $self->is_cached(1);
     return;
 }
 
 sub remove {
     my ($self) = @_;
-    my $cache_engine = $self->cache_engine or return;
-    $cache_engine->remove( $self->cache_key );
+
+    return unless $self->_has_cache_engine;
+    $self->cache_engine->remove( $self->cache_key );
     return;
 }
 

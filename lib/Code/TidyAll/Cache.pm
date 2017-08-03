@@ -5,23 +5,22 @@ use warnings;
 
 use Digest::SHA qw(sha1_hex);
 use Path::Tiny qw(path);
+use Specio::Library::Path::Tiny;
 
 use Moo;
 
 our $VERSION = '0.66';
 
-has 'cache_dir' => ( is => 'ro', required => 1 );
-
-sub path_to_key {
-    my ( $self, $key ) = @_;
-    my $sig = sha1_hex($key);
-    return $self->cache_dir->child( substr( $sig, 0, 1 ), "$sig.dat" );
-}
+has cache_dir => (
+    is       => 'ro',
+    isa      => t('Path'),
+    required => 1,
+);
 
 sub get {
     my ( $self, $key ) = @_;
 
-    my $file = $self->path_to_key($key);
+    my $file = $self->_path_for_key($key);
     if ( $file->exists ) {
         return $file->slurp;
     }
@@ -33,7 +32,7 @@ sub get {
 sub set {
     my ( $self, $key, $value ) = @_;
 
-    my $file = $self->path_to_key($key);
+    my $file = $self->_path_for_key($key);
     $file->parent->mkpath( { mode => 0755 } );
     $file->spew($value);
 
@@ -43,9 +42,16 @@ sub set {
 sub remove {
     my ( $self, $key, $value ) = @_;
 
-    $self->path_to_key($key)->remove;
+    $self->_path_for_key($key)->remove;
 
     return;
+}
+
+sub _path_for_key {
+    my ( $self, $key ) = @_;
+
+    my $sig = sha1_hex($key);
+    return $self->cache_dir->child( substr( $sig, 0, 1 ), "$sig.dat" );
 }
 
 1;

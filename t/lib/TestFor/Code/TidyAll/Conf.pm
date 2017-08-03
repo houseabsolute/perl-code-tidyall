@@ -22,12 +22,12 @@ select = **/bar*
 times = 3
 EOF
         methods => {
-            backup_ttl      => '5m',
-            backup_ttl_secs => '300',
-            inc             => [ '/foo', '/bar' ],
-            no_backups      => undef,
-            no_cache        => 1,
-            plugins         => {
+            backup_ttl       => '5m',
+            _backup_ttl_secs => '300',
+            inc              => [ '/foo', '/bar' ],
+            no_backups       => undef,
+            no_cache         => 1,
+            plugins          => {
                 '+TestHelper::Plugin::UpperText' => {
                     select => ['**/*.txt'],
                 },
@@ -100,7 +100,7 @@ sub test_bad_config : Tests {
     ( my $config = $tests[0]{config} ) =~ s/times/timez/;
     $conf_file->spew($config);
 
-    throws_ok { my $ct = Code::TidyAll->new_from_conf_file($conf_file)->plugin_objects }
+    throws_ok { my $ct = Code::TidyAll->new_from_conf_file($conf_file)->_plugin_objects }
     qr/unknown option 'timez'/;
 }
 

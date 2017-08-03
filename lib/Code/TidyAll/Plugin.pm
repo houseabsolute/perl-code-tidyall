@@ -7,25 +7,83 @@ use Code::TidyAll::Util::Zglob qw(zglobs_to_regex);
 use File::Which qw(which);
 use IPC::Run3 qw(run3);
 use Scalar::Util qw(weaken);
+use Specio::Declare;
+use Specio::Library::Builtins;
+use Specio::Library::Numeric;
+use Specio::Library::String;
 use Text::Diff 1.44 qw(diff);
 
 use Moo;
 
 our $VERSION = '0.66';
 
-# External
-has 'argv'               => ( is => 'ro', default => q{} );
-has 'class'              => ( is => 'ro' );
-has 'cmd'                => ( is => 'lazy' );
-has 'diff_on_tidy_error' => ( is => 'ro', default => 0 );
-has 'ignore'             => ( is => 'ro' );
-has 'is_tidier'          => ( is => 'lazy' );
-has 'is_validator'       => ( is => 'lazy' );
-has 'name'               => ( is => 'ro', required => 1 );
-has 'select'             => ( is => 'ro' );
-has 'shebang'            => ( is => 'ro' );
-has 'tidyall'            => ( is => 'ro', required => 1, weak_ref => 1 );
-has 'weight'             => ( is => 'lazy' );
+has argv => (
+    is      => 'ro',
+    isa     => t('Str'),
+    default => q{}
+);
+
+has cmd => (
+    is  => 'lazy',
+    isa => t('NonEmptyStr'),
+);
+
+has diff_on_tidy_error => (
+    is      => 'ro',
+    isa     => t('Bool'),
+    default => 0
+);
+
+has is_tidier => (
+    is  => 'lazy',
+    isa => t('Bool'),
+);
+
+has is_validator => (
+    is  => 'lazy',
+    isa => t('Bool'),
+);
+
+has name => (
+    is       => 'ro',
+    required => 1
+);
+
+has select => (
+    is  => 'lazy',
+    isa => t( 'ArrayRef', of => t('NonEmptyStr') ),
+);
+
+has select_regex => (
+    is  => 'lazy',
+    isa => t('RegexpRef'),
+);
+
+has selects => (
+    is  => 'lazy',
+    isa => t( 'ArrayRef', of => t('NonEmptyStr') ),
+);
+
+has shebang => (
+    is  => 'ro',
+    isa => t( 'ArrayRef', of => t('NonEmptyStr') ),
+);
+
+has tidyall => (
+    is => 'ro',
+
+    # This should be "object_isa_type( class => 'Code::TidyAll' )" but then
+    # we'd need to load Code::TidyAll, leading to a circular require
+    # situation.
+    isa      => t('Object'),
+    required => 1,
+    weak_ref => 1
+);
+
+has weight => (
+    is  => 'lazy',
+    isa => t('PositiveOrZeroInt'),
+);
 
 with 'Code::TidyAll::Role::HasIgnore';
 
@@ -50,7 +108,6 @@ sub _build_cmd {
 
 sub _build_selects {
     my ($self) = @_;
-    die sprintf( q{select is required for '%s'}, $self->name ) unless defined( $self->select );
     return $self->_parse_zglob_list( $self->select );
 }
 
@@ -275,10 +332,6 @@ Name of the plugin to be used in error messages etc.
 =item tidyall
 
 A weak reference back to the L<Code::TidyAll> object.
-
-=item select, ignore
-
-Select and ignore patterns - you can ignore these.
 
 =item weight
 

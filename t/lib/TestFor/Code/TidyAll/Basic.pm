@@ -438,7 +438,7 @@ sub test_errors : Tests {
         Code::TidyAll->new(
             root_dir => $root_dir,
             plugins  => { 'DoesNotExist' => { select => '**/*' } }
-        )->plugin_objects;
+        )->_plugin_objects;
     }
     qr/could not load plugin class/;
 
@@ -448,7 +448,7 @@ sub test_errors : Tests {
             plugins  => {
                 test_plugin('UpperText') => { select => '**/*', bad_option => 1, worse_option => 2 }
             }
-        )->plugin_objects;
+        )->_plugin_objects;
     }
     qr/unknown options/;
 
@@ -647,7 +647,7 @@ sub test_inc : Tests {
     );
 
     is_deeply(
-        [ sort map { ref($_) } @{ $ct->plugin_objects } ],
+        [ sort map { ref($_) } @{ $ct->_plugin_objects } ],
         [qw( Bar Foo TestHelper::Plugin::UpperText )],
         'when inc is provided it is used when loading plugins'
     );

@@ -9,20 +9,49 @@ use Code::TidyAll;
 use Digest::SHA qw(sha1_hex);
 use IPC::System::Simple qw(capturex run);
 use Path::Tiny qw(cwd path);
+use Specio::Library::Builtins;
+use Specio::Library::Numeric;
+use Specio::Library::String;
 use Try::Tiny;
 
 use Moo;
 
 our $VERSION = '0.66';
 
-# Public
-has 'allow_repeated_push' => ( is => 'ro', default => 3 );
-has 'conf_name'           => ( is => 'ro' );
-has 'extra_conf_files'    => ( is => 'ro', default => sub { [] } );
-has 'git_path'            => ( is => 'ro', default => 'git' );
-has 'reject_on_error'     => ( is => 'ro' );
-has 'tidyall_class'       => ( is => 'ro', default => 'Code::TidyAll' );
-has 'tidyall_options'     => ( is => 'ro', default => sub { {} } );
+has allow_repeated_push => (
+    is      => 'ro',
+    isa     => t('PositiveInt'),
+    default => 3,
+);
+
+has conf_name => (
+    is  => 'ro',
+    isa => t('NonEmptyStr'),
+);
+
+has extra_conf_files => (
+    is  => 'ro',
+    isa => t( 'ArrayRef', of => t('NonEmptyStr') ),
+    default => sub { [] },
+);
+
+has git_path => (
+    is      => 'ro',
+    isa     => t('NonEmptyStr'),
+    default => 'git',
+);
+
+has tidyall_class => (
+    is      => 'ro',
+    isa     => t('ClassName'),
+    default => 'Code::TidyAll',
+);
+
+has tidyall_options => (
+    is      => 'ro',
+    isa     => t('HashRef'),
+    default => sub { {} }
+);
 
 sub check {
     my ( $class, %params ) = @_;

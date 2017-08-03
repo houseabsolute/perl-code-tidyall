@@ -16,18 +16,18 @@ use Moo;
 our $VERSION = '0.66';
 
 # Public
-has 'conf_name'                => ( is => 'ro' );
-has 'emergency_comment_prefix' => ( is => 'ro', default => 'NO TIDYALL' );
-has 'extra_conf_files'         => ( is => 'ro', default => sub { [] } );
-has 'reject_on_error'          => ( is => 'ro' );
-has 'repos'                    => ( is => 'ro', default => sub { $ARGV[0] } );
-has 'tidyall_class'            => ( is => 'ro', default => 'Code::TidyAll' );
-has 'tidyall_options'          => ( is => 'ro', default => sub { {} } );
-has 'txn'                      => ( is => 'ro', default => sub { $ARGV[1] } );
+has conf_name                => ( is => 'ro' );
+has emergency_comment_prefix => ( is => 'ro', default => 'NO TIDYALL' );
+has extra_conf_files         => ( is => 'ro', default => sub { [] } );
+has reject_on_error          => ( is => 'ro' );
+has repos                    => ( is => 'ro', default => sub { $ARGV[0] } );
+has tidyall_class            => ( is => 'ro', default => 'Code::TidyAll' );
+has tidyall_options          => ( is => 'ro', default => sub { {} } );
+has txn                      => ( is => 'ro', default => sub { $ARGV[1] } );
 
 # Private
-has 'cat_file_cache' => ( init_arg => undef, is => 'ro', default => sub { {} } );
-has 'revlook'        => ( init_arg => undef, is => 'lazy' );
+has cat_file_cache => ( init_arg => undef, is => 'ro', default => sub { {} } );
+has revlook        => ( init_arg => undef, is => 'lazy' );
 
 sub _build_revlook {
     my $self = shift;

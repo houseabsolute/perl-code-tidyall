@@ -4,13 +4,18 @@ use strict;
 use warnings;
 
 use IPC::Run3 qw(run3);
+use Specio::Library::String;
 use Text::ParseWords qw(shellwords);
 
 use Moo;
 
 extends 'Code::TidyAll::Plugin';
 
-has 'options' => ( is => 'ro', predicate => '_has_options' );
+has options => (
+    is        => 'ro',
+    isa       => t('NonEmptyStr'),
+    predicate => '_has_options',
+);
 
 with 'Code::TidyAll::Role::Tempdir';
 
