@@ -18,17 +18,24 @@ sub _build_cmd {'js-beautify'}
 sub transform_file {
     my ( $self, $file ) = @_;
 
+    my @cmd = ( $self->cmd, shellwords( $self->argv ), '-f', $file );
     try {
-        my @cmd = ( $self->cmd, shellwords( $self->argv ), $file );
         my $output;
         my $exit = run3( \@cmd, \undef, \$output, \$output );
-        die "exited with $?\n" if $?;
+        if ($?) {
+            my $code   = $? >> 8;
+            my $signal = $? & 127;
+            my $msg    = "exited with $code";
+            $msg .= " (signal $signal)" if $signal;
+            die "$msg\n";
+        }
         $file->spew($output);
     }
     catch {
         die sprintf(
-            "%s failed - possibly bad arg list '%s'\n    $_", $self->cmd,
-            $self->argv
+            "%s failed\n    %s",
+            ( join q{ }, @cmd ),
+            $_,
         );
     };
 }
