@@ -13,6 +13,7 @@ language: perl
 perl:
   - blead
   - dev
+  - '5.26'
   - '5.24'
   - '5.22'
   - '5.20'
@@ -26,15 +27,15 @@ matrix:
     - perl: blead
   include:
     - env: COVERAGE=1
-      perl: '5.24'
+      perl: '5.26'
     - env:
         - AUTHOR_TESTING=0
         - RELEASE_TESTING=0
       perl: '5.8'
 env:
   global:
-    - RELEASE_TESTING=1
     - AUTHOR_TESTING=1
+    - RELEASE_TESTING=1
 before_install:
   - git config --global user.email "test@example.com"
   - git config --global user.name "Test User"
@@ -57,3 +58,8 @@ script:
   - prove -l -j$(test-jobs) $(test-files)
 after_success:
   - coverage-report
+### __app_cisetup__
+# ---
+# force_threaded_perls: 0
+
+### __app_cisetup__
