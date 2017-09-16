@@ -27,6 +27,7 @@ sub transform_file {
             my $signal = $? & 127;
             my $msg    = "exited with $code";
             $msg .= " (signal $signal)" if $signal;
+            $msg .= " output was:\n$output" if defined $output and length $output;
             die "$msg\n";
         }
         $file->spew($output);
