@@ -4,7 +4,7 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
 # VERSION
 
-version 0.65
+version 0.66
 
 # SYNOPSIS
 
@@ -38,30 +38,40 @@ This is the engine used by [tidyall](https://metacpan.org/pod/tidyall) - read th
 
 You can call this API from your own program instead of executing `tidyall`.
 
-# CONSTRUCTION
+# METHODS
 
-## Constructor methods
+This class offers the following methods:
 
-- new (%params)
+## Code::TidyAll->new(%params)
 
-    The regular constructor. Must pass at least _plugins_ and _root\_dir_.
+The regular constructor. Must pass at least _plugins_ and _root\_dir_.
 
-- new\_with\_conf\_file ($conf\_file, %params)
+## $tidyall->new\_with\_conf\_file( $conf\_file, %params )
 
-    Takes a conf file path, followed optionally by a set of key/value parameters.
-    Reads parameters out of the conf file and combines them with the passed
-    parameters (the latter take precedence), and calls the regular constructor.
+Takes a conf file path, followed optionally by a set of key/value parameters.
+Reads parameters out of the conf file and combines them with the passed
+parameters (the latter take precedence), and calls the regular constructor.
 
-    If the conf file or params defines _tidyall\_class_, then that class is
-    constructed instead of `Code::TidyAll`.
+If the conf file or params defines _tidyall\_class_, then that class is
+constructed instead of `Code::TidyAll`.
 
-## Constructor parameters
+### Constructor parameters
 
 - plugins
 
     Specify a hash of plugins, each of which is itself a hash of options. This is
     equivalent to what would be parsed out of the sections in the configuration
     file.
+
+- selected\_plugins
+
+    An arrayref of plugins to be used. This overrides the `mode` parameter.
+
+    This is really only useful if you're getting configuration from a config file
+    and want to narrow the set of plugins to be run.
+
+    Note that plugins will still only run on files which match their `select` and
+    `ignore` configuration.
 
 - cache\_model\_class
 
@@ -114,45 +124,44 @@ You can call this API from your own program instead of executing `tidyall`.
     one or more parameters. The default sub used simply calls `printf "$format\n",
     @_` but [Test::Code::TidyAll](https://metacpan.org/pod/Test::Code::TidyAll) overrides this to use the `Test::Builder->diag` method.
 
-# METHODS
+## $tidyall->process\_paths( $path, ... )
 
-- process\_paths (path, ...)
+This method iterates through a list of paths, processing all the files it
+finds. It will descend into subdirectories if `recursive` flag is true.
+Returns a list of [Code::TidyAll::Result](https://metacpan.org/pod/Code::TidyAll::Result) objects, one for each file.
 
-    Call ["process\_file"](#process_file) on each file; descend recursively into each directory if
-    the `recursive` flag is on. Return a list of [Code::TidyAll::Result](https://metacpan.org/pod/Code::TidyAll::Result) objects,
-    one for each file.
+## $tidyall->process\_file( $file )
 
-- process\_file (file)
+Process the one _file_, meaning:
 
-    Process the _file_, meaning
+- Check the cache and return immediately if file has not changed.
+- Apply appropriate matching plugins.
+- Print success or failure result to STDOUT, depending on quiet/verbose settings.
+- Write to the cache if caching is enabled.
+- Return a [Code::TidyAll::Result](https://metacpan.org/pod/Code::TidyAll::Result) object.
 
-    - Check the cache and return immediately if file has not changed
-    - Apply appropriate matching plugins
-    - Print success or failure result to STDOUT, depending on quiet/verbose settings
-    - Write the cache if enabled
-    - Return a [Code::TidyAll::Result](https://metacpan.org/pod/Code::TidyAll::Result) object
+## $tidyall->process\_source( $source, $path )
 
-- process\_source (_source_, _path_)
+Like `process_file`, but process the _source_ string instead of a file, and
+does not read from or write to the cache. You must still pass the relative
+_path_ from the root as the second argument, so that we know which plugins to
+apply. Returns a [Code::TidyAll::Result](https://metacpan.org/pod/Code::TidyAll::Result) object.
 
-    Like ["process\_file"](#process_file), but process the _source_ string instead of a file, and
-    do not read from or write to the cache. You must still pass the relative
-    _path_ from the root as the second argument, so that we know which plugins to
-    apply. Return a [Code::TidyAll::Result](https://metacpan.org/pod/Code::TidyAll::Result) object.
+## $tidyall->plugins\_for\_path($path)
 
-- plugins\_for\_path (_path_)
+Given a relative _path_ from the root, returns a list of
+[Code::TidyAll::Plugin](https://metacpan.org/pod/Code::TidyAll::Plugin) objects that apply to it, or an empty list if no
+plugins apply.
 
-    Given a relative _path_ from the root, return a list of
-    [Code::TidyAll::Plugin](https://metacpan.org/pod/Code::TidyAll::Plugin) objects that apply to it, or an empty list if no
-    plugins apply.
+## $tidyall->find\_matched\_files
 
-- find\_conf\_file (_conf\_names_, _start\_dir_)
+Returns a list of sorted files that match at least one plugin in configuration.
 
-    Class method. Start in the _start\_dir_ and work upwards, looking for one of
-    the _conf\_names_. Return the pathname if found or throw an error if not found.
+## Code::TidyAll->find\_conf\_file( $conf\_names, $start\_dir )
 
-- find\_matched\_files
-
-    Returns a list of sorted files that match at least one plugin in configuration.
+Start in the _start\_dir_ and work upwards, looking for a file matching one of
+the _conf\_names_. Returns the pathname if found or throw an error if not
+found.
 
 # SUPPORT
 

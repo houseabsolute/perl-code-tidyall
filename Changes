@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.66     2017-09-17
+
 - The tidyall command line app now takes a --plugins option. This allows you
   to limit tidyall to running just the selected plugin(s).
 
