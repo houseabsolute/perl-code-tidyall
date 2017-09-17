@@ -159,60 +159,87 @@ __END__
 A cache model for Code::TidyAll. Different subclasses can employ different
 caching techniques.
 
-The basic model implemented here is simple;  It stores in the cache a hash key
-of the file contents keyed by a hash key of the file's path.
+The basic model implemented here is simple; It stores a hash key of the file
+contents keyed by a hash key of the file's path.
 
-=head2 Attributes
+=head1 METHODS
 
-=over
+This class has the following methods:
 
-=item full_path (required, ro)
+=head2 Code::TidyAll::CacheModel->new(%params)
 
-The full path to the file on disk
+The constructor accepts the following attributes:
 
-=item path (required, ro)
+=over 4
+
+=item * full_path
+
+The full path to the cache file on disk. This is required.
+
+=item * path
 
 The local path to the file (i.e. what the cache system will consider the
-canonical name of the file)
+canonical name of the file).
 
-=item cache_engine (optional, default undef, ro)
+=item * cache_engine
 
-A C<Code::TidyAll::Cache> compatible instance, or, if no caching is required
-undef.
+A C<Code::TidyAll::Cache> compatible instance. This can be omitted if no
+caching is actually being done.
 
-=item base_sig (optional, default empty string, ro)
+=item * base_sig
 
-A base signature.
+A base signature. This defaults to an empty string.
 
-=item file_contents (optional, default loads file contents from disk, rw)
+=item * file_contents
 
-=item is_cached (optional, default computed, rw)
+The contents of the file being cached. This can be omitted, in which case it
+will be loaded as needed.
 
-A flag indicating if this is cached. By default checks that the cache key and
-cache value match the cache.
+=item * is_cached
 
-=back
-
-=head2 Methods
-
-=over
-
-=item cache_key
-
-The computed cache key for the file
-
-=item cache_value
-
-The computed cache value for the file
-
-=item update
-
-Updates the cache
-
-=item remove
-
-Attempts to remove the value from the cache
+A boolean indicating if this file is cached. By default this is computed by
+checking that the cache key and cache value match what is in the cache.
 
 =back
+
+=head2 $model->full_path
+
+The value passed to the constructor.
+
+=head2 $model->path
+
+The value passed to the constructor.
+
+=head2 $model->cache_engine
+
+The value passed to the constructor.
+
+=head2 $model->base_sig
+
+The value passed to the constructor or the default value, an empty string.
+
+=head2 $model->file_contents
+
+The file contents, which will be loaded from the file system if needed.
+
+=head2 $model->is_cached
+
+A boolean indicating whether the path is currently in the cache.
+
+=head2 $model->cache_key
+
+The computed cache key for the file.
+
+=head2 $model->cache_value
+
+The computed cache value for the file.
+
+=head2 $model->update
+
+Updates the cache.
+
+=head2 $model->remove
+
+Attempts to remove the value from the cache.
 
 =cut

@@ -110,4 +110,5 @@ sub zglob_to_regex_string {
 }
 
 1;
-__END__
+
+# ABSTRACT: Test::Glob hacked up to support "**/*"

@@ -872,17 +872,15 @@ This is the engine used by L<tidyall> - read that first to get an overview.
 
 You can call this API from your own program instead of executing C<tidyall>.
 
-=head1 CONSTRUCTION
+=head1 METHODS
 
-=head2 Constructor methods
+This class offers the following methods:
 
-=over
-
-=item new (%params)
+=head2 Code::TidyAll->new(%params)
 
 The regular constructor. Must pass at least I<plugins> and I<root_dir>.
 
-=item new_with_conf_file ($conf_file, %params)
+=head2 $tidyall->new_with_conf_file( $conf_file, %params )
 
 Takes a conf file path, followed optionally by a set of key/value parameters.
 Reads parameters out of the conf file and combines them with the passed
@@ -891,19 +889,17 @@ parameters (the latter take precedence), and calls the regular constructor.
 If the conf file or params defines I<tidyall_class>, then that class is
 constructed instead of C<Code::TidyAll>.
 
-=back
+=head3 Constructor parameters
 
-=head2 Constructor parameters
+=over 4
 
-=over
-
-=item plugins
+=item * plugins
 
 Specify a hash of plugins, each of which is itself a hash of options. This is
 equivalent to what would be parsed out of the sections in the configuration
 file.
 
-=item selected_plugins
+=item * selected_plugins
 
 An arrayref of plugins to be used. This overrides the C<mode> parameter.
 
@@ -913,61 +909,61 @@ and want to narrow the set of plugins to be run.
 Note that plugins will still only run on files which match their C<select> and
 C<ignore> configuration.
 
-=item cache_model_class
+=item * cache_model_class
 
 The cache model class. Defaults to C<Code::TidyAll::CacheModel>
 
-=item cache
+=item * cache
 
 The cache instance (e.g. an instance of C<Code::TidyAll::Cache> or a C<CHI>
 instance.) An instance of C<Code::TidyAll::Cache> is automatically instantiated
 by default.
 
-=item backup_ttl
+=item * backup_ttl
 
-=item check_only
+=item * check_only
 
 If this is true, then we simply check that files pass validation steps and that
 tidying them does not change the file. Any changes from tidying are not
 actually written back to the file.
 
-=item no_cleanup
+=item * no_cleanup
 
 A boolean indicating if we should skip cleaning temporary files or not.
 Defaults to false.
 
-=item inc
+=item * inc
 
 An arrayref of directories to prepend to C<@INC>. This can be set via the
 command-line as C<-I>, but you can also set it in a config file.
 
 This affects both loading and running plugins.
 
-=item data_dir
+=item * data_dir
 
-=item iterations
+=item * iterations
 
-=item mode
+=item * mode
 
-=item no_backups
+=item * no_backups
 
-=item no_cache
+=item * no_cache
 
-=item output_suffix
+=item * output_suffix
 
-=item quiet
+=item * quiet
 
-=item root_dir
+=item * root_dir
 
-=item ignore
+=item * ignore
 
-=item verbose
+=item * verbose
 
 These options are the same as the equivalent C<tidyall> command-line options,
 replacing dashes with underscore (e.g. the C<backup-ttl> option becomes
 C<backup_ttl> here).
 
-=item msg_outputter
+=item * msg_outputter
 
 This is a subroutine reference that is called whenever a message needs to be
 printed in some way. The sub receives a C<sprintf()> format string followed by
@@ -977,66 +973,61 @@ Test::Builder->diag >> method.
 
 =back
 
-=head1 METHODS
+=head2 $tidyall->process_paths( $path, ... )
 
-=over
+This method iterates through a list of paths, processing all the files it
+finds. It will descend into subdirectories if C<recursive> flag is true.
+Returns a list of L<Code::TidyAll::Result> objects, one for each file.
 
-=item process_paths (path, ...)
+=head2 $tidyall->process_file( $file )
 
-Call L</process_file> on each file; descend recursively into each directory if
-the C<recursive> flag is on. Return a list of L<Code::TidyAll::Result> objects,
-one for each file.
+Process the one I<file>, meaning:
 
-=item process_file (file)
-
-Process the I<file>, meaning
-
-=over
+=over 4
 
 =item *
 
-Check the cache and return immediately if file has not changed
+Check the cache and return immediately if file has not changed.
 
 =item *
 
-Apply appropriate matching plugins
+Apply appropriate matching plugins.
 
 =item *
 
-Print success or failure result to STDOUT, depending on quiet/verbose settings
+Print success or failure result to STDOUT, depending on quiet/verbose settings.
 
 =item *
 
-Write the cache if enabled
+Write to the cache if caching is enabled.
 
 =item *
 
-Return a L<Code::TidyAll::Result> object
+Return a L<Code::TidyAll::Result> object.
 
 =back
 
-=item process_source (I<source>, I<path>)
+=head2 $tidyall->process_source( $source, $path )
 
-Like L</process_file>, but process the I<source> string instead of a file, and
-do not read from or write to the cache. You must still pass the relative
+Like C<process_file>, but process the I<source> string instead of a file, and
+does not read from or write to the cache. You must still pass the relative
 I<path> from the root as the second argument, so that we know which plugins to
-apply. Return a L<Code::TidyAll::Result> object.
+apply. Returns a L<Code::TidyAll::Result> object.
 
-=item plugins_for_path (I<path>)
+=head2 $tidyall->plugins_for_path($path)
 
-Given a relative I<path> from the root, return a list of
+Given a relative I<path> from the root, returns a list of
 L<Code::TidyAll::Plugin> objects that apply to it, or an empty list if no
 plugins apply.
 
-=item find_conf_file (I<conf_names>, I<start_dir>)
-
-Class method. Start in the I<start_dir> and work upwards, looking for one of
-the I<conf_names>. Return the pathname if found or throw an error if not found.
-
-=item find_matched_files
+=head2 $tidyall->find_matched_files
 
 Returns a list of sorted files that match at least one plugin in configuration.
 
-=back
+=head2 Code::TidyAll->find_conf_file( $conf_names, $start_dir )
+
+Start in the I<start_dir> and work upwards, looking for a file matching one of
+the I<conf_names>. Returns the pathname if found or throw an error if not
+found.
 
 =cut

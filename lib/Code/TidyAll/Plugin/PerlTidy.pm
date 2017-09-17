@@ -81,12 +81,9 @@ Install perltidy from CPAN.
 
 =head1 CONFIGURATION
 
-=over
+This plugin accepts the following configuration options:
 
-=item argv
+=head2 argv
 
-Arguments to pass to perltidy
+Arguments to pass to C<perltidy>.
 
-=back
-
-=cut

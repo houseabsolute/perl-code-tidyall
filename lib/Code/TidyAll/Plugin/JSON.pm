@@ -57,10 +57,10 @@ format with the keys of objects sorted.
 
 =head1 CONFIGURATION
 
-=over
+This plugin accepts the following configuration options:
 
-=item ascii
+=head2 ascii
 
 Escape non-ASCII characters. The output file will be valid ASCII.
 
-=back
+=cut

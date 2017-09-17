@@ -66,11 +66,11 @@ Install podchecker from CPAN.
 
 =head1 CONFIGURATION
 
-=over
+This plugin accepts the following configuration options:
 
-=item warnings
+=head2 warnings
 
-Level of warnings to consider as errors - 1 or 2. By default, warnings will be
-ignored.
+The level of warnings to consider as errors - 1 or 2. By default, warnings will
+be ignored.
 
-=back
+=cut

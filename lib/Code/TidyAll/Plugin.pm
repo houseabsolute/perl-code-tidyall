@@ -266,8 +266,8 @@ L<Code::TidyAll::Plugin::PerlTidy> and L<Code::TidyAll::Plugin::PerlCritic>.
 
 =head1 NAMING
 
-If you are going to publicly release your plugin, call it
-'Code::TidyAll::Plugin::I<something>' so that users can find it easily and
+If you are going to publicly release your plugin, call it C<<
+Code::TidyAll::Plugin::I<something> >> so that users can find it easily and
 refer to it by its short name in configuration.
 
 If it's an internal plugin, you can call it whatever you like and refer to it
@@ -297,33 +297,31 @@ then L<Code::TidyAll::Plugin::PerlCritic> would be constructed with parameters
 The following attributes are part of this base class. Your subclass can declare
 others, of course.
 
-=over
-
-=item argv
+=head2 argv
 
 A standard attribute for passing command line arguments.
 
-=item diff_on_tidy_error
+=head2 diff_on_tidy_error
 
 This only applies to plugins which transform source. If this is true, then when
 the plugin is run in check mode it will include a diff in the return value from
 C<process_source_or_file> when the source is not tidy.
 
-=item is_validator
+=head2 is_validator
 
 An attribute that indicates if this is a validator or not; By default this
 returns true if either C<validate_source> or C<validate_file> methods have been
 implemented.
 
-=item name
+=head2 name
 
 Name of the plugin to be used in error messages etc.
 
-=item tidyall
+=head2 tidyall
 
 A weak reference back to the L<Code::TidyAll> object.
 
-=item weight
+=head2 weight
 
 A number indicating the relative weight of the plugin, used to calculate the
 order the plugins will execute in. The lower the number the sooner the plugin
@@ -337,27 +335,23 @@ The order of plugin execution is determined first by the value of the C<weight>
 attribute, and then (if multiple plugins have the same weight>) by sorting by
 the name of module.
 
-=back
-
 =head1 METHODS
 
 Your plugin may define one or more of these methods. They are all no-ops by
 default.
 
-=over
-
-=item preprocess_source ($source)
+=head2 $plugin->preprocess_source($source)
 
 Receives source code as a string; returns the processed string, or dies with
 error. This runs on all plugins I<before> any of the other methods.
 
-=item transform_source ($source)
+=head2 $plugin->transform_source($source)
 
 Receives source code as a string; returns the transformed string, or dies with
 error. This is repeated multiple times if --iterations was passed or specified
 in the configuration file.
 
-=item transform_file ($file)
+=head2 $plugin->transform_file($file)
 
 Receives filename; transforms the file in place, or dies with error. Note that
 the file will be a temporary copy of the user's file with the same basename;
@@ -365,19 +359,19 @@ your changes will only propagate back if there was no error reported from any
 plugin. This is repeated multiple times if --iterations was passed or specified
 in the configuration file.
 
-=item validate_source ($source)
+=head2 $plugin->validate_source($source)
 
 Receives source code as a string; dies with error if invalid. Return value will
 be ignored.
 
-=item validate_file ($file)
+=head2 $plugin->validate_file($file)
 
 Receives filename; validates file and dies with error if invalid. Should not
 modify file! Return value will be ignored.
 
-=item postprocess_source ($source)
+=head2 $plugin->postprocess_source($source)
 
 Receives source code as a string; returns the processed string, or dies with
 error. This runs on all plugins I<after> any of the other methods.
 
-=back
+=cut

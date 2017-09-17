@@ -63,10 +63,9 @@ Install perlcritic from CPAN.
 
 =head1 CONFIGURATION
 
-=over
+This plugin accepts the following configuration options:
 
-=item argv
+=head2 argv
 
-Arguments to pass to perlcritic
+Arguments to pass to C<perlcritic>.
 
-=back

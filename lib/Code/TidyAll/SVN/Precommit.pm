@@ -195,13 +195,13 @@ rejects the commit if not.
 
 =head1 METHODS
 
-=over
+This class provides the following methods:
 
-=item check (key/value params...)
+=head1 Code::TidyAll::SVN::Precommit->check(%params)
 
-Class method. Check that all files being added or modified in this commit are
-tidied and valid according to L<tidyall>. If not, then the entire commit is
-rejected and the reason(s) are output to the client. e.g.
+Check that all files being added or modified in this commit are tidied and
+valid according to L<tidyall>. If not, then the entire commit is rejected and
+the reason(s) are output to the client. e.g.
 
     % svn commit -m "fixups" CHI.pm CHI/Driver.pm
     Sending        CHI/Driver.pm
@@ -235,13 +235,13 @@ Passes mode = "commit" by default; see L<modes|tidyall/MODES>.
 
 Key/value parameters:
 
-=over
+=over 4
 
-=item conf_name
+=item * conf_name
 
 Conf file name to search for instead of the defaults.
 
-=item emergency_comment_prefix
+=item * emergency_comment_prefix
 
 Commit prefix that will cause this hook to be bypassed. Defaults to "NO
 TIDYALL". e.g.
@@ -250,7 +250,7 @@ TIDYALL". e.g.
 
 Set to a false value (e.g. blank or undefined) to disable bypassing.
 
-=item extra_conf_files
+=item * extra_conf_files
 
 A listref of other configuration files referred to from the main configuration
 file, e.g.
@@ -260,28 +260,26 @@ file, e.g.
 If you don't list them here then you'll get errors like 'cannot find
 perlcriticrc' when the hook runs.
 
-=item reject_on_error
+=item * reject_on_error
 
 If the configuration file cannot be found for some/all the files, or if a
 runtime error occurs, reject the commit.
 
-=item repos
+=item * repos
 
 Repository path being committed; defaults to C<< $ARGV[0] >>
 
-=item tidyall_class
+=item * tidyall_class
 
 Subclass to use instead of L<Code::TidyAll>
 
-=item tidyall_options
+=item * tidyall_options
 
 Hashref of options to pass to the L<Code::TidyAll> constructor
 
-=item txn
+=item * txn
 
 Commit transaction; defaults to C<< $ARGV[1] >>
-
-=back
 
 =back
 

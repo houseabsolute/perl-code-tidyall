@@ -52,18 +52,20 @@ Install L<npm|https://npmjs.org/>, then run
 
     npm install js-beautify -g
 
-Do not confuse this with the C<jsbeautify> package (without the dash).
+Do not confuse this with the C<jsbeautify> command, which is provided by the
+L<JavaScript::Beautifier> module.
 
 =head1 CONFIGURATION
 
-=over
+This plugin accepts the following configuration options:
 
-=item argv
+=head2 argv
 
-Arguments to pass to js-beautify
+Arguments to pass to C<js-beautify>.
 
-=item cmd
+=head2 cmd
 
-Full path to js-beautify
+The path for the C<js-beautify> command. By default this is just
+C<js-beautify>, meaning that the user's C<PATH> will be searched for the
+command.
 
-=back

@@ -25,3 +25,5 @@ sub set_value {
 }
 
 1;
+
+# ABSTRACT: A L<Config::INI::Reader> subclass which can handle a key appearing more than once

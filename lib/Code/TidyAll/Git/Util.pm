@@ -72,3 +72,5 @@ sub _parse_status {
 }
 
 1;
+
+# ABSTRACT: Utilities for the git hook classes

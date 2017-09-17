@@ -52,14 +52,9 @@ Install L<masontidy> from CPAN.
 
 =head1 CONFIGURATION
 
-=over
+This plugin accepts the following configuration options:
 
-=item argv
+=head2 argv
 
-Arguments to pass to masontidy
+Arguments to pass to C<masontidy>.
 
-=item cmd
-
-Full path to masontidy
-
-=back

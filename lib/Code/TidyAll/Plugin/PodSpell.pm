@@ -112,19 +112,20 @@ Install ispell from your package manager or from the link above.
 
 =head1 CONFIGURATION
 
-=over
+This plugin accepts the following configuration options:
 
-=item ispell_argv
+=head2 ispell_argv
 
-Arguments to pass to ispell. "-a" will always be passed, in order to parse the
-results.
+Arguments to pass to ispell. The "-a" flag will always be passed, in order to
+parse the results.
 
-=item ispell_cmd
+=head2 ispell_cmd
 
-Full path to ispell
+The path for the C<ispell> command. By default this is just C<ispell>, meaning
+that the user's C<PATH> will be searched for the command.
 
-=item suggest
+=head2 suggest
 
 If true, show suggestions next to misspelled words. Default is false.
 
-=back
+=cut

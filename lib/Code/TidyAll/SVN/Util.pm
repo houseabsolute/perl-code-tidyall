@@ -23,3 +23,5 @@ sub svn_uncommitted_files {
 }
 
 1;
+
+# ABSTRACT: Utility functions for SVN hooks

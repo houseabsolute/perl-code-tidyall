@@ -98,20 +98,21 @@ easy method is to install L<npm|https://npmjs.org/>, then run
 
 =head1 CONFIGURATION
 
-=over
+This plugin accepts the following configuration options:
 
-=item argv
+=head2 argv
 
-Arguments to pass to jshint
+Arguments to pass to C<jshint>.
 
-=item cmd
+=head2 cmd
 
-Full path to jshint
+The path for the C<jshint> command. By default this is just C<jshint>, meaning
+that the user's C<PATH> will be searched for the command.
 
-=item options
+=head2 options
 
-A whitespace separated string of options, as documented
-L<here|http://www.jshint.com/docs/>. These will be written to a temporary
-config file and passed as --config to argv.
+A whitespace separated string of options, as L<documented by
+jshint|http://www.jshint.com/docs/>. These will be written to a temporary
+config file and passed as C<--config> argument.
 
-=back
+=cut

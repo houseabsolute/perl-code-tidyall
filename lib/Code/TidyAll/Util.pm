@@ -40,3 +40,5 @@ sub tempdir_simple {
 }
 
 1;
+
+# ABSTRACT: Utility functions for internal use by Code::TidyAll

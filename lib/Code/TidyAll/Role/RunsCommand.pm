@@ -114,7 +114,5 @@ returned by the method.
 This method returns true if the exit code is bad and false otherwise. By
 default all non-zero codes are bad, but some programs may be expected to exit
 non-0 when they encounter validation/tidying issues.
-b
-=back
 
 =cut

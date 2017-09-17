@@ -61,10 +61,10 @@ Install podtidy from CPAN.
 
 =head1 CONFIGURATION
 
-=over
+This plugin accepts the following configuration options:
 
-=item columns
+=head2 columns
 
-Number of columns per line
+Number of columns per line.
 
-=back
+=cut

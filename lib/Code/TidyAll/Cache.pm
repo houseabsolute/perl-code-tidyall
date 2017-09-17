@@ -55,3 +55,5 @@ sub _path_for_key {
 }
 
 1;
+
+# ABSTRACT: A simple caching engine which stores key/value pairs

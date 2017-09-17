@@ -142,13 +142,13 @@ repo.
 
 =head1 METHODS
 
-=over
+This class provides one method:
 
-=item check (key/value params...)
+=head2 Code::TidyAll::Git::Precommit->check(%params)
 
-Class method. Check that all files being added or modified in this commit are
-tidied and valid according to L<tidyall>. If not, then the entire commit is
-rejected and the reason(s) are output to the client. e.g.
+Checks that all files being added or modified in this commit are tidied and
+valid according to L<tidyall>. If not, then the entire commit is rejected and
+the reason(s) are output to the client. e.g.
 
     % git commit -m "fixups" CHI.pm CHI/Driver.pm
     2 files did not pass tidyall check
@@ -166,45 +166,44 @@ or you can just move C<.git/hooks/pre-commit> out of the way temporarily.
 The configuration file (C<tidyall.ini> or C<.tidyallrc>) must be checked into
 git in the repo root directory i.e. next to the .git directory.
 
-The hook will stash any changes not in the index beforehand, and restore them
-afterwards, via
+By default, the hook will stash any changes not in the index beforehand, and
+restore them afterwards, via
 
-    git stash -q --keep-index
+    git stash save --keep-index --include-untracked
     ....
-    git stash pop -q
+    git stash pop
 
 This means that if the configuration file has uncommitted changes that are not
 in the index, they will not affect the tidyall run.
 
-Passes mode = "commit" by default; see L<modes|tidyall/MODES>.
+This class passes mode = "commit" by default to tidyall; see
+L<modes|tidyall/MODES>.
 
 Key/value parameters:
 
-=over
+=over 4
 
-=item conf_name
+=item * conf_name
 
-Conf file name to search for instead of the defaults.
+A conf file name to search for instead of the defaults.
 
-=item git_path
+=item * git_path
 
 Path to git to use in commands, e.g. '/usr/bin/git' or '/usr/local/bin/git'. By
-default, just uses 'git', which will search the user's PATH.
+default, it just uses 'git', which will search the user's C<PATH>.
 
-=item no_stash
+=item * no_stash
 
 Don't attempt to stash changes not in the index. This means the hook will
-process even files that are not going to be committed.
+process files that are not going to be committed.
 
-=item tidyall_class
+=item * tidyall_class
 
-Subclass to use instead of L<Code::TidyAll>
+Subclass to use instead of L<Code::TidyAll>.
 
-=item tidyall_options
+=item * tidyall_options
 
-Hashref of options to pass to the L<Code::TidyAll> constructor
-
-=back
+A hashref of options to pass to the L<Code::TidyAll> constructor.
 
 =back
 
@@ -251,8 +250,10 @@ of the repo
 
 =back
 
-More information on pre-commit hooks and the impossibility of enforcing them
-L<here|http://stackoverflow.com/questions/3703159/git-remote-shared-pre-commit-hook>.
+See L<this Stack Overflow
+question||http://stackoverflow.com/questions/3703159/git-remote-shared-pre-commit-hook>
+for more information on pre-commit hooks and the impossibility of enforcing
+their use.
 
 See also L<Code::TidyAll::Git::Prereceive>, which enforces tidyall on pushes to
 a remote shared repository.
