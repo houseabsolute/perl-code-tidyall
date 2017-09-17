@@ -11,7 +11,7 @@ use Try::Tiny;
 
 use Moo::Role;
 
-our $VERSION = '0.66';
+our $VERSION = '0.67';
 
 requires qw( _build_cmd );
 

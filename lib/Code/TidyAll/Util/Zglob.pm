@@ -5,7 +5,7 @@ package Code::TidyAll::Util::Zglob;
 use strict;
 use warnings;
 
-our $VERSION = '0.66';
+our $VERSION = '0.67';
 
 use Exporter qw(import);
 
