@@ -11,6 +11,8 @@ use Moo;
 
 extends 'Code::TidyAll::Plugin';
 
+with 'Code::TidyAll::Role::RunsCommand';
+
 our $VERSION = '0.66';
 
 sub _build_cmd {'js-beautify'}
@@ -18,27 +20,10 @@ sub _build_cmd {'js-beautify'}
 sub transform_file {
     my ( $self, $file ) = @_;
 
-    my @cmd = ( $self->cmd, shellwords( $self->argv ), '-f', $file );
-    try {
-        my $output;
-        my $exit = run3( \@cmd, \undef, \$output, \$output );
-        if ($?) {
-            my $code   = $? >> 8;
-            my $signal = $? & 127;
-            my $msg    = "exited with $code";
-            $msg .= " (signal $signal)" if $signal;
-            $msg .= " output was:\n$output" if defined $output and length $output;
-            die "$msg\n";
-        }
-        $file->spew($output);
-    }
-    catch {
-        die sprintf(
-            "%s failed\n    %s",
-            ( join q{ }, @cmd ),
-            $_,
-        );
-    };
+    my $output = $self->_run_or_die( '-f', $file );
+    $file->spew($output);
+
+    return;
 }
 
 1;

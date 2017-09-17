@@ -10,6 +10,8 @@ use Moo;
 
 extends 'Code::TidyAll::Plugin';
 
+with 'Code::TidyAll::Role::RunsCommand';
+
 our $VERSION = '0.66';
 
 sub _build_cmd {'jslint'}
@@ -17,11 +19,13 @@ sub _build_cmd {'jslint'}
 sub validate_file {
     my ( $self, $file ) = @_;
 
-    my @cmd = ( $self->cmd, shellwords( $self->argv ), $file );
-    my $output;
-    run3( \@cmd, \undef, \$output, \$output );
-    die "$output\n" if $output !~ /is OK\./;
+    my $output = $self->_run_or_die($file);
+    die "$output\n" if $output =~ /\S/ && $output !~ /.+ is OK\./;
+
+    return;
 }
+
+sub _is_bad_exit_code { return $_[1] > 1 }
 
 1;
 

@@ -52,3 +52,5 @@ sub _build_ignore_regex {
 }
 
 1;
+
+# ABSTRACT: A role for any class that has a list of ignored paths specified in zglob syntax

@@ -17,7 +17,7 @@ has options => (
     predicate => '_has_options',
 );
 
-with 'Code::TidyAll::Role::Tempdir';
+with qw( Code::TidyAll::Role::RunsCommand Code::TidyAll::Role::Tempdir );
 
 our $VERSION = '0.66';
 
@@ -26,25 +26,25 @@ sub _build_cmd {'jshint'}
 sub validate_file {
     my ( $self, $file ) = @_;
 
-    my @cmd = ( $self->cmd, shellwords( $self->argv ) );
-    push @cmd, $self->_config_file_argv if $self->_has_options;
-    push @cmd, $file;
-
-    my $output;
-    run3( \@cmd, \undef, \$output, \$output );
+    my $output = $self->_run_or_die( $self->_config_file_argv, $file );
     if ( $output =~ /\S/ ) {
         $output =~ s/^$file:\s*//gm;
         die "$output\n";
     }
+
+    return;
 }
 
 sub _config_file_argv {
     my $self = shift;
 
+    return unless $self->_has_options;
+
     my $conf_file = $self->_tempdir->child('jshint.json');
     $conf_file->spew(
         '{ ' . join( ",\n", map {qq["$_": true]} split /\s+/, $self->options ) . ' }' );
-    return '--config', $conf_file;
+
+    return ( '--config', $conf_file );
 }
 
 1;

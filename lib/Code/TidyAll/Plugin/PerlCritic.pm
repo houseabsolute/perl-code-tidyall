@@ -10,6 +10,8 @@ use Moo;
 
 extends 'Code::TidyAll::Plugin';
 
+with 'Code::TidyAll::Role::RunsCommand';
+
 our $VERSION = '0.66';
 
 # On Windows only the batch file is actually executable.
@@ -19,10 +21,10 @@ sub _build_cmd {$cmd}
 sub validate_file {
     my ( $self, $file ) = @_;
 
-    my @cmd = ( $self->cmd, shellwords( $self->argv ), $file );
-    my $output;
-    run3( \@cmd, \undef, \$output, \$output );
-    die "$output\n" if $output !~ /^.* source OK\n/s;
+    my $output = $self->_run_or_die($file);
+    die "$output\n" unless $output =~ /^.* source OK\n/s;
+
+    return;
 }
 
 1;

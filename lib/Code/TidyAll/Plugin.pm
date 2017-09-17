@@ -23,11 +23,6 @@ has argv => (
     default => q{}
 );
 
-has cmd => (
-    is  => 'lazy',
-    isa => t('NonEmptyStr'),
-);
-
 has diff_on_tidy_error => (
     is      => 'ro',
     isa     => t('Bool'),
@@ -307,11 +302,6 @@ others, of course.
 =item argv
 
 A standard attribute for passing command line arguments.
-
-=item cmd
-
-A standard attribute for specifying the name of the command to run, e.g.
-"/usr/local/bin/perlcritic".
 
 =item diff_on_tidy_error
 

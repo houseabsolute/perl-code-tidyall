@@ -10,6 +10,8 @@ use Moo;
 
 extends 'Code::TidyAll::Plugin';
 
+with 'Code::TidyAll::Role::RunsCommand';
+
 our $VERSION = '0.66';
 
 sub _build_cmd {'cssunminifier'}
@@ -17,7 +19,9 @@ sub _build_cmd {'cssunminifier'}
 sub transform_file {
     my ( $self, $file ) = @_;
 
-    run( $self->cmd, shellwords( $self->argv ), $file, $file );
+    $self->_run_or_die( $file, $file );
+
+    return;
 }
 
 1;

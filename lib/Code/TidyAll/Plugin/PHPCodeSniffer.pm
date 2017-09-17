@@ -10,6 +10,8 @@ use Moo;
 
 extends 'Code::TidyAll::Plugin';
 
+with 'Code::TidyAll::Role::RunsCommand';
+
 our $VERSION = '0.66';
 
 sub _build_cmd {'phpcs'}
@@ -17,13 +19,9 @@ sub _build_cmd {'phpcs'}
 sub validate_file {
     my ( $self, $file ) = @_;
 
-    my @cmd = ( $self->cmd, shellwords( $self->argv ), $file );
-    my $output;
-    run3( \@cmd, \undef, \$output, \$output );
-    if ( $? > 0 ) {
-        $output ||= 'problem running ' . $self->cmd;
-        die "$output\n";
-    }
+    $self->_run_or_die($file);
+
+    return;
 }
 
 1;
