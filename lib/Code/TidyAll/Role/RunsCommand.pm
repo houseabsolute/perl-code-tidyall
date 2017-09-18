@@ -15,13 +15,6 @@ our $VERSION = '0.67';
 
 requires qw( _build_cmd );
 
-has cmd => (
-    is      => 'ro',
-    isa     => t('NonEmptyStr'),
-    lazy    => 1,
-    builder => '_build_cmd',
-);
-
 sub _run_or_die {
     my $self = shift;
     my @argv = @_;

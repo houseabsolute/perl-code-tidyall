@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- Move "cmd" attribute back to Code::TidyAll::Plugin. Moving this to a role in
+  0.66 broke plugins which run external commands but which don't ship with
+  this distro. Reported by Greg Oschwald. GH #82.
+
+
 0.66     2017-09-17
 
 - The tidyall command line app now takes a --plugins option. This allows you

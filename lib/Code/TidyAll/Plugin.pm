@@ -23,6 +23,16 @@ has argv => (
     default => q{}
 );
 
+# This really belongs in Code::TidyAll::Role::RunsCommand but moving it there
+# breaks plugins not in the core distro that expect to just inherit from this
+# module and be able to specify a cmd attribute.
+has cmd => (
+    is      => 'ro',
+    isa     => t('NonEmptyStr'),
+    lazy    => 1,
+    builder => '_build_cmd',
+);
+
 has diff_on_tidy_error => (
     is      => 'ro',
     isa     => t('Bool'),
