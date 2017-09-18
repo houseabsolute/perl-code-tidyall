@@ -9,6 +9,8 @@ install:
   - set PATH=C:\strawberry\perl\bin;C:\strawberry\perl\site\bin;C:\strawberry\c\bin;%PATH%
   - cd %APPVEYOR_BUILD_FOLDER%
   - cpanm --installdeps . -n
+  # Without this Data::UUID (a dep of CHI) will fail to install - https://github.com/rjbs/Data-UUID/issues/24
+  - md C:\tmp
   # Is there a better way to get the list of DevelopRequires modules?
   - cpanm -n CHI Code::TidyAll::Plugin::Perl::AlignMooseAttributes JSON::MaybeXS Mason::Tidy Mason::Tidy::App Parallel::ForkManager Perl::Critic::Policy::Moose::RequireMakeImmutable Perl::Tidy Perl::Tidy::Sweetened Pod::Checker Pod::Spell Pod::Tidy SVN::Look
   - ps: Install-Product node $env:nodejs_version
