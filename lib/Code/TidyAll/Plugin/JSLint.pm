@@ -12,7 +12,7 @@ extends 'Code::TidyAll::Plugin';
 
 with 'Code::TidyAll::Role::RunsCommand';
 
-our $VERSION = '0.67';
+our $VERSION = '0.68';
 
 sub _build_cmd {'jslint'}
 

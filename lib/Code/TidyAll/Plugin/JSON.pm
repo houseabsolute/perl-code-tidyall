@@ -8,7 +8,7 @@ use Specio::Library::Builtins;
 
 use Moo;
 
-our $VERSION = '0.67';
+our $VERSION = '0.68';
 
 extends 'Code::TidyAll::Plugin';
 

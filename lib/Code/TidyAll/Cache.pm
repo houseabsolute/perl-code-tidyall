@@ -9,7 +9,7 @@ use Specio::Library::Path::Tiny;
 
 use Moo;
 
-our $VERSION = '0.67';
+our $VERSION = '0.68';
 
 has cache_dir => (
     is       => 'ro',

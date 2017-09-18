@@ -12,7 +12,7 @@ use Specio::Library::String;
 
 use Moo;
 
-our $VERSION = '0.67';
+our $VERSION = '0.68';
 
 has base_sig => (
     is      => 'ro',

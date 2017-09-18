@@ -10,7 +10,7 @@ use Path::Tiny qw(path);
 
 use Exporter qw(import);
 
-our $VERSION = '0.67';
+our $VERSION = '0.68';
 
 our @EXPORT_OK = qw(git_files_to_commit git_modified_files);
 
