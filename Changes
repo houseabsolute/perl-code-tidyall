@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.67     2017-09-18
+
 - Move "cmd" attribute back to Code::TidyAll::Plugin. Moving this to a role in
   0.66 broke plugins which run external commands but which don't ship with
   this distro. Reported by Greg Oschwald. GH #82.
