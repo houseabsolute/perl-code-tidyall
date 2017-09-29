@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Fixed heisenbug that could cause displaying constructor params (in verbose
+  mode) to omit most of the parameter values.
+
+
 0.67     2017-09-18
 
 - Move "cmd" attribute back to Code::TidyAll::Plugin. Moving this to a role in

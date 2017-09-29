@@ -411,6 +411,8 @@ sub _dump_params {
 sub _recurse_dump {
     my ($p) = @_;
 
+    return $p unless ref $p;
+
     if ( ref $p eq 'HASH' ) {
         my %dump;
         for my $k ( keys %{$p} ) {
@@ -453,8 +455,7 @@ sub _recurse_dump {
         return \@dump;
     }
 
-    return;
-    die '_recurse_dump was called with a value that is neither a hashref nor an arrayref';
+    die "_recurse_dump was called with a value that was not a scalar, hashref, or an arrayref: $p";
 }
 
 sub process_all {
