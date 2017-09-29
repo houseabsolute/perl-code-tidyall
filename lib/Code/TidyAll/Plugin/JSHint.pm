@@ -19,7 +19,7 @@ has options => (
 
 with qw( Code::TidyAll::Role::RunsCommand Code::TidyAll::Role::Tempdir );
 
-our $VERSION = '0.68';
+our $VERSION = '0.69';
 
 sub _build_cmd {'jshint'}
 

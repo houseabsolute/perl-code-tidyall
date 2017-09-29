@@ -7,7 +7,7 @@ use Moo;
 
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.68';
+our $VERSION = '0.69';
 
 sub transform_source {
     my ( $self, $source ) = @_;
