@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.68     2017-09-29
+
 - Fixed heisenbug that could cause displaying constructor params (in verbose
   mode) to omit most of the parameter values.
 
