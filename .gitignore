@@ -2,6 +2,7 @@
 .\#*
 .build
 .tidyall.d
+/test-mydeps*
 Build
 Code-TidyAll-*
 Debian_CPANTS.txt

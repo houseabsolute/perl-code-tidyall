@@ -26,6 +26,8 @@ matrix:
   allow_failures:
     - perl: blead
   include:
+    - env: TIDYALL_TEST_DEPS=1
+      perl: '5.26'
     - env: COVERAGE=1
       perl: '5.26'
     - env:
@@ -58,6 +60,8 @@ script:
   - prove -l -j$(test-jobs) $(test-files)
 after_success:
   - coverage-report
+after_failure:
+  - cat test-mydeps-*.log
 ### __app_cisetup__
 # ---
 # force_threaded_perls: 0
