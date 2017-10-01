@@ -22,6 +22,11 @@ perl:
   - '5.14'
   - '5.12'
   - '5.10'
+cache:
+  directories:
+    - $HOME/perl5
+    - $TRAVIS_BUILD_DIR/node_modules
+    - $TRAVIS_BUILD_DIR/php5
 matrix:
   allow_failures:
     - perl: blead
@@ -67,5 +72,6 @@ after_failure:
 ### __app_cisetup__
 # ---
 # force_threaded_perls: 0
+# perl_caching: 1
 
 ### __app_cisetup__
