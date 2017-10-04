@@ -12,6 +12,7 @@ use Data::Dumper;
 use Date::Format;
 use Digest::SHA qw(sha1_hex);
 use File::Find qw(find);
+use File::pushd qw( pushd );
 use File::Zglob qw(zglob);
 use List::SomeUtils qw(uniq);
 use Module::Runtime qw( use_module );
@@ -472,6 +473,7 @@ sub process_paths {
             || $_->absolute
     } map { path($_) } @paths;
 
+    my $dir = pushd( $self->root_dir );
     if ( $self->jobs > 1 && @paths > 1 ) {
         return $self->_process_parallel(@paths);
     }

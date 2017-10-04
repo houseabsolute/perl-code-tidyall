@@ -1,5 +1,11 @@
 {{$NEXT}}
 
+- We now chdir to $ROOT before running commands. This fixes issues when you
+  run tidyall from a subdirectory of your $ROOT (which works)ey but commands
+  run by tidyall (like perlcritic) are looking for files using paths relative
+  to root. Patch by Olaf Alders. Fixes GH #85. PR #86
+
+
 0.68     2017-09-29
 
 - Fixed heisenbug that could cause displaying constructor params (in verbose
