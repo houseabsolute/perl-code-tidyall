@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+- chdir to $ROOT before running commands. Olaf Alders. GH #85
+
 0.68     2017-09-29
 
 - Fixed heisenbug that could cause displaying constructor params (in verbose
