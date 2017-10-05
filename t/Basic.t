@@ -3,11 +3,10 @@
 use strict;
 use warnings;
 
+use lib::relative 'lib';
+
 use Config;
 use File::Spec ();
-use FindBin    ();
-
-use lib "$FindBin::Bin/lib";
 
 $ENV{PERL5LIB} = join $Config{path_sep},
     File::Spec->rel2abs('./t/lib'), split $Config{path_sep},
