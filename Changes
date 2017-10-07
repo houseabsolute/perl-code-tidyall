@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.69     2017-10-06
+
 - We now chdir to $ROOT before running commands. This fixes issues when you
   run tidyall from a subdirectory of your $ROOT (which works)ey but commands
   run by tidyall (like perlcritic) are looking for files using paths relative
