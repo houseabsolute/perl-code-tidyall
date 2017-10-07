@@ -73,7 +73,7 @@ my %WriteMakefileArgs = (
     "lib" => 0,
     "lib::relative" => 0
   },
-  "VERSION" => "0.69",
+  "VERSION" => "0.70",
   "test" => {
     "TESTS" => "t/*.t"
   }
