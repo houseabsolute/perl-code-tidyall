@@ -51,6 +51,7 @@ on 'test' => sub {
   requires "Test::Warnings" => "0";
   requires "autodie" => "0";
   requires "lib" => "0";
+  requires "lib::relative" => "0";
 };
 
 on 'test' => sub {
@@ -82,6 +83,7 @@ on 'develop' => sub {
   requires "SVN::Look" => "0";
   requires "Test::CPAN::Changes" => "0.19";
   requires "Test::CPAN::Meta::JSON" => "0.16";
+  requires "Test::DependentModules" => "0";
   requires "Test::Mojibake" => "0";
   requires "Test::More" => "0.96";
   requires "Test::NoTabs" => "0";

@@ -70,7 +70,8 @@ my %WriteMakefileArgs = (
     "Test::More" => "0.96",
     "Test::Warnings" => 0,
     "autodie" => 0,
-    "lib" => 0
+    "lib" => 0,
+    "lib::relative" => 0
   },
   "VERSION" => "0.69",
   "test" => {
@@ -127,6 +128,7 @@ my %FallbackPrereqs = (
   "base" => 0,
   "constant" => 0,
   "lib" => 0,
+  "lib::relative" => 0,
   "strict" => 0,
   "warnings" => 0
 );
