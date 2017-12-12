@@ -228,7 +228,7 @@ See also L<Code::TidyAll::Git::Precommit>, which operates locally.
 
 This class provides the following methods:
 
-=head2 Code::TidyAll::Git::Prerecive->check(%params)
+=head2 Code::TidyAll::Git::Prereceive->check(%params)
 
 This method reads commit info from standard input, then checks that all files
 being added or modified in this push are tidied and valid according to
