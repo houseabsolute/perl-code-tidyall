@@ -2,6 +2,7 @@ API
 CPAN
 JSON
 JavaScript
+Matsuno
 Misc
 PHP
 PREREQS
@@ -12,10 +13,12 @@ STDOUT
 Simakov
 TIDYALL
 Thalhammer
+Tokuhiro
 Vim
 argv
 ascii
 atomicity
+borged
 cmd
 conf
 config
