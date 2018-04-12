@@ -114,9 +114,9 @@ has plugins => (
 );
 
 has selected_plugins => (
-    is   => 'ro',
-    isa  => t( 'ArrayRef', of => t('NonEmptyStr') ),
-    lazy => 1,
+    is      => 'ro',
+    isa     => t( 'ArrayRef', of => t('NonEmptyStr') ),
+    lazy    => 1,
     default => sub { [] },
 );
 
@@ -148,8 +148,8 @@ has verbose => (
 );
 
 has inc => (
-    is  => 'ro',
-    isa => t( 'ArrayRef', of => t('NonEmptyStr') ),
+    is      => 'ro',
+    isa     => t( 'ArrayRef', of => t('NonEmptyStr') ),
     default => sub { [] },
 );
 
@@ -198,7 +198,7 @@ has _plugins_for_path => (
     isa      => t( 'HashRef', of => t('HashRef') ),
     init_arg => undef,
     lazy     => 1,
-    default => sub { {} },
+    default  => sub { {} },
 );
 
 with qw( Code::TidyAll::Role::HasIgnore Code::TidyAll::Role::Tempdir );

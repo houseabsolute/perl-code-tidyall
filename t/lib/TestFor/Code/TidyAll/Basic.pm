@@ -160,8 +160,8 @@ sub test_plugin_order_and_atomicity : Tests {
     );
 
     $self->tidy(
-        plugins => { %AToZ, %ReverseFoo, %CheckUpper },
-        options     => { verbose   => 1 },
+        plugins     => { %AToZ, %ReverseFoo, %CheckUpper },
+        options     => { verbose => 1 },
         source      => { 'foo.txt' => 'abc' },
         dest        => { 'foo.txt' => 'abc' },
         errors      => qr/lowercase found/,
@@ -229,7 +229,7 @@ sub test_caching_and_backups : Tests {
             Code::TidyAll::CacheModel
             Code::TidyAll::CacheModel::Shared
             )
-            ) {
+        ) {
             foreach my $no_cache ( 0 .. 1 ) {
                 foreach my $no_backups ( 0 .. 1 ) {
                     my $desc

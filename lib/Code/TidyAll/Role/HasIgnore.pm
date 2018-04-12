@@ -12,8 +12,8 @@ use Moo::Role;
 our $VERSION = '0.70';
 
 has ignore => (
-    is  => 'ro',
-    isa => t( 'ArrayRef', of => t('NonEmptyStr') ),
+    is      => 'ro',
+    isa     => t( 'ArrayRef', of => t('NonEmptyStr') ),
     default => sub { [] },
 );
 
@@ -28,8 +28,8 @@ has ignores => (
 );
 
 has select => (
-    is  => 'ro',
-    isa => t( 'ArrayRef', of => t('NonEmptyStr') ),
+    is      => 'ro',
+    isa     => t( 'ArrayRef', of => t('NonEmptyStr') ),
     default => sub { [] },
 );
 

@@ -30,8 +30,8 @@ has conf_name => (
 );
 
 has extra_conf_files => (
-    is  => 'ro',
-    isa => t( 'ArrayRef', of => t('NonEmptyStr') ),
+    is      => 'ro',
+    isa     => t( 'ArrayRef', of => t('NonEmptyStr') ),
     default => sub { [] },
 );
 
