@@ -4,7 +4,7 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
 # VERSION
 
-version 0.69
+version 0.70
 
 # SYNOPSIS
 
@@ -193,6 +193,8 @@ The source code repository for Code-TidyAll can be found at
 - Mark Grimes <mgrimes@cpan.org>
 - Martin Gruner <martin.gruner@otrs.com>
 - Mohammad S Anwar <mohammad.anwar@yahoo.com>
+- Nick Tonkin <1nickt@users.noreply.github.com>
+- Nick Tonkin <ntonkin@bur-ntonkin-m1.corp.endurance.com>
 - Olaf Alders <olaf@wundersolutions.com>
 - Pedro Melo <melo@simplicidade.org>
 - Ricardo Signes <rjbs@cpan.org>
@@ -202,7 +204,7 @@ The source code repository for Code-TidyAll can be found at
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 - 2017 by Jonathan Swartz.
+This software is copyright (c) 2011 - 2018 by Jonathan Swartz.
 
 This is free software; you can redistribute it and/or modify it under the same
 terms as the Perl 5 programming language system itself.
