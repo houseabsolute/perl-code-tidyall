@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- Borged File::Zglob into this distro for now. File::Zglob has not been
+  installable under Perl 5.26+ for 8+ months
+  (https://rt.cpan.org/Public/Bug/Display.html?id=120445).
+
+
 0.69     2017-10-06
 
 - We now chdir to $ROOT before running commands. This fixes issues when you

@@ -8,12 +8,12 @@ use Code::TidyAll::CacheModel;
 use Code::TidyAll::Config::INI::Reader;
 use Code::TidyAll::Plugin;
 use Code::TidyAll::Result;
+use Code::TidyAll::Zglob qw(zglob);
 use Data::Dumper;
 use Date::Format;
 use Digest::SHA qw(sha1_hex);
 use File::Find qw(find);
 use File::pushd qw( pushd );
-use File::Zglob qw(zglob);
 use List::SomeUtils qw(uniq);
 use Module::Runtime qw( use_module );
 use Path::Tiny qw(path);
@@ -808,7 +808,7 @@ sub _matched_by_plugin {
 sub _zglob {
     my ( $self, $globs ) = @_;
 
-    local $File::Zglob::NOCASE = 0;
+    local $Code::TidyAll::Zglob::NOCASE = 0;
     my @files;
     foreach my $glob (@$globs) {
         try {
