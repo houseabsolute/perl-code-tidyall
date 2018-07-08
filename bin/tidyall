@@ -150,7 +150,6 @@ sub handle_pipe {
 
     $conf_file ||= $tidyall_class->find_conf_file( \@conf_names, $pipe_filename->parent );
     my $ct       = $tidyall_class->new_from_conf_file( $conf_file, %params );
-    my $root_dir = $ct->root_dir;
     my $source   = do { local $/; <STDIN> };
 
     # Merge stdout and stderr and output all to stderr, so that stdout is
