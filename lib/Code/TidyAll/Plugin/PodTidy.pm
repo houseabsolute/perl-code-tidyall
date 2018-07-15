@@ -33,6 +33,8 @@ sub transform_file {
     die $output if $output =~ /\S/ && $output !~ /does not contain Pod/;
 }
 
+sub required_perl_modules {qw( Pod::Tidy )}
+
 1;
 
 # ABSTRACT: Use podtidy with tidyall

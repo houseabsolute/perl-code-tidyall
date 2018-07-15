@@ -34,6 +34,8 @@ sub transform_source {
     return $json->encode( $json->decode($source) );
 }
 
+sub required_perl_modules {qw( JSON::MaybeXS )}
+
 1;
 
 # ABSTRACT: Use the JSON::MaybeXS module to tidy JSON documents with tidyall

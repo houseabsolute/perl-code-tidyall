@@ -27,6 +27,8 @@ sub validate_file {
     return;
 }
 
+sub required_perl_modules {qw( Perl::Critic )}
+
 1;
 
 # ABSTRACT: Use perlcritic with tidyall

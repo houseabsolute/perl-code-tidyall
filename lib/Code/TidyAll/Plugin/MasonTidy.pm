@@ -23,6 +23,8 @@ sub transform_source {
     return $dest;
 }
 
+sub required_perl_modules {qw( Mason::Tidy::App )}
+
 1;
 
 # ABSTRACT: Use masontidy with tidyall

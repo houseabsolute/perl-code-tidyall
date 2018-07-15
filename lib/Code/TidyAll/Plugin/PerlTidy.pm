@@ -45,6 +45,8 @@ sub transform_source {
     return $destination;
 }
 
+sub required_perl_modules {qw( Perl::Tidy )}
+
 1;
 
 # ABSTRACT: Use perltidy with tidyall

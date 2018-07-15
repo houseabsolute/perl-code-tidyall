@@ -38,6 +38,8 @@ sub transform_source {
     return $destination;
 }
 
+sub required_perl_modules {qw( Perl::Tidy::Sweetened )}
+
 1;
 
 # ABSTRACT: Use perltidy-sweet with tidyall

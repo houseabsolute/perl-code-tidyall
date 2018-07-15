@@ -31,6 +31,8 @@ sub validate_file {
         || ( $self->warnings && $checker->num_warnings > 0 );
 }
 
+sub required_perl_modules {qw( Pod::Checker )}
+
 1;
 
 # ABSTRACT: Use podchecker with tidyall

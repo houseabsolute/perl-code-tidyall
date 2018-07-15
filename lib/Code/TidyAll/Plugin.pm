@@ -235,6 +235,8 @@ sub matches_path {
         && $path !~ $self->ignore_regex;
 }
 
+sub required_perl_modules { }
+
 1;
 
 # ABSTRACT: Create plugins for tidying or validating code

@@ -64,6 +64,8 @@ sub validate_file {
     die sprintf( "unrecognized words:\n%s\n", join( "\n", sort @errors ) ) if @errors;
 }
 
+sub required_perl_modules {qw( Pod::Spell )}
+
 1;
 
 # ABSTRACT: Use Pod::Spell + ispell with tidyall
