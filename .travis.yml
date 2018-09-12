@@ -13,6 +13,7 @@ language: perl
 perl:
   - blead
   - dev
+  - '5.28'
   - '5.26'
   - '5.24'
   - '5.22'
@@ -32,9 +33,9 @@ matrix:
     - perl: blead
   include:
     - env: TIDYALL_TEST_DEPS=1
-      perl: '5.26'
+      perl: '5.28'
     - env: COVERAGE=1
-      perl: '5.26'
+      perl: '5.28'
     - env:
         - AUTHOR_TESTING=0
         - RELEASE_TESTING=0
