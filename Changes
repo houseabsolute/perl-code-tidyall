@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.71     2018-09-12
+
 - Added two new plugins, GenericValidator and GenericTransformer. These allow
   you to execute any command as a validator or transformer respectively. This
   should be sufficient to keep us all from having to write new plugins for
