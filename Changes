@@ -1,5 +1,12 @@
 {{$NEXT}}
 
+- Added two new plugins, GenericValidator and GenericTransformer. These allow
+  you to execute any command as a validator or transformer respectively. This
+  should be sufficient to keep us all from having to write new plugins for
+  every command in the world, as these two plugins should handle most common
+  cases.
+
+
 0.70     2018-04-12
 
 - Borged File::Zglob into this distro for now. File::Zglob has not been

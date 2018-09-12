@@ -9,6 +9,10 @@ extends 'Code::TidyAll::Plugin';
 
 with 'Code::TidyAll::Role::RunsCommand';
 
+has '+ok_exit_codes' => (
+    default => sub { [ 0, 1 ] },
+);
+
 our $VERSION = '0.71';
 
 sub _build_cmd {'jslint'}
@@ -21,8 +25,6 @@ sub validate_file {
 
     return;
 }
-
-sub _is_bad_exit_code { return $_[1] > 1 }
 
 1;
 

@@ -4,8 +4,9 @@ use strict;
 use warnings;
 
 use IPC::Run3 qw(run3);
+use List::SomeUtils qw(any);
 use Specio::Library::Builtins;
-use Specio::Library::String;
+use Specio::Library::Numeric;
 use Text::ParseWords qw(shellwords);
 use Try::Tiny;
 
@@ -13,14 +14,20 @@ use Moo::Role;
 
 our $VERSION = '0.71';
 
-requires qw( _build_cmd );
+has ok_exit_codes => (
+    is      => 'ro',
+    isa     => t( 'ArrayRef', of => t('PositiveOrZeroInt') ),
+    default => sub { [0] },
+);
+
+# We will end up getting $self->argv from the Plugin base class.
 
 sub _run_or_die {
     my $self = shift;
     my @argv = @_;
 
     my $output;
-    my @cmd = ( $self->cmd, shellwords( $self->argv ), @argv );
+    my @cmd = ( shellwords( $self->cmd ), shellwords( $self->argv ), @argv );
     try {
         local $?;
         run3( \@cmd, \undef, \$output, \$output );
@@ -44,7 +51,12 @@ sub _run_or_die {
     return $output;
 }
 
-sub _is_bad_exit_code { return $_[1] != 0 }
+sub _is_bad_exit_code {
+    my $self = shift;
+    my $code = shift;
+
+    return !( any { $code == $_ } @{ $self->ok_exit_codes } );
+}
 
 1;
 
