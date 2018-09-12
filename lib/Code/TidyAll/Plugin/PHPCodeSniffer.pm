@@ -3,9 +3,6 @@ package Code::TidyAll::Plugin::PHPCodeSniffer;
 use strict;
 use warnings;
 
-use IPC::Run3;
-use Text::ParseWords qw(shellwords);
-
 use Moo;
 
 extends 'Code::TidyAll::Plugin';

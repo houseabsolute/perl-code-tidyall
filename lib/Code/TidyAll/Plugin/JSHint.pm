@@ -3,9 +3,7 @@ package Code::TidyAll::Plugin::JSHint;
 use strict;
 use warnings;
 
-use IPC::Run3 qw(run3);
 use Specio::Library::String;
-use Text::ParseWords qw(shellwords);
 
 use Moo;
 

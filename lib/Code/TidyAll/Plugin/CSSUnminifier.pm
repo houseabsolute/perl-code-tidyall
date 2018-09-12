@@ -3,9 +3,6 @@ package Code::TidyAll::Plugin::CSSUnminifier;
 use strict;
 use warnings;
 
-use IPC::System::Simple qw(run);
-use Text::ParseWords qw(shellwords);
-
 use Moo;
 
 extends 'Code::TidyAll::Plugin';

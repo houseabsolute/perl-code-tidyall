@@ -3,10 +3,6 @@ package Code::TidyAll::Plugin::JSBeautify;
 use strict;
 use warnings;
 
-use IPC::Run3 qw(run3);
-use Text::ParseWords qw(shellwords);
-use Try::Tiny;
-
 use Moo;
 
 extends 'Code::TidyAll::Plugin';

@@ -4,8 +4,7 @@ use strict;
 use warnings;
 
 use Capture::Tiny qw();
-use IPC::Run3;
-use List::SomeUtils qw(uniq);
+use IPC::Run3 qw(run3);
 use Pod::Spell;
 use Specio::Library::Builtins;
 use Specio::Library::String;

@@ -3,9 +3,6 @@ package Code::TidyAll::Plugin::PerlCritic;
 use strict;
 use warnings;
 
-use IPC::Run3 qw(run3);
-use Text::ParseWords qw(shellwords);
-
 use Moo;
 
 extends 'Code::TidyAll::Plugin';
