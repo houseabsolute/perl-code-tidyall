@@ -34,6 +34,7 @@ __END__
     # In your tidyall config
     [GenericTransformer / JSONOrderedTidy]
     cmd = json-ordered-tidy
+    argv = -stdout
     ok_exit_codes = 0 1
 
 =head1 DESCRIPTION

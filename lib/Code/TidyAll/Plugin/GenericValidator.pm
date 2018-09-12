@@ -33,6 +33,7 @@ __END__
     # In your tidyall config
     [GenericValidator / JSONOrderedTidy]
     cmd = json-ordered-tidy
+    argv = -check
     ok_exit_codes = 0 1
 
 =head1 DESCRIPTION
