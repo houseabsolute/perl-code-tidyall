@@ -116,7 +116,7 @@ sub check_input {
 sub create_tidyall {
     my ( $self, $commit ) = @_;
 
-    my $temp_dir = tempdir_simple();
+    my $temp_dir   = tempdir_simple();
     my @conf_names = $self->conf_name ? ( $self->conf_name ) : Code::TidyAll->default_conf_names;
     my ($conf_file) = grep { $self->get_file_contents( $_, $commit ) } @conf_names
         or die sprintf( 'could not find conf file %s', join( ' or ', @conf_names ) );
@@ -140,7 +140,7 @@ sub create_tidyall {
 sub get_changed_files {
     my ( $self, $base, $commit ) = @_;
     my $output = capturex( $self->git_path, 'diff', '--numstat', '--name-only', "$base..$commit" );
-    my @files = grep {/\S/} split( "\n", $output );
+    my @files  = grep {/\S/} split( "\n", $output );
     return @files;
 }
 

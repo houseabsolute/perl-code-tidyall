@@ -57,7 +57,7 @@ sub test_svn : Tests {
     cmp_deeply( [ svn_uncommitted_files($work_dir) ], [], 'no uncommitted files' );
 
     my $precommit_hook_file = $hooks_dir->child('pre-commit');
-    my $precommit_hook = sprintf( $precommit_hook_template, path('lib')->realpath, $hook_log );
+    my $precommit_hook      = sprintf( $precommit_hook_template, path('lib')->realpath, $hook_log );
     $precommit_hook_file->spew($precommit_hook);
     $precommit_hook_file->chmod(0755);
 

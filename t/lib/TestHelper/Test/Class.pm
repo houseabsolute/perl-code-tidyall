@@ -43,14 +43,14 @@ sub tidy {
     my $root_dir = $self->create_dir( $params{source} );
 
     my $options = $params{options} || {};
-    my $ct = Code::TidyAll->new(
+    my $ct      = Code::TidyAll->new(
         plugins  => $params{plugins},
         root_dir => $root_dir,
         %$options
     );
 
     my @results;
-    my $output = capture_stdout { @results = $ct->process_all() };
+    my $output      = capture_stdout { @results = $ct->process_all() };
     my $error_count = grep { $_->error } @results;
     if ( $params{errors} ) {
         ok( $error_count > 0, "$desc - error_count > 0" );

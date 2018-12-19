@@ -75,7 +75,7 @@ sub test_git : Tests {
     };
 
     my $prereceive_hook_file = $shared_dir->child(qw( hooks pre-receive ));
-    my $prereceive_hook = sprintf( $prereceive_hook_template, $self->_lib_dirs );
+    my $prereceive_hook      = sprintf( $prereceive_hook_template, $self->_lib_dirs );
     $prereceive_hook_file->spew($prereceive_hook);
     $prereceive_hook_file->chmod(0775);
 
@@ -299,7 +299,7 @@ sub _make_working_dir_and_repo {
     runx(qw( git commit -q -m added tidyall.ini .gitignore ));
 
     my $precommit_hook_file = $hooks_dir->child('pre-commit');
-    my $precommit_hook = sprintf( $precommit_hook_template, $self->_lib_dirs );
+    my $precommit_hook      = sprintf( $precommit_hook_template, $self->_lib_dirs );
     $precommit_hook_file->spew($precommit_hook);
     $precommit_hook_file->chmod(0755);
 

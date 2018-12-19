@@ -36,7 +36,7 @@ sub _run_or_die {
             my $signal = $? & 127;
             my $msg    = "exited with $code";
             $msg .= " - received signal $signal" if $signal;
-            $msg .= " - output was:\n$output" if defined $output and length $output;
+            $msg .= " - output was:\n$output"    if defined $output and length $output;
             die "$msg\n";
         }
     }

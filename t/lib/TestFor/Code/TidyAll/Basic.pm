@@ -108,7 +108,7 @@ sub test_filemode : Tests {
     }
 
     my $root_dir = $self->create_dir( { 'foo.txt' => 'abc' } );
-    my $file = $root_dir->child('foo.txt');
+    my $file     = $root_dir->child('foo.txt');
     $file->chmod('0755');
     my $ct = Code::TidyAll->new(
         plugins  => { test_plugin('UpperText') => { select => '**/foo*' } },
@@ -147,7 +147,7 @@ sub test_plugin_order_and_atomicity : Tests {
             # note without the weight here this would run first, and the
             # letters in the photetic words themselves would be reversed
             test_plugin('AlwaysPhonetic') => { select => '**/*.txt', weight => 51 }
-            )
+        )
     } ( 1 .. 3 );
 
     $self->tidy(
@@ -176,7 +176,7 @@ sub test_quiet_and_verbose : Tests {
     foreach my $state ( 'normal', 'quiet', 'verbose' ) {
         foreach my $error ( 0, 1 ) {
             my $root_dir = $self->create_dir( { 'foo.txt' => ( $error ? '123' : 'abc' ) } );
-            my $output = capture_stdout {
+            my $output   = capture_stdout {
                 my $ct = Code::TidyAll->new(
                     plugins  => {%UpperText},
                     root_dir => $root_dir,
@@ -235,7 +235,7 @@ sub test_caching_and_backups : Tests {
                     my $desc
                         = "(no_cache=$no_cache, no_backups=$no_backups, model=$cache_model_class, cache_class=$chi)";
                     my $root_dir = $self->create_dir( { 'foo.txt' => 'abc' } );
-                    my $ct = Code::TidyAll->new(
+                    my $ct       = Code::TidyAll->new(
                         plugins           => {%UpperText},
                         root_dir          => $root_dir,
                         cache_model_class => $cache_model_class,
@@ -245,7 +245,7 @@ sub test_caching_and_backups : Tests {
                     );
                     my $output;
                     my $file = path( $root_dir, 'foo.txt' );
-                    my $go = sub {
+                    my $go   = sub {
                         $output = capture_stdout { $ct->process_paths($file) };
                     };
 
@@ -314,7 +314,7 @@ sub test_selects_and_ignores : Tests {
 
     my @files = ( 'a/foo.pl', 'b/foo.pl', 'a/foo.pm', 'a/bar.pm', 'b/bar.pm' );
     my $root_dir = $self->create_dir( { map { $_ => 'hi' } @files } );
-    my $ct = Code::TidyAll->new(
+    my $ct       = Code::TidyAll->new(
         root_dir => $root_dir,
         plugins  => {
             test_plugin('UpperText') => {
@@ -453,7 +453,7 @@ sub test_errors : Tests {
     }
     qr/unknown options/;
 
-    my $ct = Code::TidyAll->new( plugins => {%UpperText}, root_dir => $root_dir );
+    my $ct     = Code::TidyAll->new( plugins => {%UpperText}, root_dir => $root_dir );
     my $output = capture_stdout { $ct->process_paths("$root_dir/baz/blargh.txt") };
     like( $output, qr/baz\/blargh.txt: not a file or directory/, 'file not found' );
 
