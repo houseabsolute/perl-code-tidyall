@@ -9,7 +9,7 @@ use warnings;
 
 our $VERSION = '0.72';
 
-my $usage = '
+my $usage = <<'EOF';
 Usage: tidyall [options] [file] ...
 See https://metacpan.org/module/tidyall for full documentation.
 
@@ -27,22 +27,22 @@ Options:
    -v, --verbose            Show extra output
    -I I<path1,path2,...>    Add one or more paths to @INC
    --backup-ttl <duration>  Amount of time before backup files can be purged
-   --check-only             Just check each file, don\'t modify
+   --check-only             Just check each file, don't modify
    --plugins <name>         Explicitly run only the given plugins
    --conf-file <path>       Relative or absolute path to conf file
    --conf-name <name>       Conf file name to search for
    --data-dir <path>        Contains metadata, defaults to root/.tidyall.d
    --iterations <count>     Number of times to repeat each transform - default is 1
-   --no-backups             Don\'t back up files before processing
-   --no-cache               Don\'t cache last processed times
-   --no-cleanup             Don\'t clean up the temporary files
+   --no-backups             Don't back up files before processing
+   --no-cache               Don't cache last processed times
+   --no-cleanup             Don't clean up the temporary files
    --output-suffix <suffix> Suffix to add to tidied file
    --refresh-cache          Erase any existing cache info before processing each file
    --root-dir               Specify root directory explicitly
    --tidyall-class <class>  Subclass to use instead of Code::TidyAll
    --version                Show version
    -h, --help               Print help message
-';
+EOF
 
 sub version {
     my $version = $Code::TidyAll::VERSION || 'unknown';
@@ -528,10 +528,6 @@ than once.
 
 Process all added or modified files in the current git working directory.
 
-=item -h, --help
-
-Print help message
-
 =item -l, --list
 
 List each file along with the list of plugins it matches (files without any
@@ -613,6 +609,16 @@ not. This is used by L<Test::Code::TidyAll> and the
 L<svn|Code::TidyAll::SVN::Precommit> and L<git|Code::TidyAll::Git::Precommit>
 pre-commit hooks, for example, to enforce that you've tidied your files.
 
+=item --plugins I<name>
+
+Only run the specified plugins. The name should match the name given in the
+config file exactly, including a leading "+" if one exists.
+
+This overrides the C<--mode> option.
+
+Note that plugins will still only run on files which match their C<select> and
+C<ignore> configuration.
+
 =item --conf-file I<path>
 
 Specify relative or absolute path to conf file, instead of searching for it in
@@ -651,15 +657,9 @@ Don't backup files before processing.
 Don't cache last processed times; process all files every time. See also
 C<--refresh-cache>.
 
-=item --plugins I<name>
+=item --no-cleanup
 
-Only run the specified plugins. The name should match the name given in the
-config file exactly, including a leading "+" if one exists.
-
-This overrides the C<--mode> option.
-
-Note that plugins will still only run on files which match their C<select> and
-C<ignore> configuration.
+Don't clean up temporary files.
 
 =item --output-suffix I<suffix>
 
@@ -679,6 +679,14 @@ files or the current working directory.
 =item --tidyall-class I<class>
 
 Subclass to use instead of C<Code::TidyAll>.
+
+=item --version
+
+Show the version of L<Code::TidyAll> that this script invokes.
+
+=item -h, --help
+
+Print help message
 
 =back
 
