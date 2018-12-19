@@ -3,6 +3,10 @@
 - Added documentation for the -j/--jobs flag to the tidyall script's help
   output and POD docs.
 
+- Make the --iterations flag for bin/tidyall actually work. This had been
+  documented but it has never actually done anything (though setting this in
+  your config file does work).
+
 
 0.71     2018-09-12
 

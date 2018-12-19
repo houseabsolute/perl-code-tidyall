@@ -56,9 +56,19 @@ sub usage {
 }
 
 my (
-    %params, $all_files, $conf_file, $conf_name, $git_files,
-    $help,   $inc_dirs,  $pipe,      $svn_files, $version
+    %params,
+    $all_files,
+    $git_files,
+    $pipe,
+    $svn_files,
+    $conf_file,
+    $conf_name,
+    $iterations,
+    $inc_dirs,
+    $version,
+    $help,
 );
+
 my @conf_names = Code::TidyAll->default_conf_names;
 
 GetOptions(
@@ -80,6 +90,7 @@ GetOptions(
     'conf-file=s'     => \$conf_file,
     'conf-name=s'     => \$conf_name,
     'data-dir=s'      => \$params{data_dir},
+    'iterations=i'    => \$iterations,
     'no-backups'      => \$params{no_backups},
     'no-cache'        => \$params{no_cache},
     'no-cleanup'      => \$params{no_cleanup},
@@ -100,6 +111,7 @@ unshift( @INC, split( /\s*,\s*/, $inc_dirs ) ) if defined($inc_dirs);
 for my $key (qw( data_dir root_dir )) {
     $params{$key} = path( $params{$key} ) if exists $params{$key};
 }
+$params{iterations} = $iterations if $iterations;
 
 ($conf_file) = ( grep { $_->is_file } map { $params{root_dir}->child($_) } @conf_names )
     if $params{root_dir} && !$conf_file;
