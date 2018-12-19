@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Added documentation for the -j/--jobs flag to the tidyall script's help
+  output and POD docs.
+
+
 0.71     2018-09-12
 
 - Added two new plugins, GenericValidator and GenericTransformer. These allow

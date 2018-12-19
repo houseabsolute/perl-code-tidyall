@@ -17,11 +17,11 @@ Options:
    -a, --all                Process all files in project
    -i, --ignore             Ignore matching files (zglob syntax)
    -g, --git                Process all added/modified files according to git
-   -h, --help               Print help message
    -l, --list               List each file along with the plugins it matches
    -m, --mode               Mode (e.g. "editor", "commit") - affects which plugins run
    -p <path>, --pipe <path> Read from STDIN, output to STDOUT/STDERR
    -r, --recursive          Descend recursively into directories listed on command line
+   -j, --jobs               Number of parallel jobs to run - default is 1
    -s, --svn                Process all added/modified files according to svn
    -q, --quiet              Suppress output except for errors
    -v, --verbose            Show extra output
@@ -41,6 +41,7 @@ Options:
    --root-dir               Specify root directory explicitly
    --tidyall-class <class>  Subclass to use instead of Code::TidyAll
    --version                Show version
+   -h, --help               Print help message
 ';
 
 sub version {
@@ -61,24 +62,9 @@ my (
 my @conf_names = Code::TidyAll->default_conf_names;
 
 GetOptions(
-    'backup-ttl=i'    => \$params{backup_ttl},
-    'check-only'      => \$params{check_only},
-    'conf-file=s'     => \$conf_file,
-    'conf-name=s'     => \$conf_name,
-    'data-dir=s'      => \$params{data_dir},
-    'no-backups'      => \$params{no_backups},
-    'no-cache'        => \$params{no_cache},
-    'no-cleanup'      => \$params{no_cleanup},
-    'output-suffix=s' => \$params{output_suffix},
-    'plugins=s@'      => \$params{selected_plugins},
-    'refresh-cache'   => \$params{refresh_cache},
-    'root-dir=s'      => \$params{root_dir},
-    'tidyall-class=s' => \$params{tidyall_class},
-    'version'         => \$version,
     'a|all'           => \$all_files,
     'i|ignore=s@'     => \$params{ignore},
     'g|git'           => \$git_files,
-    'h|help'          => \$help,
     'l|list'          => \$params{list_only},
     'm|mode=s'        => \$params{mode},
     'p|pipe=s'        => \$pipe,
@@ -88,6 +74,21 @@ GetOptions(
     'q|quiet'         => \$params{quiet},
     'v|verbose'       => \$params{verbose},
     'I=s'             => \$inc_dirs,
+    'backup-ttl=i'    => \$params{backup_ttl},
+    'check-only'      => \$params{check_only},
+    'plugins=s@'      => \$params{selected_plugins},
+    'conf-file=s'     => \$conf_file,
+    'conf-name=s'     => \$conf_name,
+    'data-dir=s'      => \$params{data_dir},
+    'no-backups'      => \$params{no_backups},
+    'no-cache'        => \$params{no_cache},
+    'no-cleanup'      => \$params{no_cleanup},
+    'output-suffix=s' => \$params{output_suffix},
+    'refresh-cache'   => \$params{refresh_cache},
+    'root-dir=s'      => \$params{root_dir},
+    'tidyall-class=s' => \$params{tidyall_class},
+    'version'         => \$version,
+    'h|help'          => \$help,
 ) or usage();
 version() if $version;
 usage()   if $help;
@@ -562,6 +563,12 @@ result).
 Recursively enter any directories listed on the command-line and process all
 the files within. By default, directories encountered on the command-line will
 generate a warning.
+
+=item -j, --jobs
+
+Specify how many jobs should run in parallel. By default, we only run 1, but if
+you have multiple cores this should cause tidyall to run faster, especially on
+larger code bases.
 
 =item -s, --svn
 
