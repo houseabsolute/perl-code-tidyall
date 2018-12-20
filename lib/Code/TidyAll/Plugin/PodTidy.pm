@@ -11,7 +11,7 @@ use Moo;
 
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.72';
+our $VERSION = '0.73';
 
 has columns => (
     is  => 'ro',
