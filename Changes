@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.72     2018-12-20
+
 - Added documentation for the -j/--jobs flag to the tidyall script's help
   output and POD docs.
 
