@@ -99,4 +99,18 @@ sub _extra_path {
     return;
 }
 
+{
+    my $Perl = $^X;
+    if ( $^O eq 'MSWin32' ) {
+
+        # We need to use forward slashes to get this working with all the
+        # layers of quoting in RunsCommand and IPC::Run3.
+        $Perl =~ s{\\}{/}g;
+    }
+
+    sub _this_perl {
+        return $Perl;
+    }
+}
+
 1;
