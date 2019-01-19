@@ -2,12 +2,19 @@ package TestFor::Code::TidyAll::Plugin::GenericTransformer;
 
 use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 
+sub _mswin_compat {
+    my $cmd = shift;
+
+    # Get the tests to pass on windows due to shellwords()
+    $cmd =~ s#\\#/#g;
+    return $cmd;
+}
+
 sub test_main : Tests {
     my $self = shift;
 
-    my $trans
-        = $^X
-        . q{ -MPath::Tiny=path -e 'my $content = path(shift)->slurp; $content =~ s/forbidden/safe/i; print $content'};
+    my $trans = _mswin_compat( $^X . ' ' . 't/lib/progs/trans1.pl' );
+
     $self->tidyall(
         source    => 'this text is unchanged',
         expect_ok => 1,
@@ -29,7 +36,7 @@ sub test_main : Tests {
         expect_error => qr/exited with 3/,
         desc         => 'exit code of 3 is an exception',
         conf         => {
-            cmd           => qq{$^X -e 'exit 3'},
+            cmd           => _mswin_compat(qq{$^X -e "exit 3"}),
             ok_exit_codes => [ 0, 1, 2 ],
         },
     );
