@@ -5,13 +5,14 @@ use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 sub test_main : Tests {
     my $self = shift;
 
-    my $val = qq{$^X -MPath::Tiny=path -e 'exit 1 if path(shift)->slurp =~ /forbidden/i'};
+    my $cmd = $self->_this_perl . ' t/helper-bin/generic-validator.pl';
+
     $self->tidyall(
         source    => 'this text is ok',
         expect_ok => 1,
         desc      => 'text does not contain forbidden word',
         conf      => {
-            cmd => $val,
+            cmd => $cmd,
         },
     );
     $self->tidyall(
@@ -19,15 +20,17 @@ sub test_main : Tests {
         expect_ok => 0,
         desc      => 'text does contain forbidden word',
         conf      => {
-            cmd => $val,
+            cmd => $cmd,
         },
     );
+
+    my $exit = $self->_this_perl . ' t/helper-bin/exit.pl';
     $self->tidyall(
         source    => 'this text is fine',
         expect_ok => 1,
         desc      => 'exit code of 2 is ok',
         conf      => {
-            cmd           => qq{$^X -e 'exit 2'},
+            cmd           => "$exit 2",
             ok_exit_codes => [ 0, 1, 2 ],
         },
     );
@@ -36,7 +39,7 @@ sub test_main : Tests {
         expect_error => qr/exited with 3/,
         desc         => 'exit code of 3 is an exception',
         conf         => {
-            cmd           => qq{$^X -e 'exit 3'},
+            cmd           => "$exit 3",
             ok_exit_codes => [ 0, 1, 2 ],
         },
     );
