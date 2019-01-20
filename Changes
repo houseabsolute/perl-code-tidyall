@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.73     2019-01-20
+
 - Fix test failures on Windows. Based on GH #91 from Shlomi Fish.
 
 
