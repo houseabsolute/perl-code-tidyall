@@ -16,7 +16,7 @@ use Try::Tiny;
 
 use Moo;
 
-our $VERSION = '0.73';
+our $VERSION = '0.74';
 
 has allow_repeated_push => (
     is      => 'ro',
