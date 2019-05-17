@@ -11,6 +11,7 @@ use Path::Tiny qw(cwd path);
 
 use Test::Class::Most parent => 'TestHelper::Test::Class';
 use Test::Fatal;
+use Test::Warnings;
 
 sub test_plugin {"+TestHelper::Plugin::$_[0]"}
 my %UpperText
@@ -345,6 +346,7 @@ sub test_shebang : Tests {
         'b/bar'    => '#!/usr/bin/perl5',
         'b/baz'    => '#!perl -w',
         'b/bar.pm' => 'package b::bar;',
+        'empty'    => q{},
     );
     my $root_dir = $self->create_dir( \%files );
     my $ct       = Code::TidyAll->new(

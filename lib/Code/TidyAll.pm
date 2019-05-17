@@ -791,7 +791,8 @@ sub _matched_by_plugin {
 
     my %is_ignored = map { $_ => 1 }
         $self->_zglob( [ @{ $self->ignores || [] }, @{ $plugin->ignores || [] } ] );
-    my @matched = grep { !$is_ignored{$_} } grep { -f && !-l } $self->_zglob( $plugin->selects );
+    my @matched
+        = grep { !$is_ignored{$_} } grep { -f && -s && !-l } $self->_zglob( $plugin->selects );
 
     my $shebang = $plugin->shebang
         or return @matched;
