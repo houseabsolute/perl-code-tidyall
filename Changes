@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.74     2019-05-24
+
 - Fix a warning that would happen when applying shebang matching to empty
   files. Fixed by Greg Oschwald. GH #93.
 
