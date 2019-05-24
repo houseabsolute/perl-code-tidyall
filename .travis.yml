@@ -1,5 +1,4 @@
 ---
-sudo: false
 addons:
   apt:
     packages:
@@ -32,6 +31,7 @@ matrix:
   allow_failures:
     - perl: blead
     - perl: dev
+  fast_finish: 1
   include:
     - env: TIDYALL_TEST_DEPS=1
       perl: '5.28'
