@@ -12,7 +12,7 @@ use Try::Tiny;
 
 use Moo::Role;
 
-our $VERSION = '0.74';
+our $VERSION = '0.75';
 
 has ok_exit_codes => (
     is      => 'ro',
