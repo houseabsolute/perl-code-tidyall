@@ -58,7 +58,7 @@ sub test_basic : Tests {
         source  => { 'foo.txt' => 'abc' },
         dest    => { 'foo.txt' => 'cba' },
         desc    => 'one file reversals mode',
-        options => { mode      => 'reversals' },
+        options => { mode => 'reversals' },
     );
     $self->tidy(
         plugins => { %UpperText, %ReverseFoo },
@@ -313,7 +313,7 @@ sub _chi {
 sub test_selects_and_ignores : Tests {
     my $self = shift;
 
-    my @files = ( 'a/foo.pl', 'b/foo.pl', 'a/foo.pm', 'a/bar.pm', 'b/bar.pm' );
+    my @files    = ( 'a/foo.pl', 'b/foo.pl', 'a/foo.pm', 'a/bar.pm', 'b/bar.pm' );
     my $root_dir = $self->create_dir( { map { $_ => 'hi' } @files } );
     my $ct       = Code::TidyAll->new(
         root_dir => $root_dir,
@@ -368,7 +368,7 @@ sub test_shebang : Tests {
 sub test_dirs : Tests {
     my $self = shift;
 
-    my @files = ( 'a/foo.txt', 'a/bar.txt', 'a/bar.pl', 'b/foo.txt' );
+    my @files    = ( 'a/foo.txt', 'a/bar.txt', 'a/bar.pl', 'b/foo.txt' );
     my $root_dir = $self->create_dir( { map { $_ => 'hi' } @files } );
 
     foreach my $recursive ( 0 .. 1 ) {
@@ -382,7 +382,7 @@ sub test_dirs : Tests {
             @results = $ct->process_paths("$root_dir/a");
         };
         if ($recursive) {
-            is( @results, 3, '3 results' );
+            is( @results,                                          3, '3 results' );
             is( scalar( grep { $_->state eq 'tidied' } @results ), 2, '2 tidied' );
             like( $output, qr/\[tidied\]  a\/foo.txt/ );
             like( $output, qr/\[tidied\]  a\/bar.txt/ );
