@@ -5,7 +5,7 @@ use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 sub test_filename {'foo.php'}
 
 sub _extra_path {
-    'php5/usr/bin';
+    'php/PHP_CodeSniffer/bin';
 }
 
 sub test_main : Tests {
