@@ -8,6 +8,7 @@ addons:
       - ispell
       - nodejs
       - php-cli
+      - php7.0-xml
 language: perl
 perl:
   - blead
