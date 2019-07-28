@@ -7,7 +7,7 @@ addons:
       - iamerican
       - ispell
       - nodejs
-      - php5-cli
+      - php-cli
 language: perl
 perl:
   - blead
