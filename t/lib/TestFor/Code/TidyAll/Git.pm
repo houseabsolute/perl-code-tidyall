@@ -25,7 +25,7 @@ sub test_git : Tests {
     my ( $temp_dir, $work_dir, $pushd ) = $self->_make_working_dir_and_repo;
 
     subtest 'add foo.txt', sub {
-        $work_dir->child('foo.txt')->spew("abc\n");
+        $work_dir->child('foo.txt')->spew_raw("abc\n");
         cmp_deeply( [ git_files_to_commit($work_dir) ], [], 'no files to commit' );
 
         runx(qw( git add foo.txt ));
@@ -43,14 +43,14 @@ sub test_git : Tests {
     };
 
     subtest 'successfully commit tidied file', sub {
-        $work_dir->child('foo.txt')->spew("ABC\n");
+        $work_dir->child('foo.txt')->spew_raw("ABC\n");
         my $output = capture_stderr { runx(qw( git commit -q -m changed -a )) };
         like( $output, qr/\[checked\] foo\.txt/, 'checked foo.txt' );
         $self->_assert_nothing_to_commit($work_dir);
     };
 
     subtest 'add another file which is tidied', sub {
-        $work_dir->child('bar.txt')->spew('ABC');
+        $work_dir->child('bar.txt')->spew_raw('ABC');
         runx(qw( git add bar.txt ));
         runx(qw( git commit -q -m bar.txt ));
 
@@ -80,7 +80,7 @@ sub test_git : Tests {
     $prereceive_hook_file->chmod(0775);
 
     subtest 'untidy file and attempt to commit it via commit -a', sub {
-        $clone_dir->child('foo.txt')->spew("def\n");
+        $clone_dir->child('foo.txt')->spew_raw("def\n");
         runx(qw( git commit -q -m changed -a ));
         $self->_assert_nothing_to_commit($work_dir);
         $self->_assert_branch_is_ahead_of_origin;
@@ -95,7 +95,7 @@ sub test_git : Tests {
     };
 
     subtest 'can push tidied file', sub {
-        $clone_dir->child('foo.txt')->spew("DEF\n");
+        $clone_dir->child('foo.txt')->spew_raw("DEF\n");
         capture_stderr { runx(qw( git commit -q -m changed -a )) };
         $self->_assert_nothing_to_commit($work_dir);
         my $output = capture_stderr { system(qw( git push )) };
@@ -104,7 +104,7 @@ sub test_git : Tests {
     };
 
     subtest 'untidy file and commit it', sub {
-        $clone_dir->child('foo.txt')->spew("def\n");
+        $clone_dir->child('foo.txt')->spew_raw("def\n");
         runx(qw( git commit -q -m changed -a ));
         $self->_assert_nothing_to_commit($work_dir);
         $self->_assert_branch_is_ahead_of_origin;
@@ -144,14 +144,14 @@ sub test_copied_status : Tests {
 
     # If the file isn't long enough the new file doesn't end up with the
     # "copied" status.
-    $foo_file->spew( "ABC\n" x 500 );
+    $foo_file->spew_raw( "ABC\n" x 500 );
 
     runx(qw( git add foo.txt ));
     runx(qw( git commit -m foo ));
 
     my $bar_file = $work_dir->child('bar.txt');
-    $bar_file->spew( "ABC\n" x 500 );
-    $foo_file->spew(q{});
+    $bar_file->spew_raw( "ABC\n" x 500 );
+    $foo_file->spew_raw(q{});
 
     runx(qw( git add foo.txt bar.txt ));
     my $output = capture_stderr { runx(qw( git commit -m bar )) };
@@ -168,10 +168,10 @@ sub test_precommit_stash_issues : Tests {
     my ( $temp_dir, $work_dir, $pushd ) = $self->_make_working_dir_and_repo;
 
     my $foo_file = $work_dir->child('foo.txt');
-    $foo_file->spew("ABC\n");
+    $foo_file->spew_raw("ABC\n");
 
     my $bar_file = $work_dir->child('bar.txt');
-    $bar_file->spew("DEF\n");
+    $bar_file->spew_raw("DEF\n");
 
     subtest 'commit two tidy files', sub {
         $self->_assert_something_to_commit($work_dir);
@@ -182,8 +182,8 @@ sub test_precommit_stash_issues : Tests {
         $self->_assert_nothing_to_commit($work_dir);
     };
 
-    $foo_file->spew("abc\n");
-    $bar_file->spew("abc\n");
+    $foo_file->spew_raw("abc\n");
+    $bar_file->spew_raw("abc\n");
 
     subtest 'cannot commit untidy files', sub {
         $self->_assert_something_to_commit($work_dir);
@@ -196,10 +196,10 @@ sub test_precommit_stash_issues : Tests {
         $self->_assert_something_to_commit($work_dir);
     };
 
-    $foo_file->spew("ABC\n");
+    $foo_file->spew_raw("ABC\n");
 
     my $baz_file = $work_dir->child('baz.txt');
-    $baz_file->spew("ABC\n");
+    $baz_file->spew_raw("ABC\n");
 
     subtest 'commit one valid file and working directory is left intact', sub {
         runx(qw( git add foo.txt ));
@@ -224,7 +224,7 @@ sub test_precommit_stash_issues : Tests {
         );
     };
 
-    $foo_file->spew("abc\n");
+    $foo_file->spew_raw("abc\n");
     subtest 'commit one invalid file and working directory is left intact', sub {
         runx(qw( git add foo.txt ));
         my ( undef, $stderr ) = capture( sub { system(qw( git commit -q -m foo )) } );
@@ -256,11 +256,11 @@ sub test_precommit_stash_issues : Tests {
 
     # We need to add to the stash so we can make sure that it's not popped
     # incorrectly later.
-    $foo_file->spew("abC\n");
+    $foo_file->spew_raw("abC\n");
     runx(qw( git stash -q ));
 
     subtest 'precommit hook does not pop when it did not stash', sub {
-        $foo_file->spew("ABCD\n");
+        $foo_file->spew_raw("ABCD\n");
         runx(qw( git commit -q -a -m changed ));
 
         # The bug we're fixing is that this commit would always pop the stash,

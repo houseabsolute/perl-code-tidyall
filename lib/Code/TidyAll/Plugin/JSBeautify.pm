@@ -17,7 +17,7 @@ sub transform_file {
     my ( $self, $file ) = @_;
 
     my $output = $self->_run_or_die( '-f', $file );
-    $file->spew($output);
+    $file->spew_raw($output);
 
     return;
 }
