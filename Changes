@@ -1,5 +1,12 @@
 {{$NEXT}}
 
+- Preserve line endings in files but using raw mode to read and
+  write. Otherwise Perl will automatically write files with the
+  platform-appropriate ending. This could lead to ending "flapping" if you
+  have developers working on the same project on different platforms, and
+  probably lots of other annoying issues. Based on PR #97 from Kenneth Ölwing.
+
+
 0.75     2019-12-24
 
 - Git v2.24.0 introduced a serious bug when running `git stash` with the

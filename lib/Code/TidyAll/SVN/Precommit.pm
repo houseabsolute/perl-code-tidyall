@@ -89,7 +89,7 @@ sub check {
                 my $contents  = $self->cat_file( $root->child($rel_file) );
                 my $full_path = $tempdir->child($rel_file);
                 $full_path->parent->mkpath( { mode => 0755 } );
-                $full_path->spew($contents);
+                $full_path->spew_raw($contents);
             }
             my $tidyall = $self->tidyall_class->new_from_conf_file(
                 $tempdir->child($conf_name),

@@ -71,7 +71,7 @@ has path => (
 
 sub _build_file_contents {
     my ($self) = @_;
-    return Path::Tiny::path( $self->full_path )->slurp;
+    return Path::Tiny::path( $self->full_path )->slurp_raw;
 }
 
 sub _trigger_file_contents {

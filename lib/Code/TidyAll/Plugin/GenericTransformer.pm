@@ -16,7 +16,7 @@ sub transform_file {
     my $file = shift;
 
     my $output = $self->_run_generic_executable_or_die($file);
-    $file->spew($output);
+    $file->spew_raw($output);
 
     return;
 }

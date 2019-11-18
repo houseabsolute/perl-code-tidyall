@@ -564,7 +564,7 @@ sub process_file {
         return Code::TidyAll::Result->new( path => $path, state => 'cached' );
     }
 
-    my $contents = $cache_model->file_contents || $full_path->slurp;
+    my $contents = $cache_model->file_contents || $full_path->slurp_raw;
     my $result   = $self->process_source( $contents, $path );
 
     if ( $result->state eq 'tidied' ) {
@@ -577,7 +577,7 @@ sub process_file {
 
         # We don't use ->spew because that creates a new file and renames it,
         # losing the existing mode setting in the process.
-        path( $full_path . $self->output_suffix )->append( { truncate => 1 }, $contents );
+        path( $full_path . $self->output_suffix )->append_raw( { truncate => 1 }, $contents );
 
         # change the in memory contents of the cache (but don't update yet)
         $cache_model->file_contents($contents) unless $self->output_suffix;
@@ -617,7 +617,7 @@ sub _backup_file {
     unless ( $self->no_backups ) {
         my $backup_file = $self->_backup_dir->child( $self->_backup_filename($path) );
         $backup_file->parent->mkpath( { mode => 0775 } );
-        $backup_file->spew($contents);
+        $backup_file->spew_raw($contents);
     }
 }
 
