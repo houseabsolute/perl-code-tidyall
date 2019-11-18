@@ -96,7 +96,7 @@ Some useless junk
 =cut
 EOF
 
-    $file->spew($source);
+    $file->spew_raw($source);
 
     my %plugins = (
         PerlCritic => {

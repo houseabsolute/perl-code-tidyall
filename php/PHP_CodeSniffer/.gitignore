@@ -1,6 +1,6 @@
+.idea/*
 /CodeSniffer.conf
 /phpcs.xml
 /phpunit.xml
-.idea/*
 /vendor/
 composer.lock

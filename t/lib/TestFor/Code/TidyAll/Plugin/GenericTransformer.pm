@@ -6,25 +6,25 @@ use Path::Tiny qw/ path /;
 sub test_main : Tests {
     my $self = shift;
 
-    my $cmd = $self->_this_perl . ' t/helper-bin/generic-transformer.pl';
+    my $cmd       = $self->_this_perl . ' t/helper-bin/generic-transformer.pl';
     my $cmd_xform = $self->_this_perl . ' t/helper-bin/generic-xform.pl';
 
-	my $crlf_str = "a\r\nb\r\nc\r\n";
-	my $lf_str = "a\nb\nc\n";
+    my $crlf_str = "a\r\nb\r\nc\r\n";
+    my $lf_str   = "a\nb\nc\n";
 
     $self->tidyall(
-        source_file  => write_file("$self->{root_dir}/crlf", $crlf_str),
-        expect_xform => sprintf("%v02X", $crlf_str),
-        desc      => 'preserving crlf',
-        conf      => {
+        source_file  => write_file( "$self->{root_dir}/crlf", $crlf_str ),
+        expect_xform => sprintf( "%v02X", $crlf_str ),
+        desc         => 'preserving crlf',
+        conf         => {
             cmd => $cmd_xform,
         },
     );
     $self->tidyall(
-        source_file    => write_file("$self->{root_dir}/lf", $lf_str),
-        expect_xform => sprintf("%v02X", $lf_str),
-        desc      => 'preserving lf',
-        conf      => {
+        source_file  => write_file( "$self->{root_dir}/lf", $lf_str ),
+        expect_xform => sprintf( "%v02X", $lf_str ),
+        desc         => 'preserving lf',
+        conf         => {
             cmd => $cmd_xform,
         },
     );
@@ -56,13 +56,11 @@ sub test_main : Tests {
     );
 }
 
-sub write_file
-{
-	my $f = shift;
-	my $data = shift;
-	
-	path($f)->spew_raw($data);
-
-	return $f;
+sub write_file {
+    my $f    = shift;
+    my $data = shift;
+    path($f)->spew_raw($data);
+    return $f;
 }
+
 1;
