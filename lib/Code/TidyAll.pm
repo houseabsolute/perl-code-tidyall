@@ -330,8 +330,8 @@ sub BUILD {
 }
 
 sub _purge_backups_periodically {
-    my ($self)             = @_;
-    my $cache              = $self->cache;
+    my ($self) = @_;
+    my $cache = $self->cache;
     my $last_purge_backups = $cache->get('last_purge_backups') || 0;
     if ( time > $last_purge_backups + $self->_backup_ttl_secs ) {
         $self->_purge_backups();

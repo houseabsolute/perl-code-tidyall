@@ -58,7 +58,7 @@ sub test_basic : Tests {
         source  => { 'foo.txt' => 'abc' },
         dest    => { 'foo.txt' => 'cba' },
         desc    => 'one file reversals mode',
-        options => { mode => 'reversals' },
+        options => { mode      => 'reversals' },
     );
     $self->tidy(
         plugins => { %UpperText, %ReverseFoo },
@@ -313,7 +313,7 @@ sub _chi {
 sub test_selects_and_ignores : Tests {
     my $self = shift;
 
-    my @files    = ( 'a/foo.pl', 'b/foo.pl', 'a/foo.pm', 'a/bar.pm', 'b/bar.pm' );
+    my @files = ( 'a/foo.pl', 'b/foo.pl', 'a/foo.pm', 'a/bar.pm', 'b/bar.pm' );
     my $root_dir = $self->create_dir( { map { $_ => 'hi' } @files } );
     my $ct       = Code::TidyAll->new(
         root_dir => $root_dir,
