@@ -184,7 +184,7 @@ sub process_source_or_file {
         foreach my $iter ( 1 .. $self->tidyall->iterations ) {
             $self->transform_file($tempfile);
         }
-        $new_source = $tempfile->slurp;
+        $new_source = $tempfile->slurp_raw;
     }
     if ( $self->can('validate_source') ) {
         $self->validate_source($new_source);
@@ -222,7 +222,7 @@ sub _write_temp_file {
 
     my $tempfile = $self->tidyall->_tempdir->child($rel_path);
     $tempfile->parent->mkpath( { mode => 0755 } );
-    $tempfile->spew($source);
+    $tempfile->spew_raw($source);
     return $tempfile;
 }
 

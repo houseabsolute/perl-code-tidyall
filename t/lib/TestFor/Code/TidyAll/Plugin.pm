@@ -85,6 +85,14 @@ sub tidyall {
         is( $result->state, 'error', "state=error [$desc]" );
         like( $result->error || '', $expect_error, "error message [$desc]" );
     }
+    elsif ( my $expect_xform = $p{expect_xform} ) {
+        is( $result->state, 'tidied', "state=tidied [$desc]" );
+        is( $result->error, undef,     "no error [$desc]" );
+        eq_or_diff(
+            $result->new_contents, $expect_xform,
+            "new contents [$desc]"
+        );
+    }
 }
 
 sub _plugin_conf {

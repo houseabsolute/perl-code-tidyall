@@ -22,7 +22,7 @@ sub get {
 
     my $file = $self->_path_for_key($key);
     if ( $file->exists ) {
-        return $file->slurp;
+        return $file->slurp_raw;
     }
     else {
         return undef;
@@ -34,7 +34,7 @@ sub set {
 
     my $file = $self->_path_for_key($key);
     $file->parent->mkpath( { mode => 0755 } );
-    $file->spew($value);
+    $file->spew_raw($value);
 
     return;
 }
