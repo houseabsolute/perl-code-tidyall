@@ -704,4 +704,27 @@ sub test_selected_plugins : Tests {
     );
 }
 
+sub test_exclude_filter : Tests {
+    my $self = shift;
+    $self->tidy(
+        options => +{
+            exclude_filter => sub {
+                my ($args) = @_;
+                return $args->{name} =~ /UpperText/;
+            },
+        },
+        plugins => {
+            test_plugin('RepeatFoo for txt') => { select => '**/*.txt', times => 2 },
+            test_plugin('RepeatFoo for foo') => { select => '**/foo.*', times => 3 },
+            %UpperText
+        },
+        source => { 'foo.txt' => 'abc', 'foo.dat' => 'def', 'bar.txt' => 'ghi' },
+        dest   => {
+            'foo.txt' => scalar( 'abc' x 6 ),
+            'foo.dat' => scalar( 'def' x 3 ),
+            'bar.txt' => scalar( 'ghi' x 2 )
+        }
+    );
+}
+
 1;

@@ -62,6 +62,12 @@ has data_dir => (
     coerce => t('Path')->coercion_sub,
 );
 
+has exclude_filter => (
+    is      => 'ro',
+    isa     => t('CodeRef'),
+    default => sub { return sub { return; }; },
+);
+
 has iterations => (
     is      => 'ro',
     isa     => t('PositiveInt'),
@@ -251,8 +257,14 @@ sub _build_plugins_to_run {
             grep { $self->_plugin_conf_matches_mode( $all_plugins->{$_}, $mode ) }
             keys %{$all_plugins};
     }
+    my %filtered_plugins;
+    while ( my ( $name, $val ) = each %plugins ) {
+        if ( not $self->exclude_filter->( { name => $name, } ) ) {
+            $filtered_plugins{$name} = $val;
+        }
+    }
 
-    return \%plugins;
+    return \%filtered_plugins;
 }
 
 sub _plugin_conf_matches_mode {

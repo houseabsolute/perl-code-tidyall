@@ -28,6 +28,17 @@ sub tidyall_ok {
         $conf_file = Code::TidyAll->find_conf_file( \@conf_names, "." );
     }
     $options{quiet} = 1 unless $options{verbose};
+    {
+        my $KEY      = 'TIDYALL_EXCLUDE_PATTERN';
+        my $pat_text = $ENV{$KEY};
+        if ($pat_text) {
+            my $pat_regex = qr/$pat_text/;
+            $options{exclude_filter} ||= sub {
+                my ($args) = @_;
+                return $args->{name} =~ $pat_regex;
+            };
+        }
+    }
     $test->diag("Using $conf_file for config")
         if $options{verbose};
 
@@ -128,6 +139,13 @@ specify. However, you can pass a C<files> parameter as an array reference to
 override this, in which case only the files you specify will be tested. These
 files are still filtered based on the C<select> and C<exclude> rules defined in
 your config.
+
+=head1 ENVIRONMENT VARIABLES
+
+=head2 TIDYALL_EXCLUDE_PATTERN
+
+A regular expression that makes Test::Code::TidyAll skip plugins whose
+names are matched by it.
 
 =head1 SEE ALSO
 
