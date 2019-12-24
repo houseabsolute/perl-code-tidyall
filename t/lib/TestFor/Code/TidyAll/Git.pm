@@ -289,6 +289,9 @@ sub _make_working_dir_and_repo {
 
     runx( qw( git init -q ), _quote_for_win32($work_dir) );
 
+    # This dir doesn't exist unless there's a git dir template that includes
+    # the hooks subdir.
+    $hooks_dir->mkpath( 0, 0755 );
     ok( -d $_, "$_ exists" ) for ( $work_dir, $hooks_dir );
 
     my $pushd = pushd($work_dir);
