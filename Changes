@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.75     2019-12-24
+
 - Git v2.24.0 introduced a serious bug when running `git stash` with the
   `--quiet` flag that causes it to delete files. This in turn caused this
   package's pre-commit hook code to be seriously broken. We no longer pass the

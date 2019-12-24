@@ -4,7 +4,7 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
 # VERSION
 
-version 0.74
+version 0.75
 
 # SYNOPSIS
 
@@ -122,13 +122,13 @@ constructed instead of `Code::TidyAll`.
     This is a subroutine reference that is called whenever a message needs to be
     printed in some way. The sub receives a `sprintf()` format string followed by
     one or more parameters. The default sub used simply calls `printf "$format\n",
-    @_` but [Test::Code::TidyAll](https://metacpan.org/pod/Test::Code::TidyAll) overrides this to use the `Test::Builder->diag` method.
+    @_` but [Test::Code::TidyAll](https://metacpan.org/pod/Test%3A%3ACode%3A%3ATidyAll) overrides this to use the `Test::Builder->diag` method.
 
 ## $tidyall->process\_paths( $path, ... )
 
 This method iterates through a list of paths, processing all the files it
 finds. It will descend into subdirectories if `recursive` flag is true.
-Returns a list of [Code::TidyAll::Result](https://metacpan.org/pod/Code::TidyAll::Result) objects, one for each file.
+Returns a list of [Code::TidyAll::Result](https://metacpan.org/pod/Code%3A%3ATidyAll%3A%3AResult) objects, one for each file.
 
 ## $tidyall->process\_file( $file )
 
@@ -138,19 +138,19 @@ Process the one _file_, meaning:
 - Apply appropriate matching plugins.
 - Print success or failure result to STDOUT, depending on quiet/verbose settings.
 - Write to the cache if caching is enabled.
-- Return a [Code::TidyAll::Result](https://metacpan.org/pod/Code::TidyAll::Result) object.
+- Return a [Code::TidyAll::Result](https://metacpan.org/pod/Code%3A%3ATidyAll%3A%3AResult) object.
 
 ## $tidyall->process\_source( $source, $path )
 
 Like `process_file`, but process the _source_ string instead of a file, and
 does not read from or write to the cache. You must still pass the relative
 _path_ from the root as the second argument, so that we know which plugins to
-apply. Returns a [Code::TidyAll::Result](https://metacpan.org/pod/Code::TidyAll::Result) object.
+apply. Returns a [Code::TidyAll::Result](https://metacpan.org/pod/Code%3A%3ATidyAll%3A%3AResult) object.
 
 ## $tidyall->plugins\_for\_path($path)
 
 Given a relative _path_ from the root, returns a list of
-[Code::TidyAll::Plugin](https://metacpan.org/pod/Code::TidyAll::Plugin) objects that apply to it, or an empty list if no
+[Code::TidyAll::Plugin](https://metacpan.org/pod/Code%3A%3ATidyAll%3A%3APlugin) objects that apply to it, or an empty list if no
 plugins apply.
 
 ## $tidyall->find\_matched\_files
@@ -193,7 +193,6 @@ The source code repository for Code-TidyAll can be found at
 - Mark Grimes <mgrimes@cpan.org>
 - Martin Gruner <martin.gruner@otrs.com>
 - Mohammad S Anwar <mohammad.anwar@yahoo.com>
-- Nick Tonkin <1nickt@users.noreply.github.com>
 - Nick Tonkin <ntonkin@bur-ntonkin-m1.corp.endurance.com>
 - Olaf Alders <olaf@wundersolutions.com>
 - Pedro Melo <melo@simplicidade.org>
