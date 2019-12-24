@@ -128,9 +128,9 @@ sub test_git : Tests {
 
 sub _quote_for_win32 {
 
-    # The docs for IPC::System::Simple lie about how iallt works on
-    # Windows. On Windows it _always_ invokes a shell, so we need to quote a
-    # path with spaces.
+    # The docs for IPC::System::Simple lie about how it works on Windows. On
+    # Windows it _always_ invokes a shell, so we need to quote a path with
+    # spaces.
     return $_[0] unless IS_WIN32 && $_[0] =~ / /;
     return qq{"$_[0]"};
 }
