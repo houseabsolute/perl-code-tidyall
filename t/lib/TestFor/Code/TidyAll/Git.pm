@@ -311,11 +311,11 @@ sub _lib_dirs {
 }
 
 sub _assert_nothing_to_commit {
-    like( capturex( 'git', 'status' ), qr/nothing to commit/, 'nothing to commit' );
+    like( capturex( 'git', 'status' ), qr/nothing (?:added )?to commit/, 'nothing to commit' );
 }
 
 sub _assert_something_to_commit {
-    unlike( capturex( 'git', 'status' ), qr/nothing to commit/, 'something to commit' );
+    unlike( capturex( 'git', 'status' ), qr/nothing (?:added )?to commit/, 'something to commit' );
 }
 
 sub _assert_nothing_to_push {
