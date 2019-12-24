@@ -13,7 +13,7 @@ use Text::Diff::Table;
 
 use Exporter qw(import);
 
-our $VERSION = '0.75';
+our $VERSION = '0.76';
 
 my $test = Test::Builder->new;
 
