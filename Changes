@@ -6,6 +6,10 @@
   `--quiet` flag if the git version is >= 2.24. We re-enable the flag once
   there is a version that fixes this bug.
 
+- The pre-commit hook code now uses `git rev-parse -q --verify refs/stash` to
+  determine if the call to `git stash` actually does anything. This seems
+  better than attempting to parse the output of the `git stash` call for a
+  user-facing message.
 
 0.74     2019-05-24
 

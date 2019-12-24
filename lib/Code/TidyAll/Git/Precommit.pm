@@ -76,11 +76,15 @@ sub check {
             #
             # If there's nothing to stash there's no stash entry, in which
             # case popping would be very bad.
-            my $output = capturex(
+            my $pre_stash_state
+                = capturex( [ 0, 1 ], $self->git_path, qw( rev-parse -q --verify refs/stash ) );
+            run(
                 $self->git_path, qw( stash save --keep-index --include-untracked ),
                 'TidyAll pre-commit guard'
             );
-            unless ( $output =~ /No local changes/ ) {
+            my $post_stash_state
+                = capturex( [ 0, 1 ], $self->git_path, qw( rev-parse -q --verify refs/stash ) );
+            unless ( $pre_stash_state eq $post_stash_state ) {
                 $guard = guard {
                     my ($version) = capturex(qw( git version )) =~ /([0-9]+\.[0-9]+\.[0-9]+)/
                         or die 'Cannot determine version number from git version output!';
