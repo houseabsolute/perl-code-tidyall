@@ -80,8 +80,20 @@ sub check {
                 $self->git_path, qw( stash save --keep-index --include-untracked ),
                 'TidyAll pre-commit guard'
             );
-            $guard = guard { run( $self->git_path, 'stash', 'pop', '-q' ) }
-            unless $output =~ /No local changes/;
+            unless ( $output =~ /No local changes/ ) {
+                $guard = guard {
+                    my ($version) = capturex(qw( git version )) =~ /([0-9]+\.[0-9]+\.[0-9]+)/
+                        or die 'Cannot determine version number from git version output!';
+                    my $minor = ( split /\./, $version )[1];
+
+                    # When pop is run quietly in 2.24.x it deletes files! I can
+                    # make this guard smarter once there's a fixed version. See
+                    # https://public-inbox.org/git/CAMcnqp22tEFva4vYHYLzY83JqDHGzDbDGoUod21Dhtnvv=h_Pg@mail.gmail.com/
+                    # for the initial bug report.
+                    my @args = $minor >= 24 ? () : ('-q');
+                    run( $self->git_path, 'stash', 'pop', @args );
+                }
+            }
         }
 
         # Gather file paths to be committed

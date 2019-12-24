@@ -1,5 +1,12 @@
 {{$NEXT}}
 
+- Git v2.24.0 introduced a serious bug when running `git stash` with the
+  `--quiet` flag that causes it to delete files. This in turn caused this
+  package's pre-commit hook code to be seriously broken. We no longer pass the
+  `--quiet` flag if the git version is >= 2.24. We re-enable the flag once
+  there is a version that fixes this bug.
+
+
 0.74     2019-05-24
 
 - Fix a warning that would happen when applying shebang matching to empty
