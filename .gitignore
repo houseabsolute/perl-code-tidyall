@@ -1,7 +1,7 @@
-*~
+.*~
 .\#*
-.build
-.tidyall.d
+.build.d
+/.tidyall.d
 /test-mydeps*
 Build
 Code-TidyAll-*
