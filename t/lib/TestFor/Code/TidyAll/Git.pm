@@ -39,14 +39,14 @@ sub test_git : Tests {
         my $output = capture_stderr { system(qw( git commit -q -m changed -a )) };
         like( $output, qr/1 file did not pass tidyall check/, '1 file did not pass tidyall check' );
         like( $output, qr/needs tidying/,                     'needs tidying' );
-        $self->_assert_something_to_commit;
+        $self->_assert_something_to_commit($work_dir);
     };
 
     subtest 'successfully commit tidied file', sub {
         $work_dir->child('foo.txt')->spew("ABC\n");
         my $output = capture_stderr { runx(qw( git commit -q -m changed -a )) };
         like( $output, qr/\[checked\] foo\.txt/, 'checked foo.txt' );
-        $self->_assert_nothing_to_commit;
+        $self->_assert_nothing_to_commit($work_dir);
     };
 
     subtest 'add another file which is tidied', sub {
@@ -71,7 +71,7 @@ sub test_git : Tests {
         runx( qw( git clone -q --bare ), map { _quote_for_win32($_) } $work_dir,   $shared_dir );
         runx( qw( git clone -q ),        map { _quote_for_win32($_) } $shared_dir, $clone_dir );
         chdir($clone_dir);
-        $self->_assert_nothing_to_commit;
+        $self->_assert_nothing_to_commit($work_dir);
     };
 
     my $prereceive_hook_file = $shared_dir->child(qw( hooks pre-receive ));
@@ -82,7 +82,7 @@ sub test_git : Tests {
     subtest 'untidy file and attempt to commit it via commit -a', sub {
         $clone_dir->child('foo.txt')->spew("def\n");
         runx(qw( git commit -q -m changed -a ));
-        $self->_assert_nothing_to_commit;
+        $self->_assert_nothing_to_commit($work_dir);
         $self->_assert_branch_is_ahead_of_origin;
     };
 
@@ -97,7 +97,7 @@ sub test_git : Tests {
     subtest 'can push tidied file', sub {
         $clone_dir->child('foo.txt')->spew("DEF\n");
         capture_stderr { runx(qw( git commit -q -m changed -a )) };
-        $self->_assert_nothing_to_commit;
+        $self->_assert_nothing_to_commit($work_dir);
         my $output = capture_stderr { system(qw( git push )) };
         like( $output, qr/master -> master/, 'push succeeded' );
         $self->_assert_nothing_to_push;
@@ -106,7 +106,7 @@ sub test_git : Tests {
     subtest 'untidy file and commit it', sub {
         $clone_dir->child('foo.txt')->spew("def\n");
         runx(qw( git commit -q -m changed -a ));
-        $self->_assert_nothing_to_commit;
+        $self->_assert_nothing_to_commit($work_dir);
         $self->_assert_branch_is_ahead_of_origin;
     };
 
@@ -174,26 +174,26 @@ sub test_precommit_stash_issues : Tests {
     $bar_file->spew("DEF\n");
 
     subtest 'commit two tidy files', sub {
-        $self->_assert_something_to_commit;
+        $self->_assert_something_to_commit($work_dir);
         runx(qw( git add foo.txt bar.txt ));
         my $output = capture_stderr( sub { runx(qw( git commit -q -m two )) } );
         like( $output, qr/\Q[checked] foo.txt/, 'tidyall checked foo.txt' );
         like( $output, qr/\Q[checked] bar.txt/, 'tidyall checked bar.txt' );
-        $self->_assert_nothing_to_commit;
+        $self->_assert_nothing_to_commit($work_dir);
     };
 
     $foo_file->spew("abc\n");
     $bar_file->spew("abc\n");
 
     subtest 'cannot commit untidy files', sub {
-        $self->_assert_something_to_commit;
+        $self->_assert_something_to_commit($work_dir);
         my $output = capture_stderr( sub { system(qw( git commit -q -a -m untidy )) } );
         like(
             $output,
             qr/2 files did not pass tidyall check/,
             'commit failed because 2 files are untidy'
         );
-        $self->_assert_something_to_commit;
+        $self->_assert_something_to_commit($work_dir);
     };
 
     $foo_file->spew("ABC\n");
@@ -314,11 +314,16 @@ sub _lib_dirs {
 }
 
 sub _assert_nothing_to_commit {
-    like( capturex( 'git', 'status' ), qr/nothing (?:added )?to commit/, 'nothing to commit' );
+    shift;
+    my @files = git_files_to_commit(shift);
+    is( scalar @files, 0, 'there are no files to commit' )
+        or diag("@files");
 }
 
 sub _assert_something_to_commit {
-    unlike( capturex( 'git', 'status' ), qr/nothing (?:added )?to commit/, 'something to commit' );
+    shift;
+    my @files = git_files_to_commit(shift);
+    cmp_ok( scalar @files, '>=', 0, 'there are files to commit' );
 }
 
 sub _assert_nothing_to_push {
