@@ -38,7 +38,7 @@ sub test_git : Tests {
     subtest 'attempt to commit untidy file', sub {
         my $output = capture_stderr { system(qw( git commit -q -m changed -a )) };
         like( $output, qr/1 file did not pass tidyall check/, '1 file did not pass tidyall check' );
-        like( $output, qr/needs tidying/, 'needs tidying' );
+        like( $output, qr/needs tidying/,                     'needs tidying' );
         $self->_assert_something_to_commit;
     };
 
@@ -120,7 +120,7 @@ sub test_git : Tests {
     subtest 'cannot push when file is untidy (2nd try)', sub {
         $self->_assert_branch_is_ahead_of_origin;
         my $output = capture_stderr { system(qw( git push )) };
-        like( $output, qr/needs tidying/, 'needs tidying' );
+        like( $output, qr/needs tidying/,               'needs tidying' );
         like( $output, qr/Identical push seen 2 times/, 'Identical push seen 2 times' );
         $self->_assert_branch_is_ahead_of_origin;
     };

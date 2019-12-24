@@ -275,7 +275,7 @@ sub _build_plugin_objects {
     # alphabetical
     # TODO: These should probably sort in a consistent way independent of locale
     return [
-        sort { ( $a->weight <=> $b->weight ) || ( $a->name cmp $b->name ) }
+        sort    { ( $a->weight <=> $b->weight ) || ( $a->name cmp $b->name ) }
             map { $self->_load_plugin( $_, $self->_plugins_to_run->{$_} ) }
             keys %{ $self->_plugins_to_run }
     ];

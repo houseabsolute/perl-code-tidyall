@@ -190,7 +190,7 @@ sub test_quiet_and_verbose : Tests {
             }
             else {
                 is( $output, "[tidied]  foo.txt\n" ) if $state eq 'normal';
-                is( $output, q{} ) if $state eq 'quiet';
+                is( $output, q{} )                   if $state eq 'quiet';
                 like( $output, qr/purging old backups/, "purging old backups ($state)" )
                     if $state eq 'verbose';
                 like(
@@ -251,8 +251,8 @@ sub test_caching_and_backups : Tests {
                     };
 
                     $go->();
-                    is( $file->slurp, "ABC", "first file change $desc" );
-                    is( $output, "[tidied]  foo.txt\n", "first output $desc" );
+                    is( $file->slurp, "ABC",                 "first file change $desc" );
+                    is( $output,      "[tidied]  foo.txt\n", "first output $desc" );
 
                     $go->();
                     if ($no_cache) {
@@ -268,8 +268,8 @@ sub test_caching_and_backups : Tests {
 
                     $file->spew('def');
                     $go->();
-                    is( $file->slurp, 'DEF', "fourth file change $desc" );
-                    is( $output, "[tidied]  foo.txt\n", "fourth output $desc" );
+                    is( $file->slurp, 'DEF',                 "fourth file change $desc" );
+                    is( $output,      "[tidied]  foo.txt\n", "fourth output $desc" );
 
                     my $backup_dir = $ct->data_dir->child('backups');
                     $backup_dir->mkpath( { mode => 0775 } );
@@ -368,7 +368,7 @@ sub test_shebang : Tests {
 sub test_dirs : Tests {
     my $self = shift;
 
-    my @files = ( 'a/foo.txt', 'a/bar.txt', 'a/bar.pl', 'b/foo.txt' );
+    my @files    = ( 'a/foo.txt', 'a/bar.txt', 'a/bar.pl', 'b/foo.txt' );
     my $root_dir = $self->create_dir( { map { $_ => 'hi' } @files } );
 
     foreach my $recursive ( 0 .. 1 ) {
@@ -382,7 +382,7 @@ sub test_dirs : Tests {
             @results = $ct->process_paths("$root_dir/a");
         };
         if ($recursive) {
-            is( @results, 3, '3 results' );
+            is( @results,                                          3, '3 results' );
             is( scalar( grep { $_->state eq 'tidied' } @results ), 2, '2 tidied' );
             like( $output, qr/\[tidied\]  a\/foo.txt/ );
             like( $output, qr/\[tidied\]  a\/bar.txt/ );
@@ -460,8 +460,8 @@ sub test_errors : Tests {
     like( $output, qr/baz\/blargh.txt: not a file or directory/, 'file not found' );
 
     $output = capture_stdout { $ct->process_paths("$root_dir/foo/bar.txt") };
-    is( $output, "[tidied]  foo/bar.txt\n", 'filename output' );
-    is( path( $root_dir, 'foo', 'bar.txt' )->slurp, 'ABC', 'tidied' );
+    is( $output,                                    "[tidied]  foo/bar.txt\n", 'filename output' );
+    is( path( $root_dir, 'foo', 'bar.txt' )->slurp, 'ABC',                     'tidied' );
     my $other_dir = tempdir_simple();
     $other_dir->child('foo.txt')->spew('ABC');
     throws_ok { $ct->process_paths("$other_dir/foo.txt") } qr/not underneath root dir/;
