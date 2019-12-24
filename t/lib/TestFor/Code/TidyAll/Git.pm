@@ -293,7 +293,7 @@ sub _make_working_dir_and_repo {
 
     my $pushd = pushd($work_dir);
 
-    $work_dir->child('tidyall.ini')->spew( sprintf($tidyall_ini_template) );
+    $work_dir->child('tidyall.ini')->spew($tidyall_ini_template);
     $work_dir->child('.gitignore')->spew('.tidyall.d');
     runx(qw( git add tidyall.ini .gitignore ));
     runx(qw( git commit -q -m added tidyall.ini .gitignore ));
