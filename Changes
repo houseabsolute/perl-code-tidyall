@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.76     2019-12-24 (TRIAL RELEASE)
+
 - Preserve line endings in files but using raw mode to read and
   write. Otherwise Perl will automatically write files with the
   platform-appropriate ending. This could lead to ending "flapping" if you
