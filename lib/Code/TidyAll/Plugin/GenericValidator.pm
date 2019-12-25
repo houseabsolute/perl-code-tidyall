@@ -9,7 +9,7 @@ extends 'Code::TidyAll::Plugin';
 
 with 'Code::TidyAll::Role::GenericExecutable';
 
-our $VERSION = '0.76';
+our $VERSION = '0.77';
 
 sub validate_file {
     my $self = shift;
