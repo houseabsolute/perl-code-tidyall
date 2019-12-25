@@ -9,7 +9,7 @@ extends 'Code::TidyAll::Plugin';
 
 with 'Code::TidyAll::Role::RunsCommand';
 
-our $VERSION = '0.76';
+our $VERSION = '0.77';
 
 sub _build_cmd {'js-beautify'}
 
