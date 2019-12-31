@@ -37,7 +37,7 @@ sub test_js_plugins : Tests {
     my $self = shift;
 
     return unless $self->require_executable('node');
-    return unless $self->require_executable('js-beautify') || $ENV{TRAVIS};
+    return unless $self->require_executable('js-beautify');
     return unless $self->require_executable('jshint');
     return unless $self->require_executable('jslint');
 
@@ -46,7 +46,7 @@ sub test_js_plugins : Tests {
 
     $self->tidyall(
         plugin_conf => {
-            ( $ENV{TRAVIS} ? () : ( JSBeautify => { select => '**/*.js' } ) ),
+            JSBeautify => { select => '**/*.js' },
             JSHint => { select => '**/*.js' },
             JSLint => { select => '**/*.js' },
         },
