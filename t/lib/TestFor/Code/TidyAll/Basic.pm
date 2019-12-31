@@ -6,8 +6,9 @@ use Code::TidyAll::Util qw(tempdir_simple);
 use Code::TidyAll;
 use File::Find qw(find);
 use File::pushd qw(pushd);
+use FindBin qw( $Bin );
 use IPC::Run3 qw( run3 );
-use Path::Tiny qw(cwd path);
+use Path::Tiny qw(path);
 
 use Test::Class::Most parent => 'TestHelper::Test::Class';
 use Test::Fatal;
@@ -502,12 +503,9 @@ sub test_ignore : Tests {
     $subdir->mkpath( { mode => 0775 } );
     $subdir->child('bar.txt')->spew('bye');
 
-    my $cwd = cwd();
     capture_stdout {
         my $pushed = pushd($root_dir);
-        system( $^X, "-I$cwd/lib", "-I$cwd/t/lib", "$cwd/bin/tidyall",
-            'global_ignore/bar.txt'
-        );
+        system( $self->_tidyall_cmd, 'global_ignore/bar.txt' );
     };
     is(
         $root_dir->child( 'global_ignore', 'bar.txt' )->slurp, 'bye',
@@ -520,12 +518,9 @@ sub test_ignore : Tests {
     $subdir->mkpath( { mode => 0775 } );
     $subdir->child('bar.txt')->spew('bye');
 
-    $cwd = cwd();
     capture_stdout {
         my $pushed = pushd($root_dir);
-        system( $^X, "-I$cwd/lib", "-I$cwd/t/lib", "$cwd/bin/tidyall",
-            'plugin_ignore/bar.txt'
-        );
+        system( $self->_tidyall_cmd, 'plugin_ignore/bar.txt' );
     };
     is(
         $root_dir->child( 'global_ignore', 'bar.txt' )->slurp, 'bye',
@@ -537,8 +532,7 @@ sub test_cli : Tests {
     my $self = shift;
     my $output;
 
-    my @cmd = ( $^X, qw( -Ilib -It/lib bin/tidyall ) );
-    my $run = sub { system( @cmd, @_ ) };
+    my $run = sub { system( $self->_tidyall_cmd, @_ ) };
 
     $output = capture_stdout {
         $run->('--version');
@@ -586,10 +580,9 @@ sub test_cli : Tests {
                 $subdir->child('foo.txt')->spew('bye');
                 $subdir->child('foo2.txt')->spew('bye');
 
-                my $cwd = cwd();
                 capture_stdout {
                     my $pushed = pushd($subdir);
-                    system( $^X, "-I$cwd/lib", "-I$cwd/t/lib", "$cwd/bin/tidyall", 'foo.txt' );
+                    system( $self->_tidyall_cmd, 'foo.txt' );
                 };
                 is(
                     $root_dir->child( 'subdir', 'foo.txt' )->slurp, 'BYEBYEBYE',
@@ -605,7 +598,10 @@ sub test_cli : Tests {
                     sub {
                         my ( $stdout, $stderr );
                         run3(
-                            [ @cmd, '-p', $root_dir->child(qw( does_not_exist foo.txt )) ],
+                            [
+                                $self->_tidyall_cmd, '-p',
+                                $root_dir->child(qw( does_not_exist foo.txt ))
+                            ],
                             \'echo',
                             \$stdout,
                             \$stderr,
@@ -620,7 +616,7 @@ sub test_cli : Tests {
                     sub {
                         my ( $stdout, $stderr );
                         run3(
-                            [ @cmd, '--pipe', $root_dir->child('foo.txt') ],
+                            [ $self->_tidyall_cmd, '--pipe', $root_dir->child('foo.txt') ],
                             \'abc1',
                             \$stdout,
                             \$stderr,
@@ -640,7 +636,7 @@ sub test_inc : Tests {
     my $root_dir = $self->create_dir( { 'foo.txt' => 'abc' } );
 
     my $ct = Code::TidyAll->new(
-        inc     => [ 't/inc1', 't/inc2' ],
+        inc     => [ map { path($Bin)->parent->child( 't', $_ )->stringify } qw( inc1 inc2 ) ],
         plugins => {
             test_plugin('UpperText') => { select => '**/*.txt' },
             '+Foo'                   => { select => '*' },
@@ -702,6 +698,23 @@ sub test_selected_plugins : Tests {
         qr/\QAsked for unknown plugins: [DoesNotExist NorDoesThis]/,
         'exception is thrown when selected_plugins include unknown plugins'
     );
+}
+
+sub _tidyall_cmd {
+    my $self = shift;
+
+    my @cmd = $^X;
+    push @cmd, map { '-I' . $_ } $self->_lib_dirs;
+    push @cmd, $self->_tidyall_bin;
+    return @cmd;
+}
+
+sub _lib_dirs {
+    return path($Bin)->parent->child('lib'), path($Bin)->parent->child( 't', 'lib' );
+}
+
+sub _tidyall_bin {
+    return path($Bin)->parent->child( 'bin', 'tidyall' );
 }
 
 1;

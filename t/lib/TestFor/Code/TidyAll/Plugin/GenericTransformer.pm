@@ -1,13 +1,15 @@
 package TestFor::Code::TidyAll::Plugin::GenericTransformer;
 
 use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
+use FindBin qw( $Bin );
 use Path::Tiny qw( path );
 
 sub test_main : Tests {
     my $self = shift;
 
-    my $cmd_text = $self->_this_perl . ' t/helper-bin/generic-transformer.pl';
-    my $cmd_raw  = $self->_this_perl . ' t/helper-bin/raw-transformer.pl';
+    my $cmd_text = join q{ }, $self->_this_perl,
+        path( $Bin, qw( helper-bin generic-transformer.pl ) );
+    my $cmd_raw = join q{ }, $self->_this_perl, path( $Bin, qw( helper-bin raw-transformer.pl ) );
 
     my $crlf = "a\r\nb\r\nc\r\n";
     my $lf   = "a\nb\nc\n";
@@ -51,12 +53,13 @@ sub test_main : Tests {
         },
     );
 
+    my $cmd_exit = join q{ }, $self->_this_perl, path( $Bin, qw( helper-bin exit.pl ) );
     $self->tidyall(
         source       => 'this text is fine',
         expect_error => qr/exited with 3/,
         desc         => 'exit code of 3 is an exception',
         conf         => {
-            cmd           => $self->_this_perl . ' t/helper-bin/exit.pl 3',
+            cmd           => "$cmd_exit 3",
             ok_exit_codes => [ 0, 1, 2 ],
         },
     );

@@ -1,4 +1,4 @@
 #!/usr/bin/perl
-use lib 't/lib';
+use lib::relative 'lib';
 use TestFor::Code::TidyAll::DiffOnTidyError;
 TestFor::Code::TidyAll::DiffOnTidyError->runtests;
