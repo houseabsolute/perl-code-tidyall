@@ -2,8 +2,14 @@ package TestFor::Code::TidyAll::Plugin::PerlCritic;
 
 use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 
+use Code::TidyAll::Plugin::PerlCritic;
+use Module::Runtime qw( require_module );
+use Try::Tiny;
+
 sub test_main : Tests {
     my $self = shift;
+
+    $self->require_executable( Code::TidyAll::Plugin::PerlCritic->_build_cmd );
 
     my $rc_file = $self->{root_dir}->child('perlcriticrc');
     $rc_file->spew("only = 1\nseverity = 1\n[TestingAndDebugging::RequireUseStrict]\n");

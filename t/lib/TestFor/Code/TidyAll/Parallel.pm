@@ -4,6 +4,18 @@ use Test::Class::Most parent => 'TestHelper::Test::Class';
 use strict;
 use warnings;
 
+use Module::Runtime qw( require_module );
+use Try::Tiny;
+
+BEGIN {
+    for my $mod (qw( Parallel::ForkManager )) {
+        unless ( try { require_module($mod); 1 } ) {
+            __PACKAGE__->SKIP_CLASS("This test requires the $mod module");
+            return;
+        }
+    }
+}
+
 sub test_parallel : Tests {
     my $self = shift;
 

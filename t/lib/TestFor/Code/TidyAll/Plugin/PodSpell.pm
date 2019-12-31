@@ -2,6 +2,18 @@ package TestFor::Code::TidyAll::Plugin::PodSpell;
 
 use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 
+use Module::Runtime qw( require_module );
+use Try::Tiny;
+
+BEGIN {
+    for my $mod (qw( Pod::Spell )) {
+        unless ( try { require_module($mod); 1 } ) {
+            __PACKAGE__->SKIP_CLASS("This test requires the $mod module");
+            return;
+        }
+    }
+}
+
 sub test_filename {'Foo.pod'}
 
 sub test_main : Tests {
