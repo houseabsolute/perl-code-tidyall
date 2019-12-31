@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Specio::Declare;
+use Specio::Library::Builtins;
 use Specio::Library::Path::Tiny;
 use Specio::Library::String;
 
@@ -18,12 +19,12 @@ has error => (
 
 has new_contents => (
     is  => 'ro',
-    isa => t('NonEmptyStr'),
+    isa => t('Str'),
 );
 
 has orig_contents => (
     is  => 'ro',
-    isa => t('NonEmptyStr'),
+    isa => t('Str'),
 );
 
 has path => (
