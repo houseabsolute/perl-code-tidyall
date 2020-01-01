@@ -64,27 +64,32 @@ sub tidyall {
     $Test->diag($output) if $output && $ENV{TEST_VERBOSE};
     $Test->diag($error)  if $error  && $ENV{TEST_VERBOSE};
 
-    if ( my $expect_tidy = $p{expect_tidy} ) {
-        $expect_tidy =~ s/\\n/\n/g;
-        is( $result->state, 'tidied', "state=tidied [$desc]" );
-        eq_or_diff(
-            $result->new_contents, $expect_tidy,
-            "new contents [$desc]"
-        );
-        is( $result->error, undef, "no error [$desc]" );
-    }
-    elsif ( my $expect_ok = $p{expect_ok} ) {
-        is( $result->state, 'checked', "state=checked [$desc]" );
-        is( $result->error, undef,     "no error [$desc]" );
-        if ( $result->new_contents ) {
-            $source ||= path( $p{source_file} )->slurp_raw;
-            is( $result->new_contents, $source, "same contents [$desc]" );
+    subtest(
+        $desc,
+        sub {
+            if ( my $expect_tidy = $p{expect_tidy} ) {
+                $expect_tidy =~ s/\\n/\n/g;
+                is( $result->state, 'tidied', 'state=tidied' );
+                eq_or_diff(
+                    $result->new_contents, $expect_tidy,
+                    'new contents'
+                );
+                is( $result->error, undef, 'no error' );
+            }
+            elsif ( my $expect_ok = $p{expect_ok} ) {
+                is( $result->state, 'checked', 'state=checked' );
+                is( $result->error, undef,     'no error' );
+                if ( $result->new_contents ) {
+                    $source ||= path( $p{source_file} )->slurp_raw;
+                    is( $result->new_contents, $source, 'same contents' );
+                }
+            }
+            elsif ( my $expect_error = $p{expect_error} ) {
+                is( $result->state, 'error', 'state=error' );
+                like( $result->error || '', $expect_error, 'error message' );
+            }
         }
-    }
-    elsif ( my $expect_error = $p{expect_error} ) {
-        is( $result->state, 'error', "state=error [$desc]" );
-        like( $result->error || '', $expect_error, "error message [$desc]" );
-    }
+    );
 }
 
 sub _plugin_conf {
