@@ -41,7 +41,7 @@ sub test_main : Tests {
     );
 
     my $lf_file = path( $self->{root_dir}, 'lf' );
-    $lf_file->spew($lf);
+    $lf_file->spew_raw($lf);
     $self->tidyall(
         source_file => $lf_file,
         expect_tidy => sprintf( '%v02X', $lf ),
