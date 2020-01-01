@@ -18,10 +18,10 @@ sub test_main : Tests {
         },
     );
     $self->tidyall(
-        source    => 'this text is forbidden',
-        expect_ok => 0,
-        desc      => 'text does contain forbidden word',
-        conf      => {
+        source       => 'this text is forbidden',
+        expect_error => qr/exited with 1/,
+        desc         => 'text does contain forbidden word',
+        conf         => {
             cmd => $cmd,
         },
     );
