@@ -77,7 +77,7 @@ sub tidyall {
         is( $result->state, 'checked', "state=checked [$desc]" );
         is( $result->error, undef,     "no error [$desc]" );
         if ( $result->new_contents ) {
-            $source ||= path( $p{source_file} )->slurp;
+            $source ||= path( $p{source_file} )->slurp_raw;
             is( $result->new_contents, $source, "same contents [$desc]" );
         }
     }
