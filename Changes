@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.77     2020-01-04 (TRIAL RELEASE)
+
 - Made some more line ending fixes in the test code.
 
 - Fixed a test to handle spaces with paths (on Windows, at least).
