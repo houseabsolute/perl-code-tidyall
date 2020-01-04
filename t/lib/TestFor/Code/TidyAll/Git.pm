@@ -18,6 +18,14 @@ my ( $precommit_hook_template, $prereceive_hook_template, $tidyall_ini_template 
 $ENV{GIT_AUTHOR_NAME}  = $ENV{GIT_COMMITTER_NAME}  = 'G. Author';
 $ENV{GIT_AUTHOR_EMAIL} = $ENV{GIT_COMMITTER_EMAIL} = 'git-author@example.com';
 
+BEGIN {
+    if (IS_WIN32) {
+        __PACKAGE__->SKIP_CLASS(
+            q{These tests behave oddly on Windows (at least in Azure). I think it has to do with differences in how output is captured and possible also some line ending issues when the test plugins like UpperText are invoked.}
+        );
+    }
+}
+
 sub test_git : Tests {
     my ($self) = @_;
 
