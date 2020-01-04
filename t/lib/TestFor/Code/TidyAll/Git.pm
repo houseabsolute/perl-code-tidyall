@@ -358,7 +358,12 @@ sub _quote_for_win32 {
 }
 
 sub _lib_dirs {
-    join q{ }, map { path($Bin)->parent->child($_) } qw( lib t/lib );
+    my %dirs = map { $_ => 1 } map { path($Bin)->parent->child($_) } qw( lib t/lib );
+    if ( $ENV{PERL5LIB} ) {
+        my $sep = $^O eq 'MSWin32' ? q{;} : q{:};
+        $dirs{$_} = 1 for split /\Q$sep/, $ENV{PERL5LIB};
+    }
+    return join q{ }, sort keys %dirs;
 }
 
 sub _assert_nothing_to_commit {
