@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- Made some more line ending fixes in the test code.
+
+- Fixed a test to handle spaces with paths (on Windows, at least).
+
+
 0.76     2019-12-24 (TRIAL RELEASE)
 
 - Preserve line endings in files but using raw mode to read and
