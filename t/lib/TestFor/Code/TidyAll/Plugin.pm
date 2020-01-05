@@ -21,7 +21,11 @@ sub startup : Tests(startup => no_plan) {
     $self->{root_dir} = tempdir_simple();
 
     my @extra = $self->_extra_path();
-    $ENV{PATH} .= q{:} . join ':', @extra if @extra;
+    if (@extra) {
+        my $sep = $^O eq 'MSWin32' ? q{;} : q{:};
+        $ENV{PATH} .= $sep if $ENV{PATH};
+        $ENV{PATH} .= join $sep, @extra;
+    }
 
     return;
 }
