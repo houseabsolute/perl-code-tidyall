@@ -36,6 +36,9 @@ stages:
     parameters:
       debug: true
       use_default_perls: true
+      brew:
+        - aspell
+        - ispell
       extra_prereqs:
         - Mason::Tidy
         - Perl::Critic

@@ -26,7 +26,8 @@ You can run C<tidyall> on a single file or on an entire project hierarchy, and c
 ';
     $self->tidyall(
         source      => $source,
-        expect_tidy => '=head1 DESCRIPTION
+        expect_tidy => _maybe_crlf(
+            '=head1 DESCRIPTION
 
 There are a lot of great code tidiers and validators out there. C<tidyall>
 makes them available from a single unified interface.
@@ -36,7 +37,8 @@ configure which tidiers/validators are applied to which files. C<tidyall> will
 back up files beforehand, and for efficiency will only consider files that have
 changed since they were last processed.
 
-',
+'
+        ),
         desc => 'tidy - defaults',
     );
 
@@ -59,7 +61,8 @@ changed since they were last processed.
     $self->tidyall(
         source      => $source,
         conf        => { columns => 30 },
-        expect_tidy => '=head1 DESCRIPTION
+        expect_tidy => _maybe_crlf(
+            '=head1 DESCRIPTION
 
 There are a lot of great code
 tidiers and validators out
@@ -79,9 +82,17 @@ efficiency will only consider
 files that have changed since
 they were last processed.
 
-',
+'
+        ),
         desc => 'tidy - columns = 30',
     );
+}
+
+sub _maybe_crlf {
+    return $_[0] unless $^O eq 'MSWin32';
+    my $text = shift;
+    $text =~ s/\n/\r\n/g;
+    return $text;
 }
 
 1;
