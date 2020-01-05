@@ -1,11 +1,12 @@
 package TestFor::Code::TidyAll::Plugin::PHPCodeSniffer;
 
+use Path::Tiny qw( cwd );
 use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 
 sub test_filename {'foo.php'}
 
 sub _extra_path {
-    'php/PHP_CodeSniffer/bin';
+    cwd()->child(qw( php PHP_CodeSniffer bin ));
 }
 
 sub test_main : Tests {

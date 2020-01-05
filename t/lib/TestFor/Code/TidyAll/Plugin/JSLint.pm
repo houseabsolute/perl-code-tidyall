@@ -1,11 +1,12 @@
 package TestFor::Code::TidyAll::Plugin::JSLint;
 
+use Path::Tiny qw( cwd );
 use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 
 sub test_filename {'foo.js'}
 
 sub _extra_path {
-    'node_modules/.bin';
+    cwd()->child(qw( node_modules .bin ));
 }
 
 sub test_main : Tests {

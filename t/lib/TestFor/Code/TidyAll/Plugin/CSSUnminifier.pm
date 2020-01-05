@@ -1,9 +1,10 @@
 package TestFor::Code::TidyAll::Plugin::CSSUnminifier;
 
+use Path::Tiny qw( cwd );
 use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 
 sub _extra_path {
-    'node_modules/.bin';
+    cwd()->child(qw( node_modules .bin ));
 }
 
 sub test_main : Tests {

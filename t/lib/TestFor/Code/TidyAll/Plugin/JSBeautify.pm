@@ -1,11 +1,12 @@
 package TestFor::Code::TidyAll::Plugin::JSBeautify;
 
 use Encode qw(encode);
+use Path::Tiny qw( cwd );
 use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 use Test::Warnings qw( warnings );
 
 sub _extra_path {
-    'node_modules/.bin';
+    cwd()->child(qw( node_modules .bin ));
 }
 
 sub test_main : Tests {

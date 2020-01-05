@@ -8,6 +8,7 @@ use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 use Code::TidyAll::Plugin::PerlCritic;
 use Code::TidyAll::Util qw(tempdir_simple);
 use Module::Runtime qw( require_module );
+use Path::Tiny qw( cwd );
 use Try::Tiny;
 
 BEGIN {
@@ -24,9 +25,11 @@ BEGIN {
 }
 
 sub _extra_path {
-    (
-        'node_modules/.bin',
-        'php5/usr/bin',
+    my $cwd = cwd();
+
+    return (
+        $cwd->child(qw( node_modules .bin )),
+        $cwd->child(qw( php5 usr bin )),
     );
 }
 
