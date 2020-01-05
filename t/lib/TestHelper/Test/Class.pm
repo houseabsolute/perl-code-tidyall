@@ -16,7 +16,8 @@ sub require_executable {
 
     return 1 if which($exe);
 
-    $self->builder->skip("These tests require that $exe be in your \$PATH");
+    $self->builder->skip(
+        "These tests require that $exe be in your \$PATH - current \$PATH = $ENV{PATH}");
 
     return 0;
 }
