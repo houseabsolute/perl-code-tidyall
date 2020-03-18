@@ -29,7 +29,7 @@ use Try::Tiny;
 
 use Moo 2.000000;
 
-our $VERSION = '0.75';
+our $VERSION = '0.76';
 
 sub default_conf_names { ( 'tidyall.ini', '.tidyallrc' ) }
 
@@ -275,7 +275,7 @@ sub _build_plugin_objects {
     # alphabetical
     # TODO: These should probably sort in a consistent way independent of locale
     return [
-        sort { ( $a->weight <=> $b->weight ) || ( $a->name cmp $b->name ) }
+        sort    { ( $a->weight <=> $b->weight ) || ( $a->name cmp $b->name ) }
             map { $self->_load_plugin( $_, $self->_plugins_to_run->{$_} ) }
             keys %{ $self->_plugins_to_run }
     ];

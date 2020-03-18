@@ -8,7 +8,7 @@ use Path::Tiny 0.098 qw(tempdir);
 
 use Exporter qw(import);
 
-our $VERSION = '0.75';
+our $VERSION = '0.76';
 
 our @EXPORT_OK = qw(tempdir_simple);
 
