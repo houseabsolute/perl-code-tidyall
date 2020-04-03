@@ -85,6 +85,7 @@ Engineers from these companies and projects use JSHint:
 * [Apache CouchDB](http://couchdb.apache.org/)
 * [Google](https://www.google.com/)
 * [Codacy](https://www.codacy.com) [ref](https://support.codacy.com/hc/en-us/articles/207995005-Special-Thanks)
+* [Spotify](https://www.spotify.com)
 
 And many more!
 
@@ -102,7 +103,7 @@ reasons. This license is included as an in-line within the file it concerns.
 JSHint is currently maintained by [Rick Waldron](https://github.com/rwaldron/),
 [Caitlin Potter](https://github.com/caitp/), [Mike
 Pennisi](https://github.com/jugglinmike/), and [Luke
-Page](https://github.com/lukeapage).
+Page](https://github.com/lukeapage). You can reach them via admin@jshint.org.
 
 ## Previous Maintainers
 

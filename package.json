@@ -1,0 +1,21 @@
+{
+  "name": "perl-code-tidyall",
+  "version": "1.0.0",
+  "description": "Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "bluebird": "^3.7.2",
+    "cssunminifier": "^0.0.2",
+    "editorconfig": "^0.14.1",
+    "js-beautify": "^1.6.14",
+    "jshint": "^2.11.0",
+    "jslint": "^0.11.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/houseabsolute/perl-code-tidyall.git"
+  }
+}
