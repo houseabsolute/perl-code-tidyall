@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.78     2020-04-25
+
 - Fix an issue with the pre-commit hook code when commit after a merge. If
   tidyall invoked `git stash` in the hook and there was content to stash, this
   would break the merge commit, leading to the commit to fail entirely. Now
