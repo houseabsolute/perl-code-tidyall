@@ -9,7 +9,7 @@ use Specio::Library::Path::Tiny;
 
 use Moo::Role;
 
-our $VERSION = '0.78';
+our $VERSION = '0.79';
 
 has _tempdir => (
     is      => 'ro',

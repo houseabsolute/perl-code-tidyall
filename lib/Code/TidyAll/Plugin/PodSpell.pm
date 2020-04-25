@@ -14,7 +14,7 @@ use Moo;
 
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.78';
+our $VERSION = '0.79';
 
 has ispell_argv => (
     is      => 'ro',
