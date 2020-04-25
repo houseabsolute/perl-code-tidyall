@@ -1,5 +1,15 @@
 {{$NEXT}}
 
+- Fix an issue with the pre-commit hook code when commit after a merge. If
+  tidyall invoked `git stash` in the hook and there was content to stash, this
+  would break the merge commit, leading to the commit to fail entirely. Now
+  the pre-commit hook code will simply never call `git stash` when merging a
+  merge commit. Reported by Damien Prystay. GH #100.
+
+- This release also includes the changes from the 0.76 and 0.77 trial
+  releases.
+
+
 0.77     2020-01-04 (TRIAL RELEASE)
 
 - Made some more line ending fixes in the test code.

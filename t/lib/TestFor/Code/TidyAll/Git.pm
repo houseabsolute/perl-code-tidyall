@@ -126,15 +126,6 @@ sub test_git : Tests {
     };
 }
 
-sub _quote_for_win32 {
-
-    # The docs for IPC::System::Simple lie about how it works on Windows. On
-    # Windows it _always_ invokes a shell, so we need to quote a path with
-    # spaces.
-    return $_[0] unless IS_WIN32 && $_[0] =~ / /;
-    return qq{"$_[0]"};
-}
-
 sub test_copied_status : Tests {
     my ($self) = @_;
 
@@ -278,6 +269,49 @@ sub test_precommit_stash_issues : Tests {
     };
 }
 
+# See https://github.com/houseabsolute/perl-code-tidyall/issues/100 for the
+# bug we're testing.
+sub test_precommit_no_stash_merge : Tests {
+    my ($self) = @_;
+
+    my ( $temp_dir, $work_dir, $pushd ) = $self->_make_working_dir_and_repo;
+
+    $work_dir->child('file1.txt')->spew("A\nB\n");
+    $work_dir->child('file2.txt')->spew("A\nB\n");
+    runx(qw( git add file1.txt file2.txt ));
+    runx( qw( git commit -m ), 'Add files in master' );
+
+    $work_dir->child('file1.txt')->append("C\n");
+    $work_dir->child('file2.txt')->append("C\n");
+    runx( qw( git commit -a -m ), 'Update files in master' );
+
+    runx(qw( git checkout -b my-branch ));
+    runx(qw( git reset --hard HEAD~1 ));
+
+    $work_dir->child('file1.txt')->append("D\n");
+    $work_dir->child('file2.txt')->append("C\n");
+    runx(qw( git add file1.txt file2.txt ));
+    runx( qw( git commit  -m ), 'Update files in my-branch' );
+
+    # This will exit with 1 because of the conflict.
+    runx( [1], qw( git merge master ) );
+
+    like(
+        $work_dir->child(qw( .git MERGE_MSG ))->slurp,
+        qr/Conflicts:.+file1\.txt/s,
+        'merge produced a conflict with file.txt'
+    );
+
+    $work_dir->child('file1.txt')->spew("A\nB\nD\n");
+
+    # We need a change that will be stashed to trigger the bug.
+    $work_dir->child('file2.txt')->append("E\n");
+    runx(qw( git add file1.txt ));
+    runx( qw( git commit -m ), 'Add file1.txt in my-branch for real' );
+    my $output = capturex(qw( git log -n 1 ));
+    like( $output, qr/Merge: [0-9a-f]+ [0-9a-f]+/, 'last commit was a merge commit' );
+}
+
 sub _make_working_dir_and_repo {
     my $self = shift;
 
@@ -307,6 +341,15 @@ sub _make_working_dir_and_repo {
     $precommit_hook_file->chmod(0755);
 
     return ( $temp_dir, $work_dir, $pushd );
+}
+
+sub _quote_for_win32 {
+
+    # The docs for IPC::System::Simple lie about how it works on Windows. On
+    # Windows it _always_ invokes a shell, so we need to quote a path with
+    # spaces.
+    return $_[0] unless IS_WIN32 && $_[0] =~ / /;
+    return qq{"$_[0]"};
 }
 
 sub _lib_dirs {

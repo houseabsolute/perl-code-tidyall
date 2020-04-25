@@ -67,7 +67,7 @@ sub check {
             or die sprintf( 'could not find conf file %s', join( ' or ', @conf_names ) );
 
         my $guard;
-        unless ( $self->no_stash ) {
+        unless ( $self->no_stash || $root_dir->child( '.git', 'MERGE_HEAD' )->exists ) {
 
             # We stash things to make sure that we only attempt to run tidyall
             # on changes in the index while ensuring that after the hook runs
