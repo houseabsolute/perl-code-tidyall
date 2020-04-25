@@ -726,7 +726,7 @@
 
 0.03    2012-07-24
 
-[eNHANCEMENTS]
+[ENHANCEMENTS]
 
 * Added svn precommit hook (Code::TidyAll::SVN::Precommit)
 
