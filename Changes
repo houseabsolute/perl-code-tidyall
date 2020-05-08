@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- Run `git stash pop` with `--quiet` flag again, as long as Git is not
+  2.24.x. See notes in 0.75 for why we stopped passing `--quiet` in the first
+  place.
+
+
 0.78     2020-04-25
 
 - Fix an issue with the pre-commit hook code when commit after a merge. If

@@ -90,11 +90,10 @@ sub check {
                         or die 'Cannot determine version number from git version output!';
                     my $minor = ( split /\./, $version )[1];
 
-                    # When pop is run quietly in 2.24.x it deletes files! I can
-                    # make this guard smarter once there's a fixed version. See
+                    # When pop is run quietly in 2.24.x it deletes files! See
                     # https://public-inbox.org/git/CAMcnqp22tEFva4vYHYLzY83JqDHGzDbDGoUod21Dhtnvv=h_Pg@mail.gmail.com/
-                    # for the initial bug report.
-                    my @args = $minor >= 24 ? () : ('-q');
+                    # for the initial bug report. This was fixed in 2.25.
+                    my @args = $minor == 24 ? () : ('-q');
                     run( $self->git_path, 'stash', 'pop', @args );
                 }
             }
