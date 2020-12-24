@@ -155,6 +155,19 @@ not. Files/commits are never modified by this hook.
 See also L<Code::TidyAll::Git::Prereceive>, which validates pushes to a shared
 repo.
 
+The tidyall configuration file (F<tidyall.ini> or F<.tidyallrc>) must be
+checked into git in the repo root directory i.e. next to the .git directory.
+
+By default, the hook will stash any changes not in the index beforehand, and
+restore them afterwards, via
+
+    git stash save --keep-index --include-untracked
+    ....
+    git stash pop
+
+This means that if the configuration file has uncommitted changes that are not
+in the index, they will not affect the tidyall run.
+
 =head1 METHODS
 
 This class provides one method:
@@ -176,20 +189,7 @@ In an emergency the hook can be bypassed by passing --no-verify to commit:
 
     % git commit --no-verify ...
 
-or you can just move C<.git/hooks/pre-commit> out of the way temporarily.
-
-The configuration file (C<tidyall.ini> or C<.tidyallrc>) must be checked into
-git in the repo root directory i.e. next to the .git directory.
-
-By default, the hook will stash any changes not in the index beforehand, and
-restore them afterwards, via
-
-    git stash save --keep-index --include-untracked
-    ....
-    git stash pop
-
-This means that if the configuration file has uncommitted changes that are not
-in the index, they will not affect the tidyall run.
+or you can just move F<.git/hooks/pre-commit> out of the way temporarily.
 
 This class passes mode = "commit" by default to tidyall; see
 L<modes|tidyall/MODES>.
@@ -232,14 +232,14 @@ yourself or your developers as follows:
 
 =item *
 
-Create a directory called C<git/hooks> at the top of your repo (note no dot
+Create a directory called F<git/hooks> at the top of your repo (note no dot
 prefix).
 
     mkdir -p git/hooks
 
 =item *
 
-Commit your pre-commit script in C<git/hooks/pre-commit> containing:
+Commit your pre-commit script in F<git/hooks/pre-commit> containing:
 
     #!/usr/bin/env perl
 
@@ -251,7 +251,7 @@ Commit your pre-commit script in C<git/hooks/pre-commit> containing:
 
 =item *
 
-Add a setup script in C<git/setup.sh> containing
+Add a setup script in F<git/setup.sh> containing
 
     #!/bin/bash
     chmod +x git/hooks/pre-commit
