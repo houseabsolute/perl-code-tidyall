@@ -287,6 +287,8 @@ sub test_precommit_stash_issues : Tests {
 sub test_precommit_no_stash_merge : Tests {
     my ($self) = @_;
 
+    return unless $self->require_executable('git');
+
     my ( $temp_dir, $work_dir, $pushd ) = $self->_make_working_dir_and_repo;
 
     $work_dir->child('file1.txt')->spew("A\nB\n");
@@ -327,8 +329,6 @@ sub test_precommit_no_stash_merge : Tests {
 
 sub _make_working_dir_and_repo {
     my $self = shift;
-
-    $self->require_executable('git');
 
     my $temp_dir  = tempdir_simple;
     my $work_dir  = $temp_dir->child('work');

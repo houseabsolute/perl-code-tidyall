@@ -96,7 +96,7 @@ sub test_mason_tidy : Tests {
 sub test_perl_plugins : Tests {
     my $self = shift;
 
-    $self->require_executable( Code::TidyAll::Plugin::PerlCritic->_build_cmd );
+    return unless $self->require_executable( Code::TidyAll::Plugin::PerlCritic->_build_cmd );
 
     my $file   = $self->_spaces_dir->child('foo bar.pl');
     my $source = <<'EOF';
