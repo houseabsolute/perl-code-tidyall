@@ -884,7 +884,7 @@ This class offers the following methods:
 
 The regular constructor. Must pass at least I<plugins> and I<root_dir>.
 
-=head2 $tidyall->new_with_conf_file( $conf_file, %params )
+=head2 $tidyall->new_from_conf_file( $conf_file, %params )
 
 Takes a conf file path, followed optionally by a set of key/value parameters.
 Reads parameters out of the conf file and combines them with the passed
