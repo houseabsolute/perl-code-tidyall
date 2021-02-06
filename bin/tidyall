@@ -101,8 +101,8 @@ GetOptions(
     'version'         => \$version,
     'h|help'          => \$help,
 ) or usage();
-version() if $version;
-usage()   if $help;
+version()                  if $version;
+usage()                    if $help;
 @conf_names = ($conf_name) if defined($conf_name);
 
 unshift( @INC, split( /\s*,\s*/, $inc_dirs ) ) if defined($inc_dirs);

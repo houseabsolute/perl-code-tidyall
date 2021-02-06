@@ -43,7 +43,7 @@ sub validate_file {
     my ($output);
     my @cmd = ( $self->ispell_cmd, shellwords( $self->ispell_argv ), '-a' );
     eval { run3( \@cmd, \$text, \$output, \$error ) };
-    $error = $@ if $@;
+    $error = $@                                                  if $@;
     die q{error running '} . join( ' ', @cmd ) . q{': } . $error if $error;
 
     my ( @errors, %seen );

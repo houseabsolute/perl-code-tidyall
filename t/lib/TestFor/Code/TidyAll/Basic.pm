@@ -153,17 +153,17 @@ sub test_plugin_order_and_atomicity : Tests {
     } ( 1 .. 3 );
 
     $self->tidy(
-        plugins => {@plugins},
-        options => { verbose => 1 },
-        source  => { 'foo.txt' => 'abc' },
-        dest    => { 'foo.txt' => 'CHARLIE-BRAVO-ALFA' },
+        plugins     => {@plugins},
+        options     => { verbose   => 1 },
+        source      => { 'foo.txt' => 'abc' },
+        dest        => { 'foo.txt' => 'CHARLIE-BRAVO-ALFA' },
         like_output =>
             qr/.*ReverseFoo, .*UpperText 1, .*UpperText 2, .*UpperText 3, .*CheckUpper 1, .*CheckUpper 2, .*CheckUpper 3/
     );
 
     $self->tidy(
         plugins     => { %AToZ, %ReverseFoo, %CheckUpper },
-        options     => { verbose => 1 },
+        options     => { verbose   => 1 },
         source      => { 'foo.txt' => 'abc' },
         dest        => { 'foo.txt' => 'abc' },
         errors      => qr/lowercase found/,
