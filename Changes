@@ -4,6 +4,9 @@
   2.24.x. See notes in 0.75 for why we stopped passing `--quiet` in the first
   place.
 
+- Fixed a bug where the class in the `--tidyall-class` option was not
+  loaded. Fixed by Shlomi Fish. PR #107. Fixed GH #43.
+
 
 0.78     2020-04-25
 

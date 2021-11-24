@@ -3,6 +3,7 @@ use Capture::Tiny qw(capture_merged);
 use Code::TidyAll;
 use Config;
 use Path::Tiny qw(cwd path);
+use Module::Runtime qw( use_module );
 use Getopt::Long;
 use strict;
 use warnings;
@@ -117,6 +118,8 @@ $params{iterations} = $iterations if $iterations;
     if $params{root_dir} && !$conf_file;
 
 my $tidyall_class = $params{tidyall_class} || 'Code::TidyAll';
+
+use_module($tidyall_class);
 
 my ( $ct, @paths );
 
