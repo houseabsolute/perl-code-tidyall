@@ -14,7 +14,7 @@ stages:
     parameters:
       coverage: codecov
       debug: true
-      from_perl: "5.10"
+      from_perl: "5.12"
       extra_prereqs:
         - Mason::Tidy
         - Perl::Critic
