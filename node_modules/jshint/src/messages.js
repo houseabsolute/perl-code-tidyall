@@ -82,7 +82,11 @@ var errors = {
   E064: "Super call may only be used within class method bodies.",
   E065: "Functions defined outside of strict mode with non-simple parameter lists may not " +
     "enable strict mode.",
-  E066: "Asynchronous iteration is only available with for-of loops."
+  E066: "Asynchronous iteration is only available with for-of loops.",
+  E067: "Malformed numeric literal: '{a}'.",
+  E068: "Decimals with leading zeros are not allowed in strict mode.",
+  E069: "Duplicate exported binding: '{a}'.",
+  E070: "import.meta may only be used in module code."
 };
 
 var warnings = {
@@ -131,7 +135,8 @@ var warnings = {
   W042: "Avoid EOL escaping.",
   W043: "Bad escaping of EOL. Use option multistr if needed.",
   W044: "Bad or unnecessary escaping.", /* TODO(caitp): remove W044 */
-  W045: "Bad number '{a}'.",
+  W045: "Value described by numeric literal cannot be accurately " +
+    "represented with a number value: '{a}'.",
   W046: "Don't use extra leading zeros '{a}'.",
   W047: "A trailing decimal point can be confused with a dot: '{a}'.",
   W048: "Unexpected control character in regular expression.",
@@ -155,7 +160,7 @@ var warnings = {
   W064: "Missing 'new' prefix when invoking a constructor.",
   W065: "Missing radix parameter.",
   W066: "Implied eval. Consider passing a function instead of a string.",
-  W067: "Bad invocation.",
+  W067: "Unorthodox function invocation.",
   W068: "Wrapping non-IIFE function literals in parens is unnecessary.",
   W069: "['{a}'] is better written in dot notation.",
   W070: "Extra comma. (it breaks older versions of IE)",

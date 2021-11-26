@@ -8,9 +8,9 @@
   "dependencies": {
     "bluebird": "^3.7.2",
     "cssunminifier": "^0.0.2",
-    "editorconfig": "^0.14.1",
-    "js-beautify": "^1.6.14",
-    "jshint": "^2.11.0",
+    "editorconfig": "^0.14.2",
+    "js-beautify": "^1.14.0",
+    "jshint": "^2.13.1",
     "jslint": "^0.11.0"
   },
   "devDependencies": {},

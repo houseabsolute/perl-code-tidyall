@@ -15,8 +15,8 @@
 
 JSHint is a community-driven tool that detects errors and potential problems in
 JavaScript code. Since JSHint is so flexible, you can easily adjust it in 
-the environment you expect your code to execute. JSHint is open source and
-will always stay this way.
+the environment you expect your code to execute. JSHint is publicly available
+and will always stay this way.
 
 ## Our goal
 
@@ -62,27 +62,24 @@ Engineers from these companies and projects use JSHint:
 * [Wikipedia](https://wikipedia.org/)
 * [Facebook](https://facebook.com/)
 * [Twitter](https://twitter.com/)
-* [Bootstrap](http://getbootstrap.com/)
 * [Disqus](https://disqus.com/)
 * [Medium](https://medium.com/)
 * [Yahoo!](https://yahoo.com/)
 * [SmugMug](http://smugmug.com/)
-* [jQuery](http://jquery.com/)
-* [PDF.js](http://mozilla.github.io/pdf.js)
+* [jQuery UI](https://jqueryui.com/) ([Source](https://github.com/jquery/jquery-ui/blob/master/package.json))
+* [jQuery Mobile](https://jquerymobile.com/) ([Source](https://github.com/jquery/jquery-mobile/blob/master/package.json#))
 * [Coursera](http://coursera.com/)
-* [Adobe Brackets](http://brackets.io/)
-* [Apache Cordova](http://cordova.io/)
 * [RedHat](http://redhat.com/)
 * [SoundCloud](http://soundcloud.com/)
 * [Nodejitsu](http://nodejitsu.com/)
 * [Yelp](https://yelp.com/)
+* [Find My Electric](https://www.findmyelectric.com/)
 * [Voxer](http://voxer.com/)
 * [EnyoJS](http://enyojs.com/)
 * [QuickenLoans](http://quickenloans.com/)
 * [Cloud9](http://c9.io/)
 * [CodeClimate](https://codeclimate.com/)
 * [Zendesk](http://zendesk.com/)
-* [Apache CouchDB](http://couchdb.apache.org/)
 * [Google](https://www.google.com/)
 * [Codacy](https://www.codacy.com) [ref](https://support.codacy.com/hc/en-us/articles/207995005-Special-Thanks)
 * [Spotify](https://www.spotify.com)
@@ -91,12 +88,14 @@ And many more!
 
 ## License
 
-Most files are published using [the standard MIT Expat
-license](https://www.gnu.org/licenses/license-list.html#Expat). One file,
-however, is provided under a slightly modified version of that license. The
-so-called [JSON license](https://www.gnu.org/licenses/license-list.html#JSON)
-is a non-free license, and unfortunately, we can't change it due to historical
-reasons. This license is included as an in-line within the file it concerns.
+JSHint is licensed under [the MIT Expat
+license](https://www.gnu.org/licenses/license-list.html#Expat).
+
+Prior to version 2.12.0 (release in August 2020), JSHint was partially licensed
+under the non-free [JSON
+license](https://www.gnu.org/licenses/license-list.html#JSON). [The 2020
+Relicensing document](http://jshint.com/relicensing-2020/) details the process
+maintainers followed to change the license.
 
 ## The JSHint Team
 
