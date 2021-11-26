@@ -15,7 +15,7 @@ with 'Code::TidyAll::Role::RunsCommand';
 
 our $VERSION = '0.79';
 
-has '+cmd' => (
+has 'cmd' => (
     is       => 'ro',
     required => 1,
 );
