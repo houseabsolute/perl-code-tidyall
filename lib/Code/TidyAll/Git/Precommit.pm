@@ -16,7 +16,7 @@ use Try::Tiny;
 
 use Moo;
 
-our $VERSION = '0.79';
+our $VERSION = '0.80';
 
 has conf_name => (
     is  => 'ro',
