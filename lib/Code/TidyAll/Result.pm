@@ -10,7 +10,7 @@ use Specio::Library::String;
 
 use Moo;
 
-our $VERSION = '0.80';
+our $VERSION = '0.81';
 
 has error => (
     is  => 'ro',
