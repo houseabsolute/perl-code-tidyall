@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.80     2021-11-26
+
 - Don't run the PodSpell plugin test unless `ispell` is installed. Reported by
   Slaven Rezić. GH #108.
 
