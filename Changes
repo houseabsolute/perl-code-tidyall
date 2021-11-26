@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Don't run the PodSpell plugin test unless `ispell` is installed. Reported by
+  Slaven Rezić. GH #108.
+
+
 0.79     2021-11-26
 
 - Run `git stash pop` with `--quiet` flag again, as long as Git is not

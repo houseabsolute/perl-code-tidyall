@@ -19,6 +19,8 @@ sub test_filename {'Foo.pod'}
 sub test_main : Tests {
     my $self = shift;
 
+    return unless $self->require_executable('ispell');
+
     if ( $^O eq 'MSWin32' ) {
         $self->builder->skip('There is no ispell on Windows');
         return;
