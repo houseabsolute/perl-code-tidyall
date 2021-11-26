@@ -4,7 +4,7 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
 # VERSION
 
-version 0.78
+version 0.79
 
 # SYNOPSIS
 
@@ -46,7 +46,7 @@ This class offers the following methods:
 
 The regular constructor. Must pass at least _plugins_ and _root\_dir_.
 
-## $tidyall->new\_with\_conf\_file( $conf\_file, %params )
+## $tidyall->new\_from\_conf\_file( $conf\_file, %params )
 
 Takes a conf file path, followed optionally by a set of key/value parameters.
 Reads parameters out of the conf file and combines them with the passed
@@ -165,15 +165,11 @@ found.
 
 # SUPPORT
 
-Bugs may be submitted at
-[https://github.com/houseabsolute/perl-code-tidyall/issues](https://github.com/houseabsolute/perl-code-tidyall/issues).
-
-I am also usually active on IRC as 'autarch' on `irc://irc.perl.org`.
+Bugs may be submitted at [https://github.com/houseabsolute/perl-code-tidyall/issues](https://github.com/houseabsolute/perl-code-tidyall/issues).
 
 # SOURCE
 
-The source code repository for Code-TidyAll can be found at
-[https://github.com/houseabsolute/perl-code-tidyall](https://github.com/houseabsolute/perl-code-tidyall).
+The source code repository for Code-TidyAll can be found at [https://github.com/houseabsolute/perl-code-tidyall](https://github.com/houseabsolute/perl-code-tidyall).
 
 # AUTHORS
 
@@ -184,6 +180,7 @@ The source code repository for Code-TidyAll can be found at
 
 - Adam Herzog <adam@adamherzog.com>
 - Andy Jack <andyjack@cpan.org>
+- Bernhard Schmalhofer <Bernhard.Schmalhofer@gmx.de>
 - Finn Smith <finn@timeghost.net>
 - George Hartzell <georgewh@gene.com>
 - Graham Knop <haarg@haarg.org>
@@ -204,10 +201,10 @@ The source code repository for Code-TidyAll can be found at
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 - 2020 by Jonathan Swartz.
+This software is copyright (c) 2011 - 2021 by Jonathan Swartz.
 
-This is free software; you can redistribute it and/or modify it under the same
-terms as the Perl 5 programming language system itself.
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-The full text of the license can be found in the `LICENSE` file included with
-this distribution.
+The full text of the license can be found in the
+`LICENSE` file included with this distribution.

@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.79     2021-11-26
+
 - Run `git stash pop` with `--quiet` flag again, as long as Git is not
   2.24.x. See notes in 0.75 for why we stopped passing `--quiet` in the first
   place.
