@@ -60,20 +60,20 @@ sub zglob_to_regex_string {
             $regex .= "\\$_";
         }
         elsif ( $_ eq "\cZ" ) {    # handle **/ - if escaping, only escape first *
-            $regex .=
-                $escaping
+            $regex
+                .= $escaping
                 ? ( "\\*" . ( $strict_wildcard_slash ? "[^/]*" : ".*" ) . "/" )
                 : ".*";
         }
         elsif ( $_ eq '*' ) {
-            $regex .=
-                  $escaping              ? "\\*"
+            $regex
+                .= $escaping             ? "\\*"
                 : $strict_wildcard_slash ? "[^/]*"
                 :                          ".*";
         }
         elsif ( $_ eq '?' ) {
-            $regex .=
-                  $escaping              ? "\\?"
+            $regex
+                .= $escaping             ? "\\?"
                 : $strict_wildcard_slash ? "[^/]"
                 :                          ".";
         }
