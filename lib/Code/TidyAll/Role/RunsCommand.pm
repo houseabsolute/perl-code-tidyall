@@ -42,7 +42,7 @@ sub _run_or_die {
     }
     catch {
         die sprintf(
-            "%s failed\n    %s",
+            "Running [%s] failed\n    %s",
             ( join q{ }, @cmd ),
             $_,
         );
