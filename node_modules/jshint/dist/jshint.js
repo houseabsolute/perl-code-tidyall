@@ -1,4 +1,4 @@
-/*! 2.13.1 */
+/*! 2.13.4 */
 var JSHINT;
 if (typeof window === 'undefined') window = {};
 (function () {
@@ -1440,14 +1440,15 @@ function isUndefined(arg) {
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.17.20';
+  var VERSION = '4.17.21';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
 
   /** Error message constants. */
   var CORE_ERROR_TEXT = 'Unsupported core-js use. Try https://npms.io/search?q=ponyfill.',
-      FUNC_ERROR_TEXT = 'Expected a function';
+      FUNC_ERROR_TEXT = 'Expected a function',
+      INVALID_TEMPL_VAR_ERROR_TEXT = 'Invalid `variable` option passed into `_.template`';
 
   /** Used to stand-in for `undefined` hash values. */
   var HASH_UNDEFINED = '__lodash_hash_undefined__';
@@ -1580,10 +1581,11 @@ function isUndefined(arg) {
   var reRegExpChar = /[\\^$.*+?()[\]{}|]/g,
       reHasRegExpChar = RegExp(reRegExpChar.source);
 
-  /** Used to match leading and trailing whitespace. */
-  var reTrim = /^\s+|\s+$/g,
-      reTrimStart = /^\s+/,
-      reTrimEnd = /\s+$/;
+  /** Used to match leading whitespace. */
+  var reTrimStart = /^\s+/;
+
+  /** Used to match a single whitespace character. */
+  var reWhitespace = /\s/;
 
   /** Used to match wrap detail comments. */
   var reWrapComment = /\{(?:\n\/\* \[wrapped with .+\] \*\/)?\n?/,
@@ -1592,6 +1594,18 @@ function isUndefined(arg) {
 
   /** Used to match words composed of alphanumeric characters. */
   var reAsciiWord = /[^\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]+/g;
+
+  /**
+   * Used to validate the `validate` option in `_.template` variable.
+   *
+   * Forbids characters which could potentially change the meaning of the function argument definition:
+   * - "()," (modification of function parameters)
+   * - "=" (default value)
+   * - "[]{}" (destructuring of function parameters)
+   * - "/" (beginning of a comment)
+   * - whitespace
+   */
+  var reForbiddenIdentifierChars = /[()=,{}\[\]\/\s]/;
 
   /** Used to match backslashes in property paths. */
   var reEscapeChar = /\\(\\)?/g;
@@ -2422,6 +2436,19 @@ function isUndefined(arg) {
   }
 
   /**
+   * The base implementation of `_.trim`.
+   *
+   * @private
+   * @param {string} string The string to trim.
+   * @returns {string} Returns the trimmed string.
+   */
+  function baseTrim(string) {
+    return string
+      ? string.slice(0, trimmedEndIndex(string) + 1).replace(reTrimStart, '')
+      : string;
+  }
+
+  /**
    * The base implementation of `_.unary` without support for storing metadata.
    *
    * @private
@@ -2752,6 +2779,21 @@ function isUndefined(arg) {
     return hasUnicode(string)
       ? unicodeToArray(string)
       : asciiToArray(string);
+  }
+
+  /**
+   * Used by `_.trim` and `_.trimEnd` to get the index of the last non-whitespace
+   * character of `string`.
+   *
+   * @private
+   * @param {string} string The string to inspect.
+   * @returns {number} Returns the index of the last non-whitespace character.
+   */
+  function trimmedEndIndex(string) {
+    var index = string.length;
+
+    while (index-- && reWhitespace.test(string.charAt(index))) {}
+    return index;
   }
 
   /**
@@ -13922,7 +13964,7 @@ function isUndefined(arg) {
       if (typeof value != 'string') {
         return value === 0 ? value : +value;
       }
-      value = value.replace(reTrim, '');
+      value = baseTrim(value);
       var isBinary = reIsBinary.test(value);
       return (isBinary || reIsOctal.test(value))
         ? freeParseInt(value.slice(2), isBinary ? 2 : 8)
@@ -16294,6 +16336,12 @@ function isUndefined(arg) {
       if (!variable) {
         source = 'with (obj) {\n' + source + '\n}\n';
       }
+      // Throw an error if a forbidden character was found in `variable`, to prevent
+      // potential command injection attacks.
+      else if (reForbiddenIdentifierChars.test(variable)) {
+        throw new Error(INVALID_TEMPL_VAR_ERROR_TEXT);
+      }
+
       // Cleanup code by stripping empty strings.
       source = (isEvaluating ? source.replace(reEmptyStringLeading, '') : source)
         .replace(reEmptyStringMiddle, '$1')
@@ -16407,7 +16455,7 @@ function isUndefined(arg) {
     function trim(string, chars, guard) {
       string = toString(string);
       if (string && (guard || chars === undefined)) {
-        return string.replace(reTrim, '');
+        return baseTrim(string);
       }
       if (!string || !(chars = baseToString(chars))) {
         return string;
@@ -16442,7 +16490,7 @@ function isUndefined(arg) {
     function trimEnd(string, chars, guard) {
       string = toString(string);
       if (string && (guard || chars === undefined)) {
-        return string.replace(reTrimEnd, '');
+        return string.slice(0, trimmedEndIndex(string) + 1);
       }
       if (!string || !(chars = baseToString(chars))) {
         return string;
@@ -19772,9 +19820,6 @@ Lexer.prototype = {
     case "\\":
       char = "\\\\";
       break;
-    case "\"":
-      char = "\\\"";
-      break;
     case "/":
       break;
     case "":
@@ -22156,7 +22201,7 @@ exports.val = {
   indent       : false,
 
   /**
-   * This options allows you to set the maximum amount of warnings JSHint will
+   * This options allows you to set the maximum amount of errors JSHint will
    * produce before giving up. Default is 50.
    */
   maxerr       : false,
@@ -22389,7 +22434,8 @@ exports.val = {
    *    Notable additions: optional catch bindings.
    *  - `11` - To enable language features introduced by ECMAScript 11. Notable
    *    additions: "export * as ns from 'module'", `import.meta`, the nullish
-   *    coalescing operator, and optional chaining, and dynamic import.
+   *    coalescing operator, the BigInt type, the `globalThis` binding,
+   *    optional chaining, and dynamic import.
    */
   esversion: 5
 };
@@ -24571,6 +24617,10 @@ exports.ecmaIdentifiers = {
   8: {
     Atomics            : false,
     SharedArrayBuffer  : false
+  },
+  11: {
+    BigInt             : false,
+    globalThis         : false
   }
 };
 
@@ -24924,6 +24974,7 @@ exports.browser = {
   TimeEvent            : false,
   top                  : false,
   URL                  : false,
+  URLSearchParams      : false,
   WebGLActiveInfo      : false,
   WebGLBuffer          : false,
   WebGLContextEvent    : false,
@@ -25010,20 +25061,23 @@ exports.node = {
   global        : false,
   module        : false,
   require       : false,
+  Intl          : false,
 
   // These globals are writeable because Node allows the following
   // usage pattern: var Buffer = require("buffer").Buffer;
 
-  Buffer        : true,
-  console       : true,
-  exports       : true,
-  process       : true,
-  setTimeout    : true,
-  clearTimeout  : true,
-  setInterval   : true,
-  clearInterval : true,
-  setImmediate  : true, // v0.9.1+
-  clearImmediate: true  // v0.9.1+
+  Buffer         : true,
+  console        : true,
+  exports        : true,
+  process        : true,
+  setTimeout     : true,
+  clearTimeout   : true,
+  setInterval    : true,
+  clearInterval  : true,
+  setImmediate   : true, // v0.9.1+
+  clearImmediate : true, // v0.9.1+
+  URL            : true, // v10.0.0+
+  URLSearchParams: true  // v10.0.0+
 };
 
 exports.browserify = {
@@ -25265,10 +25319,12 @@ exports.mocha = {
   // BDD
   describe    : false,
   xdescribe   : false,
-  it          : false,
-  xit         : false,
   context     : false,
   xcontext    : false,
+  it          : false,
+  xit         : false,
+  specify     : false,
+  xspecify    : false,
   before      : false,
   after       : false,
   beforeEach  : false,
@@ -25554,6 +25610,10 @@ var JSHINT = (function() {
       combine(predefined, vars.ecmaIdentifiers[8]);
     }
 
+    if (state.inES11()) {
+      combine(predefined, vars.ecmaIdentifiers[11]);
+    }
+
     /**
      * Use `in` to check for the presence of any explicitly-specified value for
      * `globalstrict` because both `true` and `false` should trigger an error.
@@ -25735,9 +25795,10 @@ var JSHINT = (function() {
 
     removeIgnoredMessages();
 
-    if (JSHINT.errors.length >= state.option.maxerr)
+    var errors = JSHINT.errors.filter(function(e) { return /E\d{3}/.test(e.code); });
+    if (errors.length >= state.option.maxerr) {
       quit("E043", t);
-
+    }
     return w;
   }
 
@@ -27762,7 +27823,9 @@ var JSHINT = (function() {
     that.left = left;
     var right = that.right = expression(context, 39);
 
-    if (!right.paren && (right.id === "||" || right.id === "&&")) {
+    if (!right) {
+      error("E024", state.tokens.next, state.tokens.next.id);
+    } else if (!right.paren && (right.id === "||" || right.id === "&&")) {
       error("E024", that.right, that.right.id);
     }
 
@@ -29384,8 +29447,10 @@ var JSHINT = (function() {
             warning("W104", state.tokens.next, "object short notation", "6");
           }
           t = expression(context, 10);
-          i = t.value;
-          saveProperty(props, i, t);
+          i = t && t.value;
+          if (t) {
+            saveProperty(props, i, t);
+          }
 
         } else if (peek().id !== ":" && (nextVal === "get" || nextVal === "set")) {
           advance(nextVal);
