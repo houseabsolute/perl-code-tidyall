@@ -29,6 +29,14 @@ sub transform_source {
     # might be hidden in other bundles, e.g. -pbp.  Be defensive and
     # check both.
     my ( $output, $error_flag, $errorfile, $stderr, $destination );
+
+    # Add --encode-output-strings (-eos) for PT releases in 2022 and later to
+    # tell perltidy that we want encoded character strings returned.  See
+    # https://github.com/houseabsolute/perl-code-tidyall/issues/84
+    # https://github.com/perltidy/perltidy/issues/83
+    my $argv = $self->argv;
+    $argv .= ' --encode-output-strings' if $Perl::Tidy::VERSION > 20220101;
+
     $output = capture_merged {
         $error_flag = Perl::Tidy::perltidy(
             argv        => $self->argv,
@@ -87,3 +95,7 @@ This plugin accepts the following configuration options:
 
 Arguments to pass to C<perltidy>.
 
+If you are using C<Perl::Tidy> version 20220101 or newer, than the
+C<--encode-output-strings> flag will be appended to whatever you supply. In
+this case, you should ensure that you are I<not> passing a
+C<--character-encoding> (C<-enc>) or C<-utf8> flag to perltidy as well.

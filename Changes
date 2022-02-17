@@ -1,5 +1,12 @@
 {{$NEXT}}
 
+- The PerlTidy plugin will now always append the `--encode-output-strings`
+  flag when using `Perl::Tidy` 20220101 or newer. This eliminates issues with
+  character encoded content reported in GH #84, reported by Greg
+  Oschwald. Thanks to Steven Hancock for letting me know that this was
+  possible.
+
+
 0.80     2021-11-26
 
 - Don't run the PodSpell plugin test unless `ispell` is installed. Reported by
