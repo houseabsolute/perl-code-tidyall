@@ -4,7 +4,7 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
 # VERSION
 
-version 0.80
+version 0.81
 
 # SYNOPSIS
 
@@ -201,7 +201,7 @@ The source code repository for Code-TidyAll can be found at [https://github.com/
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 - 2021 by Jonathan Swartz.
+This software is copyright (c) 2011 - 2022 by Jonathan Swartz.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

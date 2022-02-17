@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.81     2022-02-16
+
 - The PerlTidy plugin will now always append the `--encode-output-strings`
   flag when using `Perl::Tidy` 20220101 or newer. This eliminates issues with
   character encoded content reported in GH #84, reported by Greg
