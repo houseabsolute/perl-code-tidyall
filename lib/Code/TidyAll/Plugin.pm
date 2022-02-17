@@ -15,7 +15,7 @@ use Text::Diff 1.44 qw(diff);
 
 use Moo;
 
-our $VERSION = '0.81';
+our $VERSION = '0.82';
 
 has argv => (
     is      => 'ro',

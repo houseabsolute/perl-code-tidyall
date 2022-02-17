@@ -9,7 +9,7 @@ extends 'Code::TidyAll::Plugin';
 
 with 'Code::TidyAll::Role::RunsCommand';
 
-our $VERSION = '0.81';
+our $VERSION = '0.82';
 
 sub _build_cmd {'cssunminifier'}
 

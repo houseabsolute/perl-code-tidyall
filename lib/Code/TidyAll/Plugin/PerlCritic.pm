@@ -9,7 +9,7 @@ extends 'Code::TidyAll::Plugin';
 
 with 'Code::TidyAll::Role::RunsCommand';
 
-our $VERSION = '0.81';
+our $VERSION = '0.82';
 
 # On Windows only the batch file is actually executable.
 my $cmd = $^O eq 'MSWin32' ? 'perlcritic.bat' : 'perlcritic';

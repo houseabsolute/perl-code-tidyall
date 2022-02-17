@@ -9,7 +9,7 @@ extends 'Code::TidyAll::Plugin';
 
 with 'Code::TidyAll::Role::GenericExecutable';
 
-our $VERSION = '0.81';
+our $VERSION = '0.82';
 
 sub transform_file {
     my $self = shift;
