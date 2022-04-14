@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- Run the Git tests with LC_ALL set to C. GH #109.
+
+
 0.81     2022-02-16
 
 - The PerlTidy plugin will now always append the `--encode-output-strings`
