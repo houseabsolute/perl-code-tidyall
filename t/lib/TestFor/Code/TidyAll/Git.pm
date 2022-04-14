@@ -5,6 +5,7 @@ use Code::TidyAll::Git::Util qw(git_files_to_commit git_modified_files);
 use Code::TidyAll::Util qw(tempdir_simple);
 use Code::TidyAll;
 use File::pushd qw(pushd);
+use File::Spec;
 use FindBin qw( $Bin );
 use IPC::System::Simple qw(capturex runx);
 use Path::Tiny qw(path);
@@ -17,6 +18,10 @@ my ( $precommit_hook_template, $prereceive_hook_template, $tidyall_ini_template 
 
 $ENV{GIT_AUTHOR_NAME}  = $ENV{GIT_COMMITTER_NAME}  = 'G. Author';
 $ENV{GIT_AUTHOR_EMAIL} = $ENV{GIT_COMMITTER_EMAIL} = 'git-author@example.com';
+
+# Ignore local configuration files, which may change the default branch from
+# "master" to "main".
+$ENV{GIT_CONFIG_GLOBAL} = $ENV{GIT_CONFIG_SYSTEM} = File::Spec->devnull;
 
 BEGIN {
     if (IS_WIN32) {

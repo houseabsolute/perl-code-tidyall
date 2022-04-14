@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+- Ignore local Git configuration files, which may break the Git tests.
+
 - Run the Git tests with LC_ALL set to C. GH #109.
 
 
