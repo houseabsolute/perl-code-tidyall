@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- Fixed git tests to ignore local Git configuration files, which may cause the
+  tests to fail. Implemented by Andreas Vögele. GH #109.
+
 - The git tests nor run with LC_ALL set to C. Implemented by Andreas
   Vögele. GH #109.
 
