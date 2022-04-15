@@ -4,7 +4,7 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
 # VERSION
 
-version 0.81
+version 0.82
 
 # SYNOPSIS
 
@@ -179,6 +179,7 @@ The source code repository for Code-TidyAll can be found at [https://github.com/
 # CONTRIBUTORS
 
 - Adam Herzog <adam@adamherzog.com>
+- Andreas Vögele <andreas@andreasvoegele.com>
 - Andy Jack <andyjack@cpan.org>
 - Bernhard Schmalhofer <Bernhard.Schmalhofer@gmx.de>
 - Finn Smith <finn@timeghost.net>
