@@ -13,7 +13,7 @@ use Moo::Role;
 
 with 'Code::TidyAll::Role::RunsCommand';
 
-our $VERSION = '0.82';
+our $VERSION = '0.83';
 
 has 'cmd' => (
     is       => 'ro',

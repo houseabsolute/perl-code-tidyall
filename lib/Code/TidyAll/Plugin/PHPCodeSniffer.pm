@@ -9,7 +9,7 @@ extends 'Code::TidyAll::Plugin';
 
 with 'Code::TidyAll::Role::RunsCommand';
 
-our $VERSION = '0.82';
+our $VERSION = '0.83';
 
 sub _build_cmd {'phpcs'}
 

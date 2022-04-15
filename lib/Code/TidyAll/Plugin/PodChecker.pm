@@ -10,7 +10,7 @@ use Moo;
 
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.82';
+our $VERSION = '0.83';
 
 has warnings => (
     is  => 'ro',

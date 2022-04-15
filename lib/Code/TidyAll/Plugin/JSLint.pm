@@ -13,7 +13,7 @@ has '+ok_exit_codes' => (
     default => sub { [ 0, 1 ] },
 );
 
-our $VERSION = '0.82';
+our $VERSION = '0.83';
 
 sub _build_cmd {'jslint'}
 
