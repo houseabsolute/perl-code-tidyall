@@ -99,3 +99,4 @@ If you are using C<Perl::Tidy> version 20220101 or newer, than the
 C<--encode-output-strings> flag will be appended to whatever you supply. In
 this case, you should ensure that you are I<not> passing a
 C<--character-encoding> (C<-enc>) or C<-utf8> flag to perltidy as well.
+
