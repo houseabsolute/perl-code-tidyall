@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- Fixed test failures on msys. Implemented by Paulo Custodio. GH #116.
+
+
 0.82     2022-04-15
 
 - Fixed git tests to ignore local Git configuration files, which may cause the
