@@ -2,9 +2,9 @@ package TestFor::Code::TidyAll::Plugin::PerlTidy;
 
 use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 
-use Getopt::Long;
+use Getopt::Long    ();
 use Module::Runtime qw( require_module );
-use Try::Tiny;
+use Try::Tiny       qw( try );
 
 BEGIN {
     for my $mod (qw( Perl::Tidy )) {

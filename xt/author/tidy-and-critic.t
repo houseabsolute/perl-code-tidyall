@@ -1,10 +1,9 @@
 #!/usr/bin/perl
 use lib::relative 'lib';
-use Code::TidyAll::Util qw(tempdir_simple);
-use Code::TidyAll;
-use Path::Tiny qw(path);
+use Code::TidyAll::Util qw( tempdir_simple );
+use Code::TidyAll ();
 use Test::More;
-use Capture::Tiny qw(capture_merged);
+use Capture::Tiny qw( capture_merged );
 
 my $root_dir = tempdir_simple();
 

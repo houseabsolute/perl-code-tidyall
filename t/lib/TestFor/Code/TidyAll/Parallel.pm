@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 use Module::Runtime qw( require_module );
-use Try::Tiny;
+use Try::Tiny       qw( try );
 
 BEGIN {
     for my $mod (qw( Parallel::ForkManager )) {

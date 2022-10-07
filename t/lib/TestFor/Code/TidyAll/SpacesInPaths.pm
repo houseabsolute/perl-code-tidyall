@@ -5,11 +5,10 @@ use warnings;
 
 use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 
-use Code::TidyAll::Plugin::PerlCritic;
-use Code::TidyAll::Util qw(tempdir_simple);
-use Module::Runtime qw( require_module );
-use Path::Tiny qw( cwd );
-use Try::Tiny;
+use Code::TidyAll::Plugin::PerlCritic ();
+use Module::Runtime                   qw( require_module );
+use Path::Tiny                        qw( cwd );
+use Try::Tiny                         qw( try );
 
 BEGIN {
     my @mods

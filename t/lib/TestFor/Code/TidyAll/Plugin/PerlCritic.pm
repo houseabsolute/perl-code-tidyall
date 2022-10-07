@@ -2,9 +2,7 @@ package TestFor::Code::TidyAll::Plugin::PerlCritic;
 
 use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 
-use Code::TidyAll::Plugin::PerlCritic;
-use Module::Runtime qw( require_module );
-use Try::Tiny;
+use Code::TidyAll::Plugin::PerlCritic ();
 
 sub test_main : Tests {
     my $self = shift;

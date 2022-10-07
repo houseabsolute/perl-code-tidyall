@@ -1,12 +1,12 @@
 package TestFor::Code::TidyAll::SVN;
 
-use Capture::Tiny qw(capture_stdout capture_stderr capture);
+use Capture::Tiny qw( capture_stderr capture_stdout );
 use Code::TidyAll::SVN::Precommit;
-use Code::TidyAll::SVN::Util qw(svn_uncommitted_files);
-use Code::TidyAll::Util qw(tempdir_simple);
-use Code::TidyAll;
-use IPC::System::Simple qw(run);
-use Path::Tiny qw(path);
+use Code::TidyAll::SVN::Util qw( svn_uncommitted_files );
+use Code::TidyAll::Util      qw( tempdir_simple );
+use Code::TidyAll            ();
+use IPC::System::Simple      qw( run );
+use Path::Tiny               qw( path );
 use Test::Class::Most parent => 'TestHelper::Test::Class';
 
 my ( $precommit_hook_template, $tidyall_ini_template );
