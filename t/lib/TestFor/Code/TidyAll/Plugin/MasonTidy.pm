@@ -3,7 +3,7 @@ package TestFor::Code::TidyAll::Plugin::MasonTidy;
 use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 
 use Module::Runtime qw( require_module );
-use Try::Tiny;
+use Try::Tiny       qw( try );
 
 BEGIN {
     for my $mod (qw( Mason::Tidy )) {

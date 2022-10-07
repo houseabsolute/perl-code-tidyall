@@ -1,6 +1,5 @@
 package TestHelper::Plugin::ReverseFoo;
 
-use Path::Tiny qw(path);
 use Moo;
 extends 'Code::TidyAll::Plugin';
 

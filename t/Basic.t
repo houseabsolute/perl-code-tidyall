@@ -5,8 +5,8 @@ use warnings;
 
 use lib::relative 'lib';
 
-use Config;
-use File::Spec;
+use Config     qw( %Config );
+use File::Spec ();
 
 # We need to make sure that t/lib is seen across forks _and_ we want to make
 # sure that the paths are absolute because Code::TidyAll may chdir while
@@ -20,5 +20,5 @@ $ENV{PERL5LIB} = join(
     )
 );
 
-use TestFor::Code::TidyAll::Basic;
+use TestFor::Code::TidyAll::Basic ();
 TestFor::Code::TidyAll::Basic->runtests;

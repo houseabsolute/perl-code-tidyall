@@ -4,10 +4,10 @@ use strict;
 use warnings;
 use autodie;
 
-use Capture::Tiny qw(capture);
-use Code::TidyAll::Util qw(tempdir_simple);
-use Code::TidyAll;
-use Path::Tiny qw(path);
+use Capture::Tiny       qw( capture );
+use Code::TidyAll::Util qw( tempdir_simple );
+use Code::TidyAll       ();
+use Path::Tiny          qw( path );
 use Test::Class::Most parent => 'TestHelper::Test::Class';
 use Test::Differences qw( eq_or_diff );
 

@@ -1,16 +1,16 @@
 package TestFor::Code::TidyAll::Git;
 
-use Capture::Tiny qw(capture capture_stderr);
-use Code::TidyAll::Git::Util qw(git_files_to_commit git_modified_files);
-use Code::TidyAll::Util qw(tempdir_simple);
-use Code::TidyAll;
-use File::pushd qw(pushd);
-use File::Spec;
-use FindBin qw( $Bin );
-use IPC::System::Simple qw(capturex runx);
-use Path::Tiny qw(path);
+use Capture::Tiny            qw( capture capture_stderr );
+use Code::TidyAll::Git::Util qw( git_files_to_commit git_modified_files );
+use Code::TidyAll::Util      qw( tempdir_simple );
+use Code::TidyAll            ();
+use File::pushd              qw( pushd );
+use File::Spec               ();
+use FindBin                  qw( $Bin );
+use IPC::System::Simple      qw( capturex runx );
+use Path::Tiny               qw( path );
 use Test::Class::Most parent => 'TestHelper::Test::Class';
-use Try::Tiny;
+use Try::Tiny qw( catch try );
 
 use constant IS_WIN32 => $^O eq 'MSWin32';
 

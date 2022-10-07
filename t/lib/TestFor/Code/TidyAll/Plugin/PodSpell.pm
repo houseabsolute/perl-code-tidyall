@@ -3,7 +3,7 @@ package TestFor::Code::TidyAll::Plugin::PodSpell;
 use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 
 use Module::Runtime qw( require_module );
-use Try::Tiny;
+use Try::Tiny       qw( try );
 
 BEGIN {
     for my $mod (qw( Pod::Spell )) {

@@ -1,7 +1,7 @@
 package TestFor::Code::TidyAll::Util;
 
-use Code::TidyAll::Util qw(tempdir_simple);
-use Path::Tiny;
+use Code::TidyAll::Util qw( tempdir_simple );
+use Path::Tiny          qw( path );
 use Test::Class::Most parent => 'TestHelper::Test::Class';
 
 sub test_tempdir_simple : Tests {

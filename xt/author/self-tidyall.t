@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::Code::TidyAll;
+use Test::Code::TidyAll qw( tidyall_ok );
 use Test::More;
 
 plan skip_all => q{This is broken because of tidyall's broken UTF-8 handling. This is because we now have a contributor in Git with a UTF-8 character in their name, and this gets mangled during tidying. Oh, the irony.};

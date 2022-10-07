@@ -1,9 +1,9 @@
 package TestHelper::Test::Class;
 
-use Capture::Tiny qw(capture_stdout);
-use Code::TidyAll;
-use Code::TidyAll::Util qw(tempdir_simple);
-use File::Which qw(which);
+use Capture::Tiny       qw( capture_stdout );
+use Code::TidyAll       ();
+use Code::TidyAll::Util qw( tempdir_simple );
+use File::Which         qw( which );
 use Test::Class::Most;
 use strict;
 use warnings;
