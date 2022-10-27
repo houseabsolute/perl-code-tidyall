@@ -2,6 +2,11 @@
 
 - Fixed test failures on msys. Implemented by Paulo Custodio. GH #116.
 
+- When running under GitHub Actions in --check-only mode, linting failures
+  will now emit GitHub annotations
+  (https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#example-creating-an-annotation-for-an-error). Implemented
+  by Pavel Dostál. GH #120.
+
 
 0.82     2022-04-15
 

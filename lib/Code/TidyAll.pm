@@ -673,6 +673,12 @@ sub process_source {
     my $was_tidied = !$error && ( $new_contents ne $orig_contents );
     if ( $was_tidied && $self->check_only ) {
         $error = '*** needs tidying';
+
+        # Github annotations parsable output to highlight code in pull requests
+        if ($ENV{GITHUB_ACTIONS}) {
+            $error .= "\n::error file=${path}::File ${path} needs tidying"
+        }
+
         foreach my $diff (@diffs) {
             $error .= "\n\n";
             $error .= "$diff->[0] made the following change:\n$diff->[1]";
