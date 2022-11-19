@@ -4,9 +4,9 @@ use strict;
 use warnings;
 
 use Code::TidyAll::Util::Zglob qw(zglobs_to_regex);
-use File::Which qw(which);
-use IPC::Run3 qw(run3);
-use Scalar::Util qw(weaken);
+use File::Which                qw(which);
+use IPC::Run3                  qw(run3);
+use Scalar::Util               qw(weaken);
 use Specio::Declare;
 use Specio::Library::Builtins;
 use Specio::Library::Numeric;

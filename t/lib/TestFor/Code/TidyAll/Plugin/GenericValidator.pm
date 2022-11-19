@@ -1,7 +1,7 @@
 package TestFor::Code::TidyAll::Plugin::GenericValidator;
 
 use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
-use FindBin qw( $Bin );
+use FindBin    qw( $Bin );
 use Path::Tiny qw( path );
 
 sub test_main : Tests {

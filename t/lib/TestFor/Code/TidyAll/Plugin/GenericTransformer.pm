@@ -1,7 +1,7 @@
 package TestFor::Code::TidyAll::Plugin::GenericTransformer;
 
 use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
-use FindBin qw( $Bin );
+use FindBin    qw( $Bin );
 use Path::Tiny qw( path );
 
 sub test_main : Tests {

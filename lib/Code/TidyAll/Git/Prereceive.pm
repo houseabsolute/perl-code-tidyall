@@ -3,12 +3,12 @@ package Code::TidyAll::Git::Prereceive;
 use strict;
 use warnings;
 
-use Capture::Tiny qw(capture);
+use Capture::Tiny       qw(capture);
 use Code::TidyAll::Util qw(tempdir_simple);
 use Code::TidyAll;
-use Digest::SHA qw(sha1_hex);
+use Digest::SHA         qw(sha1_hex);
 use IPC::System::Simple qw(capturex run);
-use Path::Tiny qw(cwd path);
+use Path::Tiny          qw(cwd path);
 use Specio::Library::Builtins;
 use Specio::Library::Numeric;
 use Specio::Library::String;

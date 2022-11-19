@@ -2,7 +2,7 @@
 use Capture::Tiny qw(capture_merged);
 use Code::TidyAll;
 use Config;
-use Path::Tiny qw(cwd path);
+use Path::Tiny      qw(cwd path);
 use Module::Runtime qw( use_module );
 use Getopt::Long;
 use strict;

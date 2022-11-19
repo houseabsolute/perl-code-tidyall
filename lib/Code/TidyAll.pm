@@ -11,13 +11,13 @@ use Code::TidyAll::Result;
 use Code::TidyAll::Zglob qw(zglob);
 use Data::Dumper;
 use Date::Format;
-use Digest::SHA qw(sha1_hex);
-use File::Find qw(find);
-use File::pushd qw( pushd );
+use Digest::SHA     qw(sha1_hex);
+use File::Find      qw(find);
+use File::pushd     qw( pushd );
 use List::SomeUtils qw(uniq);
 use Module::Runtime qw( use_module );
-use Path::Tiny qw(path);
-use Scalar::Util qw(blessed);
+use Path::Tiny      qw(path);
+use Scalar::Util    qw(blessed);
 use Specio 0.40;
 use Specio::Declare;
 use Specio::Library::Builtins;
@@ -675,8 +675,8 @@ sub process_source {
         $error = '*** needs tidying';
 
         # Github annotations parsable output to highlight code in pull requests
-        if ($ENV{GITHUB_ACTIONS}) {
-            $error .= "\n::error file=${path}::File ${path} needs tidying"
+        if ( $ENV{GITHUB_ACTIONS} ) {
+            $error .= "\n::error file=${path}::File ${path} needs tidying";
         }
 
         foreach my $diff (@diffs) {

@@ -3,7 +3,7 @@ package Code::TidyAll::SVN::Util;
 use strict;
 use warnings;
 
-use Cwd qw(realpath);
+use Cwd                 qw(realpath);
 use IPC::System::Simple qw(capturex);
 
 use Exporter qw(import);

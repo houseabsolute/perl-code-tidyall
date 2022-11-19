@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Digest::SHA qw(sha1_hex);
-use Path::Tiny qw(path);
+use Path::Tiny  qw(path);
 use Specio::Library::Path::Tiny;
 
 use Moo;

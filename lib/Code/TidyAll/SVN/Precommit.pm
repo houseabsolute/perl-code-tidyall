@@ -3,10 +3,10 @@ package Code::TidyAll::SVN::Precommit;
 use strict;
 use warnings;
 
-use Capture::Tiny qw(capture_stdout capture_stderr);
+use Capture::Tiny       qw(capture_stdout capture_stderr);
 use Code::TidyAll::Util qw(tempdir_simple);
 use Code::TidyAll;
-use Log::Any qw($log);
+use Log::Any   qw($log);
 use Path::Tiny qw(path);
 use SVN::Look;
 use Try::Tiny;

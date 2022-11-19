@@ -3,13 +3,13 @@ package Code::TidyAll::Git::Precommit;
 use strict;
 use warnings;
 
-use Capture::Tiny qw(capture_stdout capture_stderr);
+use Capture::Tiny            qw(capture_stdout capture_stderr);
 use Code::TidyAll::Git::Util qw(git_files_to_commit);
 use Code::TidyAll;
 use IPC::System::Simple qw(capturex run);
-use Log::Any qw($log);
-use Path::Tiny qw(path);
-use Scope::Guard qw(guard);
+use Log::Any            qw($log);
+use Path::Tiny          qw(path);
+use Scope::Guard        qw(guard);
 use Specio::Library::Builtins;
 use Specio::Library::String;
 use Try::Tiny;

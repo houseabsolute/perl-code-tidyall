@@ -3,10 +3,10 @@ package Code::TidyAll::Git::Util;
 use strict;
 use warnings;
 
-use File::pushd qw(pushd);
+use File::pushd         qw(pushd);
 use IPC::System::Simple qw(capturex);
-use List::SomeUtils qw(uniq);
-use Path::Tiny qw(path);
+use List::SomeUtils     qw(uniq);
+use Path::Tiny          qw(path);
 
 use Exporter qw(import);
 

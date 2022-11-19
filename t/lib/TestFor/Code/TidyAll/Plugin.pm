@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use autodie;
 
-use Capture::Tiny qw(capture);
+use Capture::Tiny       qw(capture);
 use Code::TidyAll::Util qw(tempdir_simple);
 use Code::TidyAll;
 use Path::Tiny qw(path);

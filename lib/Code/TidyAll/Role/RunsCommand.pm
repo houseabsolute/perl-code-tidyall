@@ -3,7 +3,7 @@ package Code::TidyAll::Role::RunsCommand;
 use strict;
 use warnings;
 
-use IPC::Run3 qw(run3);
+use IPC::Run3       qw(run3);
 use List::SomeUtils qw(any);
 use Specio::Library::Builtins;
 use Specio::Library::Numeric;

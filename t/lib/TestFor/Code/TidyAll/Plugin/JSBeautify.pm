@@ -1,6 +1,6 @@
 package TestFor::Code::TidyAll::Plugin::JSBeautify;
 
-use Encode qw(encode);
+use Encode     qw(encode);
 use Path::Tiny qw( cwd );
 use Test::Class::Most parent => 'TestFor::Code::TidyAll::Plugin';
 use Test::Warnings qw( warnings );

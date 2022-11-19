@@ -29,10 +29,10 @@ sub test_diff_on_tidy_error : Tests {
                 select             => '**/*.txt',
             },
         },
-        source      => { 'foo.txt'  => 'abc' },
-        options     => { check_only => 1 },
-        desc        => 'diff on tidy error running in github actions',
-        errors      => qr/::error file=foo\.txt::File foo\.txt needs tidying/,
+        source  => { 'foo.txt'  => 'abc' },
+        options => { check_only => 1 },
+        desc    => 'diff on tidy error running in github actions',
+        errors  => qr/::error file=foo\.txt::File foo\.txt needs tidying/,
     );
 }
 
