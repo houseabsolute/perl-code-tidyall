@@ -4,7 +4,7 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
 # VERSION
 
-version 0.82
+version 0.83
 
 # SYNOPSIS
 
@@ -194,6 +194,8 @@ The source code repository for Code-TidyAll can be found at [https://github.com/
 - Mohammad S Anwar <mohammad.anwar@yahoo.com>
 - Nick Tonkin <ntonkin@bur-ntonkin-m1.corp.endurance.com>
 - Olaf Alders <olaf@wundersolutions.com>
+- Paulo Custodio <pauloscustodio@gmail.com>
+- Pavel Dostál <pdostal@suse.cz>
 - Pedro Melo <melo@simplicidade.org>
 - Ricardo Signes <rjbs@cpan.org>
 - Sergey Romanov <sromanov-dev@yandex.ru>
