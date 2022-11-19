@@ -10,7 +10,7 @@ use Moo;
 
 extends 'Code::TidyAll::Plugin';
 
-our $VERSION = '0.83';
+our $VERSION = '0.84';
 
 sub _build_cmd {'masontidy'}
 

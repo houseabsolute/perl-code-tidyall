@@ -77,7 +77,7 @@ my %WriteMakefileArgs = (
     "autodie" => 0,
     "lib::relative" => 0
   },
-  "VERSION" => "0.83",
+  "VERSION" => "0.84",
   "test" => {
     "TESTS" => "t/*.t"
   }
