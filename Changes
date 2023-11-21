@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Fixed a bug that made it impossible to specify both `-i` and `-I` with
+  `tidyall. GH #125. PR #126. Fixed by @mauke.
+
+
 0.83     2022-11-19
 
 - Fixed test failures on msys. Implemented by Paulo Custodio. GH #116.

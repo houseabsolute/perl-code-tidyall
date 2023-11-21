@@ -72,6 +72,7 @@ my (
 
 my @conf_names = Code::TidyAll->default_conf_names;
 
+Getopt::Long::Configure('no_ignore_case');
 GetOptions(
     'a|all'           => \$all_files,
     'i|ignore=s@'     => \$params{ignore},
