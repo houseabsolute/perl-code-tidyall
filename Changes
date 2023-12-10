@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.84     2023-12-09
+
 - Fixed a bug that made it impossible to specify both `-i` and `-I` with
   `tidyall. GH #125. PR #126. Fixed by @mauke.
 
