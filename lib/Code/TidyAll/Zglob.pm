@@ -2,7 +2,7 @@ package Code::TidyAll::Zglob;
 use strict;
 use warnings 'all', FATAL => 'recursion';
 use 5.008008;
-our $VERSION = '0.84';
+our $VERSION = '0.85';
 use base qw(Exporter);
 
 our @EXPORT = qw(zglob);
