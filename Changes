@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- Fixed a bug in how this module called `Path::Tiny`. Fixed by @gregoa (Gregor Hermann). GH #128.
+
+
 0.84     2023-12-09
 
 - Fixed a bug that made it impossible to specify both `-i` and `-I` with

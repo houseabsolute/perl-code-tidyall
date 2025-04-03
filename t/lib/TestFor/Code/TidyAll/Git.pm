@@ -343,7 +343,7 @@ sub _make_working_dir_and_repo {
 
     # This dir doesn't exist unless there's a git dir template that includes
     # the hooks subdir.
-    $hooks_dir->mkpath( 0, 0755 );
+    $hooks_dir->mkpath( { verbose => 0, mode => 0755 } );
     ok( -d $_, "$_ exists" ) for ( $work_dir, $hooks_dir );
 
     my $pushd = pushd($work_dir);
