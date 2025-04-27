@@ -46,7 +46,7 @@ sub test_svn : Tests {
     my $hooks_dir = $repo_dir->child('hooks');
     ok( $hooks_dir->is_dir, "$hooks_dir exists" );
 
-    $src_dir->mkpath(0775);
+    $src_dir->mkpath( { mode => 0775 } );
     $src_dir->child('foo.txt')->spew('abc');
 
     run( sprintf( q{svn -q import %s file://%s/myapp/trunk -m "import"}, $src_dir,  $repo_dir ) );
