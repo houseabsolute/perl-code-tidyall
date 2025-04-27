@@ -4,7 +4,7 @@ Code::TidyAll - Engine for tidyall, your all-in-one code tidier and validator
 
 # VERSION
 
-version 0.84
+version 0.85
 
 # SYNOPSIS
 
@@ -185,6 +185,7 @@ The source code repository for Code-TidyAll can be found at [https://github.com/
 - Finn Smith <finn@timeghost.net>
 - George Hartzell <georgewh@gene.com>
 - Graham Knop <haarg@haarg.org>
+- gregor herrmann <gregoa@debian.org>
 - Gregory Oschwald <goschwald@maxmind.com>
 - Joe Crotty <joe.crotty@returnpath.net>
 - Kenneth Ölwing <kenneth.olwing@skatteverket.se>
@@ -205,7 +206,7 @@ The source code repository for Code-TidyAll can be found at [https://github.com/
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 - 2023 by Jonathan Swartz.
+This software is copyright (c) 2011 - 2025 by Jonathan Swartz.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

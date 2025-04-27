@@ -74,14 +74,6 @@ requests](https://help.github.com/articles/creating-a-pull-request)
 If you have found a bug, but do not have an accompanying patch to fix it, you
 can submit an issue report [via the web](https://github.com/houseabsolute/perl-code-tidyall/issues).
 
-## Continuous Integration
-
-All pull requests for this distribution will be automatically tested using
-[Azure Pipelines](https://dev.azure.com/houseabsolute/houseabsolute/_build).
-
-All CI results will be visible in the pull request on GitHub. Follow the
-appropriate links for details when tests fail. PRs cannot be merged until tests
-pass.
 
 ## TidyAll
 
