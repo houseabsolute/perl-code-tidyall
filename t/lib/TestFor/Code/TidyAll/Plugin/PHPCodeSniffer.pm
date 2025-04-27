@@ -12,9 +12,8 @@ sub _extra_path {
 sub test_main : Tests {
     my $self = shift;
 
-    # This fails in Azure Pipelines under Windows for some reason that I
-    # cannot figure out.
-    if ( $^O eq 'MSWin32' && $ENV{BUILD_BUILDID} ) {
+    # This fails in GitHub Actions under Windows for some reason that I cannot figure out.
+    if ( $^O eq 'MSWin32' && $ENV{CI} ) {
         $self->builder->skip('These tests fail on Windows in CI');
         return;
     }
