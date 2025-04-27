@@ -403,8 +403,12 @@ sub _read_conf_file {
 sub _dump_params {
     my $p = shift;
 
-    return Data::Dumper->new( [ _recurse_dump($p) ] )->Indent(0)->Sortkeys(1)->Quotekeys(0)
-        ->Terse(1)->Dump;
+    return Data::Dumper->new( [ _recurse_dump($p) ] )
+        ->Indent(0)
+        ->Sortkeys(1)
+        ->Quotekeys(0)
+        ->Terse(1)
+        ->Dump;
 }
 
 # This is all a ridiculous workaround around the fact that there is no good
