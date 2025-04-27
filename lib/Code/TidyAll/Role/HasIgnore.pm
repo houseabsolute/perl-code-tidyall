@@ -9,7 +9,7 @@ use Specio::Library::String;
 
 use Moo::Role;
 
-our $VERSION = '0.85';
+our $VERSION = '0.86';
 
 has ignore => (
     is      => 'ro',
